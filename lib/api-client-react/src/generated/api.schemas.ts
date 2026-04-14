@@ -8,3 +8,63 @@
 export interface HealthStatus {
   status: string;
 }
+
+export interface AppItem {
+  id: string;
+  name: string;
+  packageName: string;
+  version: string;
+  size: string;
+  type: string;
+  category: string;
+  status: string;
+  description: string;
+  modFeatures: string;
+  iconInitials: string;
+  iconColor: string;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface CreateAppBody {
+  name: string;
+  packageName: string;
+  version: string;
+  size: string;
+  type: string;
+  category: string;
+  status: string;
+  description: string;
+  modFeatures: string;
+  iconInitials: string;
+  iconColor: string;
+}
+
+export interface UpdateAppBody {
+  name?: string;
+  packageName?: string;
+  version?: string;
+  size?: string;
+  type?: string;
+  category?: string;
+  status?: string;
+  description?: string;
+  modFeatures?: string;
+  iconInitials?: string;
+  iconColor?: string;
+}
+
+export interface AppStats {
+  totalMods: number;
+  totalGames: number;
+  totalApps: number;
+  totalOnline: number;
+  totalOffline: number;
+}
+
+export type ListAppsParams = {
+  search?: string;
+  type?: string;
+  category?: string;
+  status?: string;
+};

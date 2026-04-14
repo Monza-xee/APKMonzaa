@@ -2,7 +2,7 @@
 
 ## Overview
 
-pnpm workspace monorepo using TypeScript. Each package manages its own dependencies.
+APKMONZA — a curated catalog website for modified apps and games. Full-stack application with a public catalog, app detail pages, and an admin panel for managing mods.
 
 ## Stack
 
@@ -12,9 +12,29 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 - **TypeScript version**: 5.9
 - **API framework**: Express 5
 - **Database**: PostgreSQL + Drizzle ORM
+- **Frontend**: React + Vite + Tailwind CSS + shadcn/ui
 - **Validation**: Zod (`zod/v4`), `drizzle-zod`
 - **API codegen**: Orval (from OpenAPI spec)
 - **Build**: esbuild (CJS bundle)
+
+## Features
+
+- **Public Catalog** (`/`): Browse modified apps/games with search and type filtering
+- **App Detail** (`/app/:id`): Full details with mod features, description, tech specs
+- **Admin Panel** (`/admin`): Dashboard stats, manage mods (create, edit, delete)
+
+## Data Model
+
+- **apps** table: id (uuid), name, packageName, version, size, type (GAME/APP), category, status (ONLINE/OFFLINE), description, modFeatures, iconInitials, iconColor, createdAt, updatedAt
+
+## API Endpoints
+
+- `GET /api/apps` — list apps with optional filters (search, type, category, status)
+- `POST /api/apps` — create a new app
+- `GET /api/apps/stats` — get dashboard statistics
+- `GET /api/apps/:id` — get app by ID
+- `PUT /api/apps/:id` — update an app
+- `DELETE /api/apps/:id` — delete an app
 
 ## Key Commands
 

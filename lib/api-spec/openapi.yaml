@@ -10,6 +10,8 @@ servers:
 tags:
   - name: health
     description: Health operations
+  - name: apps
+    description: App/Mod operations
 paths:
   /healthz:
     get:
@@ -24,6 +26,128 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/HealthStatus"
+  /apps:
+    get:
+      operationId: listApps
+      tags: [apps]
+      summary: List all apps
+      description: Returns list of all apps with optional filtering
+      parameters:
+        - name: search
+          in: query
+          schema:
+            type: string
+        - name: type
+          in: query
+          schema:
+            type: string
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            type: string
+      responses:
+        "200":
+          description: List of apps
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/AppItem"
+    post:
+      operationId: createApp
+      tags: [apps]
+      summary: Create a new app
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateAppBody"
+      responses:
+        "201":
+          description: Created app
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppItem"
+  /apps/stats:
+    get:
+      operationId: getAppStats
+      tags: [apps]
+      summary: Get catalog stats
+      description: Returns summary stats for the admin dashboard
+      responses:
+        "200":
+          description: Stats
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppStats"
+  /apps/{id}:
+    get:
+      operationId: getApp
+      tags: [apps]
+      summary: Get app by ID
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: App details
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppItem"
+        "404":
+          description: Not found
+    put:
+      operationId: updateApp
+      tags: [apps]
+      summary: Update an app
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UpdateAppBody"
+      responses:
+        "200":
+          description: Updated app
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AppItem"
+        "404":
+          description: Not found
+    delete:
+      operationId: deleteApp
+      tags: [apps]
+      summary: Delete an app
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "204":
+          description: Deleted
+        "404":
+          description: Not found
 components:
   schemas:
     HealthStatus:
@@ -33,4 +157,132 @@ components:
           type: string
       required:
         - status
-
+    AppItem:
+      type: object
+      properties:
+        id:
+          type: string
+        name:
+          type: string
+        packageName:
+          type: string
+        version:
+          type: string
+        size:
+          type: string
+        type:
+          type: string
+        category:
+          type: string
+        status:
+          type: string
+        description:
+          type: string
+        modFeatures:
+          type: string
+        iconInitials:
+          type: string
+        iconColor:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
+      required:
+        - id
+        - name
+        - packageName
+        - version
+        - size
+        - type
+        - category
+        - status
+        - description
+        - modFeatures
+        - iconInitials
+        - iconColor
+        - createdAt
+        - updatedAt
+    CreateAppBody:
+      type: object
+      properties:
+        name:
+          type: string
+        packageName:
+          type: string
+        version:
+          type: string
+        size:
+          type: string
+        type:
+          type: string
+        category:
+          type: string
+        status:
+          type: string
+        description:
+          type: string
+        modFeatures:
+          type: string
+        iconInitials:
+          type: string
+        iconColor:
+          type: string
+      required:
+        - name
+        - packageName
+        - version
+        - size
+        - type
+        - category
+        - status
+        - description
+        - modFeatures
+        - iconInitials
+        - iconColor
+    UpdateAppBody:
+      type: object
+      properties:
+        name:
+          type: string
+        packageName:
+          type: string
+        version:
+          type: string
+        size:
+          type: string
+        type:
+          type: string
+        category:
+          type: string
+        status:
+          type: string
+        description:
+          type: string
+        modFeatures:
+          type: string
+        iconInitials:
+          type: string
+        iconColor:
+          type: string
+    AppStats:
+      type: object
+      properties:
+        totalMods:
+          type: integer
+        totalGames:
+          type: integer
+        totalApps:
+          type: integer
+        totalOnline:
+          type: integer
+        totalOffline:
+          type: integer
+      required:
+        - totalMods
+        - totalGames
+        - totalApps
+        - totalOnline
+        - totalOffline

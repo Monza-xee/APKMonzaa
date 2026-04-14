@@ -5,18 +5,28 @@
  * API specification
  * OpenAPI spec version: 0.1.0
  */
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import type {
+  MutationFunction,
   QueryFunction,
   QueryKey,
+  UseMutationOptions,
+  UseMutationResult,
   UseQueryOptions,
   UseQueryResult,
 } from "@tanstack/react-query";
 
-import type { HealthStatus } from "./api.schemas";
+import type {
+  AppItem,
+  AppStats,
+  CreateAppBody,
+  HealthStatus,
+  ListAppsParams,
+  UpdateAppBody,
+} from "./api.schemas";
 
 import { customFetch } from "../custom-fetch";
-import type { ErrorType } from "../custom-fetch";
+import type { ErrorType, BodyType } from "../custom-fetch";
 
 type AwaitedInput<T> = PromiseLike<T> | T;
 
@@ -99,3 +109,504 @@ export function useHealthCheck<
 
   return { ...query, queryKey: queryOptions.queryKey };
 }
+
+/**
+ * Returns list of all apps with optional filtering
+ * @summary List all apps
+ */
+export const getListAppsUrl = (params?: ListAppsParams) => {
+  const normalizedParams = new URLSearchParams();
+
+  Object.entries(params || {}).forEach(([key, value]) => {
+    if (value !== undefined) {
+      normalizedParams.append(key, value === null ? "null" : value.toString());
+    }
+  });
+
+  const stringifiedParams = normalizedParams.toString();
+
+  return stringifiedParams.length > 0
+    ? `/api/apps?${stringifiedParams}`
+    : `/api/apps`;
+};
+
+export const listApps = async (
+  params?: ListAppsParams,
+  options?: RequestInit,
+): Promise<AppItem[]> => {
+  return customFetch<AppItem[]>(getListAppsUrl(params), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getListAppsQueryKey = (params?: ListAppsParams) => {
+  return [`/api/apps`, ...(params ? [params] : [])] as const;
+};
+
+export const getListAppsQueryOptions = <
+  TData = Awaited<ReturnType<typeof listApps>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: ListAppsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof listApps>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getListAppsQueryKey(params);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof listApps>>> = ({
+    signal,
+  }) => listApps(params, { signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof listApps>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type ListAppsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof listApps>>
+>;
+export type ListAppsQueryError = ErrorType<unknown>;
+
+/**
+ * @summary List all apps
+ */
+
+export function useListApps<
+  TData = Awaited<ReturnType<typeof listApps>>,
+  TError = ErrorType<unknown>,
+>(
+  params?: ListAppsParams,
+  options?: {
+    query?: UseQueryOptions<
+      Awaited<ReturnType<typeof listApps>>,
+      TError,
+      TData
+    >;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getListAppsQueryOptions(params, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Create a new app
+ */
+export const getCreateAppUrl = () => {
+  return `/api/apps`;
+};
+
+export const createApp = async (
+  createAppBody: CreateAppBody,
+  options?: RequestInit,
+): Promise<AppItem> => {
+  return customFetch<AppItem>(getCreateAppUrl(), {
+    ...options,
+    method: "POST",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(createAppBody),
+  });
+};
+
+export const getCreateAppMutationOptions = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createApp>>,
+    TError,
+    { data: BodyType<CreateAppBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof createApp>>,
+  TError,
+  { data: BodyType<CreateAppBody> },
+  TContext
+> => {
+  const mutationKey = ["createApp"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof createApp>>,
+    { data: BodyType<CreateAppBody> }
+  > = (props) => {
+    const { data } = props ?? {};
+
+    return createApp(data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type CreateAppMutationResult = NonNullable<
+  Awaited<ReturnType<typeof createApp>>
+>;
+export type CreateAppMutationBody = BodyType<CreateAppBody>;
+export type CreateAppMutationError = ErrorType<unknown>;
+
+/**
+ * @summary Create a new app
+ */
+export const useCreateApp = <
+  TError = ErrorType<unknown>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof createApp>>,
+    TError,
+    { data: BodyType<CreateAppBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof createApp>>,
+  TError,
+  { data: BodyType<CreateAppBody> },
+  TContext
+> => {
+  return useMutation(getCreateAppMutationOptions(options));
+};
+
+/**
+ * Returns summary stats for the admin dashboard
+ * @summary Get catalog stats
+ */
+export const getGetAppStatsUrl = () => {
+  return `/api/apps/stats`;
+};
+
+export const getAppStats = async (options?: RequestInit): Promise<AppStats> => {
+  return customFetch<AppStats>(getGetAppStatsUrl(), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetAppStatsQueryKey = () => {
+  return [`/api/apps/stats`] as const;
+};
+
+export const getGetAppStatsQueryOptions = <
+  TData = Awaited<ReturnType<typeof getAppStats>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getAppStats>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetAppStatsQueryKey();
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getAppStats>>> = ({
+    signal,
+  }) => getAppStats({ signal, ...requestOptions });
+
+  return { queryKey, queryFn, ...queryOptions } as UseQueryOptions<
+    Awaited<ReturnType<typeof getAppStats>>,
+    TError,
+    TData
+  > & { queryKey: QueryKey };
+};
+
+export type GetAppStatsQueryResult = NonNullable<
+  Awaited<ReturnType<typeof getAppStats>>
+>;
+export type GetAppStatsQueryError = ErrorType<unknown>;
+
+/**
+ * @summary Get catalog stats
+ */
+
+export function useGetAppStats<
+  TData = Awaited<ReturnType<typeof getAppStats>>,
+  TError = ErrorType<unknown>,
+>(options?: {
+  query?: UseQueryOptions<
+    Awaited<ReturnType<typeof getAppStats>>,
+    TError,
+    TData
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetAppStatsQueryOptions(options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Get app by ID
+ */
+export const getGetAppUrl = (id: string) => {
+  return `/api/apps/${id}`;
+};
+
+export const getApp = async (
+  id: string,
+  options?: RequestInit,
+): Promise<AppItem> => {
+  return customFetch<AppItem>(getGetAppUrl(id), {
+    ...options,
+    method: "GET",
+  });
+};
+
+export const getGetAppQueryKey = (id: string) => {
+  return [`/api/apps/${id}`] as const;
+};
+
+export const getGetAppQueryOptions = <
+  TData = Awaited<ReturnType<typeof getApp>>,
+  TError = ErrorType<void>,
+>(
+  id: string,
+  options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof getApp>>, TError, TData>;
+    request?: SecondParameter<typeof customFetch>;
+  },
+) => {
+  const { query: queryOptions, request: requestOptions } = options ?? {};
+
+  const queryKey = queryOptions?.queryKey ?? getGetAppQueryKey(id);
+
+  const queryFn: QueryFunction<Awaited<ReturnType<typeof getApp>>> = ({
+    signal,
+  }) => getApp(id, { signal, ...requestOptions });
+
+  return {
+    queryKey,
+    queryFn,
+    enabled: !!id,
+    ...queryOptions,
+  } as UseQueryOptions<Awaited<ReturnType<typeof getApp>>, TError, TData> & {
+    queryKey: QueryKey;
+  };
+};
+
+export type GetAppQueryResult = NonNullable<Awaited<ReturnType<typeof getApp>>>;
+export type GetAppQueryError = ErrorType<void>;
+
+/**
+ * @summary Get app by ID
+ */
+
+export function useGetApp<
+  TData = Awaited<ReturnType<typeof getApp>>,
+  TError = ErrorType<void>,
+>(
+  id: string,
+  options?: {
+    query?: UseQueryOptions<Awaited<ReturnType<typeof getApp>>, TError, TData>;
+    request?: SecondParameter<typeof customFetch>;
+  },
+): UseQueryResult<TData, TError> & { queryKey: QueryKey } {
+  const queryOptions = getGetAppQueryOptions(id, options);
+
+  const query = useQuery(queryOptions) as UseQueryResult<TData, TError> & {
+    queryKey: QueryKey;
+  };
+
+  return { ...query, queryKey: queryOptions.queryKey };
+}
+
+/**
+ * @summary Update an app
+ */
+export const getUpdateAppUrl = (id: string) => {
+  return `/api/apps/${id}`;
+};
+
+export const updateApp = async (
+  id: string,
+  updateAppBody: UpdateAppBody,
+  options?: RequestInit,
+): Promise<AppItem> => {
+  return customFetch<AppItem>(getUpdateAppUrl(id), {
+    ...options,
+    method: "PUT",
+    headers: { "Content-Type": "application/json", ...options?.headers },
+    body: JSON.stringify(updateAppBody),
+  });
+};
+
+export const getUpdateAppMutationOptions = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateApp>>,
+    TError,
+    { id: string; data: BodyType<UpdateAppBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof updateApp>>,
+  TError,
+  { id: string; data: BodyType<UpdateAppBody> },
+  TContext
+> => {
+  const mutationKey = ["updateApp"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof updateApp>>,
+    { id: string; data: BodyType<UpdateAppBody> }
+  > = (props) => {
+    const { id, data } = props ?? {};
+
+    return updateApp(id, data, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type UpdateAppMutationResult = NonNullable<
+  Awaited<ReturnType<typeof updateApp>>
+>;
+export type UpdateAppMutationBody = BodyType<UpdateAppBody>;
+export type UpdateAppMutationError = ErrorType<void>;
+
+/**
+ * @summary Update an app
+ */
+export const useUpdateApp = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof updateApp>>,
+    TError,
+    { id: string; data: BodyType<UpdateAppBody> },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof updateApp>>,
+  TError,
+  { id: string; data: BodyType<UpdateAppBody> },
+  TContext
+> => {
+  return useMutation(getUpdateAppMutationOptions(options));
+};
+
+/**
+ * @summary Delete an app
+ */
+export const getDeleteAppUrl = (id: string) => {
+  return `/api/apps/${id}`;
+};
+
+export const deleteApp = async (
+  id: string,
+  options?: RequestInit,
+): Promise<void> => {
+  return customFetch<void>(getDeleteAppUrl(id), {
+    ...options,
+    method: "DELETE",
+  });
+};
+
+export const getDeleteAppMutationOptions = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteApp>>,
+    TError,
+    { id: string },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationOptions<
+  Awaited<ReturnType<typeof deleteApp>>,
+  TError,
+  { id: string },
+  TContext
+> => {
+  const mutationKey = ["deleteApp"];
+  const { mutation: mutationOptions, request: requestOptions } = options
+    ? options.mutation &&
+      "mutationKey" in options.mutation &&
+      options.mutation.mutationKey
+      ? options
+      : { ...options, mutation: { ...options.mutation, mutationKey } }
+    : { mutation: { mutationKey }, request: undefined };
+
+  const mutationFn: MutationFunction<
+    Awaited<ReturnType<typeof deleteApp>>,
+    { id: string }
+  > = (props) => {
+    const { id } = props ?? {};
+
+    return deleteApp(id, requestOptions);
+  };
+
+  return { mutationFn, ...mutationOptions };
+};
+
+export type DeleteAppMutationResult = NonNullable<
+  Awaited<ReturnType<typeof deleteApp>>
+>;
+
+export type DeleteAppMutationError = ErrorType<void>;
+
+/**
+ * @summary Delete an app
+ */
+export const useDeleteApp = <
+  TError = ErrorType<void>,
+  TContext = unknown,
+>(options?: {
+  mutation?: UseMutationOptions<
+    Awaited<ReturnType<typeof deleteApp>>,
+    TError,
+    { id: string },
+    TContext
+  >;
+  request?: SecondParameter<typeof customFetch>;
+}): UseMutationResult<
+  Awaited<ReturnType<typeof deleteApp>>,
+  TError,
+  { id: string },
+  TContext
+> => {
+  return useMutation(getDeleteAppMutationOptions(options));
+};

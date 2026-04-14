@@ -14,3 +14,130 @@ import * as zod from "zod";
 export const HealthCheckResponse = zod.object({
   status: zod.string(),
 });
+
+/**
+ * Returns list of all apps with optional filtering
+ * @summary List all apps
+ */
+export const ListAppsQueryParams = zod.object({
+  search: zod.coerce.string().optional(),
+  type: zod.coerce.string().optional(),
+  category: zod.coerce.string().optional(),
+  status: zod.coerce.string().optional(),
+});
+
+export const ListAppsResponseItem = zod.object({
+  id: zod.string(),
+  name: zod.string(),
+  packageName: zod.string(),
+  version: zod.string(),
+  size: zod.string(),
+  type: zod.string(),
+  category: zod.string(),
+  status: zod.string(),
+  description: zod.string(),
+  modFeatures: zod.string(),
+  iconInitials: zod.string(),
+  iconColor: zod.string(),
+  createdAt: zod.coerce.date(),
+  updatedAt: zod.coerce.date(),
+});
+export const ListAppsResponse = zod.array(ListAppsResponseItem);
+
+/**
+ * @summary Create a new app
+ */
+export const CreateAppBody = zod.object({
+  name: zod.string(),
+  packageName: zod.string(),
+  version: zod.string(),
+  size: zod.string(),
+  type: zod.string(),
+  category: zod.string(),
+  status: zod.string(),
+  description: zod.string(),
+  modFeatures: zod.string(),
+  iconInitials: zod.string(),
+  iconColor: zod.string(),
+});
+
+/**
+ * Returns summary stats for the admin dashboard
+ * @summary Get catalog stats
+ */
+export const GetAppStatsResponse = zod.object({
+  totalMods: zod.number(),
+  totalGames: zod.number(),
+  totalApps: zod.number(),
+  totalOnline: zod.number(),
+  totalOffline: zod.number(),
+});
+
+/**
+ * @summary Get app by ID
+ */
+export const GetAppParams = zod.object({
+  id: zod.coerce.string(),
+});
+
+export const GetAppResponse = zod.object({
+  id: zod.string(),
+  name: zod.string(),
+  packageName: zod.string(),
+  version: zod.string(),
+  size: zod.string(),
+  type: zod.string(),
+  category: zod.string(),
+  status: zod.string(),
+  description: zod.string(),
+  modFeatures: zod.string(),
+  iconInitials: zod.string(),
+  iconColor: zod.string(),
+  createdAt: zod.coerce.date(),
+  updatedAt: zod.coerce.date(),
+});
+
+/**
+ * @summary Update an app
+ */
+export const UpdateAppParams = zod.object({
+  id: zod.coerce.string(),
+});
+
+export const UpdateAppBody = zod.object({
+  name: zod.string().optional(),
+  packageName: zod.string().optional(),
+  version: zod.string().optional(),
+  size: zod.string().optional(),
+  type: zod.string().optional(),
+  category: zod.string().optional(),
+  status: zod.string().optional(),
+  description: zod.string().optional(),
+  modFeatures: zod.string().optional(),
+  iconInitials: zod.string().optional(),
+  iconColor: zod.string().optional(),
+});
+
+export const UpdateAppResponse = zod.object({
+  id: zod.string(),
+  name: zod.string(),
+  packageName: zod.string(),
+  version: zod.string(),
+  size: zod.string(),
+  type: zod.string(),
+  category: zod.string(),
+  status: zod.string(),
+  description: zod.string(),
+  modFeatures: zod.string(),
+  iconInitials: zod.string(),
+  iconColor: zod.string(),
+  createdAt: zod.coerce.date(),
+  updatedAt: zod.coerce.date(),
+});
+
+/**
+ * @summary Delete an app
+ */
+export const DeleteAppParams = zod.object({
+  id: zod.coerce.string(),
+});
