@@ -75,9 +75,6 @@ export function AppDetail() {
               </Badge>
             </div>
             
-            <Button size="lg" className="w-full md:w-auto rounded-none border-4 border-black font-black text-lg uppercase bg-accent hover:bg-accent/90 text-accent-foreground brutal-shadow-sm brutal-shadow-hover h-16 px-8">
-              <Download className="mr-2 h-6 w-6" /> Download APK ({app.size})
-            </Button>
           </div>
         </div>
       </div>
@@ -136,6 +133,15 @@ export function AppDetail() {
                 </div>
               </dl>
             </div>
+          </section>
+
+          <section className="bg-primary border-4 border-black p-5 brutal-shadow">
+            <h2 className="text-xl font-black uppercase mb-4 flex items-center gap-2">
+              <Download className="h-5 w-5" /> Link Download
+            </h2>
+            <Button size="lg" className="w-full rounded-none border-4 border-black font-black text-base uppercase bg-accent hover:bg-accent/90 text-accent-foreground brutal-shadow brutal-shadow-hover h-14">
+              Download APK ({app.size})
+            </Button>
           </section>
         </div>
       </div>
