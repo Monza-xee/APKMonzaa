@@ -18,23 +18,21 @@ export function Home() {
   );
 
   return (
-    <div className="space-y-12">
-      {/* Hero Header */}
-      <section className="bg-primary text-primary-foreground border-4 border-black brutal-shadow-lg p-8 md:p-12 relative overflow-hidden">
+    <div className="space-y-10">
+      <section className="bg-card text-card-foreground border-4 border-black brutal-shadow-lg p-8 md:p-12 relative overflow-hidden">
         <div className="absolute top-[-50px] right-[-50px] opacity-10 pointer-events-none">
           <Zap size={400} strokeWidth={3} />
         </div>
         <div className="relative z-10 max-w-3xl">
-          <h1 className="text-5xl md:text-7xl font-black uppercase tracking-tighter leading-none mb-6">
-            Underground <br /> Mod Catalog
+          <h1 className="text-6xl md:text-8xl font-black uppercase tracking-tighter leading-none mb-6">
+            APK<span className="text-secondary">MONZA</span>
           </h1>
-          <p className="text-xl md:text-2xl font-mono font-bold uppercase border-l-4 border-black pl-4">
+          <p className="text-xl md:text-2xl font-mono font-bold uppercase border-l-4 border-secondary pl-4">
             Curated collection of modified apps and games. No filler.
           </p>
         </div>
       </section>
 
-      {/* Filters & Search */}
       <section className="flex flex-col md:flex-row gap-4 items-center bg-card border-4 border-black p-4 brutal-shadow">
         <div className="relative flex-1 w-full">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
@@ -42,7 +40,7 @@ export function Home() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="SEARCH CATALOG..." 
-            className="pl-10 h-12 rounded-none border-2 border-black bg-background font-mono uppercase text-lg focus-visible:ring-primary focus-visible:ring-offset-0"
+            className="pl-10 h-12 rounded-none border-2 border-black bg-white font-mono uppercase text-lg focus-visible:ring-secondary focus-visible:ring-offset-0"
           />
         </div>
         <div className="flex gap-2 w-full md:w-auto">
@@ -70,7 +68,6 @@ export function Home() {
         </div>
       </section>
 
-      {/* Catalog Grid */}
       <section>
         {isLoading ? (
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
@@ -88,9 +85,8 @@ export function Home() {
             {apps?.map((app) => (
               <Link key={app.id} href={`/app/${app.id}`} className="block group">
                 <Card className="rounded-none border-4 border-black bg-card brutal-shadow transition-all duration-200 group-hover:translate-x-1 group-hover:translate-y-1 group-hover:shadow-[2px_2px_0px_0px_#000] overflow-hidden h-full flex flex-col sm:flex-row">
-                  {/* Left Side: Mod Features */}
-                  <div className="bg-secondary/10 border-b-4 sm:border-b-0 sm:border-r-4 border-black p-4 sm:w-1/3 flex flex-col justify-center">
-                    <h3 className="font-black uppercase text-secondary mb-3 flex items-center gap-2">
+                  <div className="bg-[#f4e8ff] border-b-4 sm:border-b-0 sm:border-r-4 border-black p-4 sm:w-1/3 flex flex-col justify-center">
+                    <h3 className="font-black uppercase text-black mb-3 flex items-center gap-2">
                       <Zap className="h-4 w-4" /> Mod Info
                     </h3>
                     <p className="font-mono text-sm leading-relaxed whitespace-pre-wrap line-clamp-4">
@@ -98,7 +94,6 @@ export function Home() {
                     </p>
                   </div>
                   
-                  {/* Right Side: App Info */}
                   <CardContent className="p-6 sm:w-2/3 flex flex-col justify-between">
                     <div>
                       <div className="flex items-start justify-between gap-4 mb-4">
