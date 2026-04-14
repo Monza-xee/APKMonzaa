@@ -2,7 +2,7 @@ import { useRoute, Link } from "wouter";
 import { useGetApp, getGetAppQueryKey } from "@workspace/api-client-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { ChevronLeft, Download, Zap, Info, Server, Package } from "lucide-react";
+import { CalendarClock, ChevronLeft, Download, HardDrive, Info, Package, Server, Tags, Zap } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function AppDetail() {
@@ -114,11 +114,15 @@ export function AppDetail() {
             <div className="p-0">
               <dl className="font-mono text-sm">
                 <div className="border-b-2 border-black p-4 flex justify-between gap-4">
-                  <dt className="font-bold uppercase text-muted-foreground">Version</dt>
+                  <dt className="font-bold uppercase text-muted-foreground flex items-center gap-1">
+                    <Tags className="h-4 w-4" /> Version
+                  </dt>
                   <dd className="text-right">{app.version}</dd>
                 </div>
                 <div className="border-b-2 border-black p-4 flex justify-between gap-4">
-                  <dt className="font-bold uppercase text-muted-foreground">Size</dt>
+                  <dt className="font-bold uppercase text-muted-foreground flex items-center gap-1">
+                    <HardDrive className="h-4 w-4" /> Size
+                  </dt>
                   <dd className="text-right">{app.size}</dd>
                 </div>
                 <div className="border-b-2 border-black p-4 flex justify-between gap-4">
@@ -128,7 +132,9 @@ export function AppDetail() {
                   <dd className="text-right break-all">{app.packageName}</dd>
                 </div>
                 <div className="p-4 flex justify-between gap-4">
-                  <dt className="font-bold uppercase text-muted-foreground">Updated</dt>
+                  <dt className="font-bold uppercase text-muted-foreground flex items-center gap-1">
+                    <CalendarClock className="h-4 w-4" /> Updated
+                  </dt>
                   <dd className="text-right">{new Date(app.updatedAt).toLocaleDateString()}</dd>
                 </div>
               </dl>
