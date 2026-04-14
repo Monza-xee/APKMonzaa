@@ -92,20 +92,20 @@ export function Admin() {
         <StatCard title="Total Mods" value={stats?.totalMods} loading={statsLoading} className="bg-secondary text-secondary-foreground" />
         <StatCard title="Games" value={stats?.totalGames} loading={statsLoading} className="bg-card" />
         <StatCard title="Apps" value={stats?.totalApps} loading={statsLoading} className="bg-card" />
-        <StatCard title="Offline Modes" value={stats?.totalOffline} loading={statsLoading} className="bg-accent text-accent-foreground" />
+        <StatCard title="Online" value={stats?.totalOnline} loading={statsLoading} className="bg-primary text-primary-foreground" />
       </div>
 
       {/* Apps Table */}
       <div className="bg-card border-4 border-black brutal-shadow overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
-            <TableHeader className="bg-muted border-b-4 border-black">
-              <TableRow className="hover:bg-muted">
-                <TableHead className="font-black uppercase text-foreground py-4">App</TableHead>
-                <TableHead className="font-black uppercase text-foreground py-4">Version</TableHead>
-                <TableHead className="font-black uppercase text-foreground py-4">Type / Cat</TableHead>
-                <TableHead className="font-black uppercase text-foreground py-4">Status</TableHead>
-                <TableHead className="font-black uppercase text-foreground py-4 text-right">Actions</TableHead>
+            <TableHeader className="bg-black border-b-4 border-black">
+              <TableRow className="hover:bg-black">
+                <TableHead className="font-black uppercase text-white py-4">App</TableHead>
+                <TableHead className="font-black uppercase text-white py-4">Version</TableHead>
+                <TableHead className="font-black uppercase text-white py-4">Type / Cat</TableHead>
+                <TableHead className="font-black uppercase text-white py-4">Status</TableHead>
+                <TableHead className="font-black uppercase text-white py-4 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>

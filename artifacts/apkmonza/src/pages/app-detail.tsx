@@ -86,8 +86,8 @@ export function AppDetail() {
         {/* Left Column: Details */}
         <div className="md:col-span-2 space-y-8">
           {/* Mod Features */}
-          <section className="bg-secondary/10 border-4 border-black p-6 md:p-8 brutal-shadow">
-            <h2 className="text-2xl font-black uppercase mb-6 flex items-center gap-3 text-secondary">
+          <section className="bg-[#f4e8ff] border-4 border-black p-6 md:p-8 brutal-shadow">
+            <h2 className="text-2xl font-black uppercase mb-6 flex items-center gap-3 text-black">
               <Zap className="h-6 w-6" /> Mod Features
             </h2>
             <div className="font-mono text-base md:text-lg whitespace-pre-wrap leading-relaxed">

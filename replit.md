@@ -17,6 +17,12 @@ APKMONZA — a curated catalog website for modified apps and games. Full-stack a
 - **API codegen**: Orval (from OpenAPI spec)
 - **Build**: esbuild (CJS bundle)
 
+## Design System
+
+- **Style**: Neo brutalism
+- **Visual language**: off-white dotted background, white panels, thick black borders, hard offset shadows, blocky typography, sharp square corners
+- **Accent colors**: yellow primary, purple brand/status, teal highlights, red destructive actions
+
 ## Features
 
 - **Public Catalog** (`/`): Browse modified apps/games with search and type filtering
