@@ -1,5 +1,6 @@
 import { useRoute, Link } from "wouter";
-import { useGetApp, getGetAppQueryKey } from "@workspace/api-client-react";
+import { useState, useEffect } from "react";
+import { supabase } from "../lib/supabase";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { CalendarClock, ChevronLeft, Download, HardDrive, Info, Package, Server, Tags, Zap } from "lucide-react";
@@ -9,9 +10,22 @@ export function AppDetail() {
   const [, params] = useRoute("/app/:id");
   const id = params?.id || "";
 
-  const { data: app, isLoading } = useGetApp(id, {
-    query: { enabled: !!id, queryKey: getGetAppQueryKey(id) }
-  });
+  const [app, setApp] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    async function fetchApp() {
+      if (!id) return;
+      const { data, error } = await supabase
+        .from("ListAPKGAME")
+        .select("*")
+        .eq("id", id)
+        .single();
+      if (!error) setApp(data);
+      setIsLoading(false);
+    }
+    fetchApp();
+  }, [id]);
 
   if (isLoading) {
     return (
@@ -51,18 +65,22 @@ export function AppDetail() {
       {/* Hero Card */}
       <div className="bg-card border-4 border-black brutal-shadow overflow-hidden relative">
         <div className="absolute top-0 left-0 w-full h-32 bg-primary border-b-4 border-black z-0"></div>
-        
+
         <div className="relative z-10 pt-16 px-6 pb-6 md:px-12 md:pb-12 flex flex-col md:flex-row gap-8 items-start">
-          <div 
-            className="w-32 h-32 md:w-48 md:h-48 shrink-0 border-4 border-black flex items-center justify-center font-black text-5xl md:text-7xl shadow-[4px_4px_0px_0px_#000]"
-            style={{ backgroundColor: app.iconColor || 'hsl(var(--primary))', color: '#000' }}
+          <div
+            className="w-32 h-32 md:w-48 md:h-48 shrink-0 border-4 border-black flex items-center justify-center font-black text-5xl md:text-7xl shadow-[4px_4px_0px_0px_#000] overflow-hidden"
+            style={{ backgroundColor: app.icon_color || "hsl(var(--primary))", color: "#000" }}
           >
-            {app.iconInitials}
+            {app.icon_url ? (
+              <img src={app.icon_url} alt={app.name} className="w-full h-full object-cover" />
+            ) : (
+              app.icon_initials || "AP"
+            )}
           </div>
-          
+
           <div className="flex-1 mt-4 md:mt-20">
             <h1 className="text-4xl md:text-6xl font-black uppercase leading-none mb-4">{app.name}</h1>
-            
+
             <div className="flex flex-wrap gap-3 mb-6">
               <Badge className="rounded-none px-3 py-1 text-sm border-2 border-black bg-secondary text-secondary-foreground font-bold uppercase shadow-[2px_2px_0px_0px_#000]">
                 {app.status}
@@ -74,13 +92,12 @@ export function AppDetail() {
                 {app.category}
               </Badge>
             </div>
-            
           </div>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/* Left Column: Details */}
+        {/* Left Column */}
         <div className="md:col-span-2 space-y-8">
           {/* Mod Features */}
           <section className="bg-[#f4e8ff] border-4 border-black p-6 md:p-8 brutal-shadow">
@@ -88,7 +105,7 @@ export function AppDetail() {
               <Zap className="h-6 w-6" /> Mod Features
             </h2>
             <div className="font-mono text-base md:text-lg whitespace-pre-wrap leading-relaxed">
-              {app.modFeatures || "NO MOD FEATURES SPECIFIED."}
+              {app.mod_features || "NO MOD FEATURES SPECIFIED."}
             </div>
           </section>
 
@@ -103,7 +120,7 @@ export function AppDetail() {
           </section>
         </div>
 
-        {/* Right Column: Tech Specs */}
+        {/* Right Column */}
         <div className="space-y-8">
           <section className="bg-card border-4 border-black brutal-shadow">
             <div className="border-b-4 border-black p-4 bg-muted">
@@ -129,13 +146,21 @@ export function AppDetail() {
                   <dt className="font-bold uppercase text-muted-foreground flex items-center gap-1">
                     <Package className="h-4 w-4" /> Package
                   </dt>
-                  <dd className="text-right break-all">{app.packageName}</dd>
+                  <dd className="text-right break-all">{app.package_name}</dd>
                 </div>
                 <div className="p-4 flex justify-between gap-4">
                   <dt className="font-bold uppercase text-muted-foreground flex items-center gap-1">
                     <CalendarClock className="h-4 w-4" /> Updated
                   </dt>
-                  <dd className="text-right">{new Date(app.updatedAt).toLocaleDateString()}</dd>
+                  <dd className="text-right">
+                    {app.uploaded_at
+                      ? new Date(app.uploaded_at).toLocaleDateString("id-ID", {
+                          day: "numeric",
+                          month: "short",
+                          year: "numeric",
+                        })
+                      : "-"}
+                  </dd>
                 </div>
               </dl>
             </div>
@@ -145,12 +170,20 @@ export function AppDetail() {
             <h2 className="text-xl font-black uppercase mb-4 flex items-center gap-2">
               <Download className="h-5 w-5" /> Link Download
             </h2>
-            <Button size="lg" className="w-full rounded-none border-4 border-black font-black text-base uppercase bg-accent hover:bg-accent/90 text-accent-foreground brutal-shadow brutal-shadow-hover h-14">
-              Download APK ({app.size})
-            </Button>
+            {app.download_url ? (
+              <a href={app.download_url} target="_blank" rel="noopener noreferrer">
+                <Button size="lg" className="w-full rounded-none border-4 border-black font-black text-base uppercase bg-accent hover:bg-accent/90 text-accent-foreground brutal-shadow brutal-shadow-hover h-14">
+                  Download APK ({app.size})
+                </Button>
+              </a>
+            ) : (
+              <Button size="lg" disabled className="w-full rounded-none border-4 border-black font-black text-base uppercase h-14">
+                No Download Link
+              </Button>
+            )}
           </section>
         </div>
       </div>
     </div>
   );
-}
+      }
