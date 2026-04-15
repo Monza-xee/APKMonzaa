@@ -1,166 +1,149 @@
-import { useEffect, useState } from "react"
-import { supabase } from "../lib/supabase"
+import { useState, useEffect } from "react";
+import { Link } from "wouter";
+import { supabase } from "../lib/supabase";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
+import { Search, Box, Gamepad2, Zap } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
-export default function Home() {
-  const [data, setData] = useState<any[]>([])
-  const [search, setSearch] = useState("")
-  const [filter, setFilter] = useState("ALL")
+export function Home() {
+  const [search, setSearch] = useState("");
+  const [typeFilter, setTypeFilter] = useState("");
+  const [apps, setApps] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    async function fetchApps() {
+      let query = supabase.from("ListAPKGAME").select("*");
 
-  const fetchData = async () => {
-    const { data, error } = await supabase
-      .from("ListAPKGAME") // ⬅️ ganti sesuai table lu
-      .select("*")
+      if (typeFilter) {
+        query = query.eq("type", typeFilter);
+      }
 
-    if (error) {
-      console.error("SUPABASE ERROR:", error)
-    } else {
-      setData(data || [])
+      const { data, error } = await query;
+
+      console.log(data, error);
+
+      if (!error) setApps(data || []);
+      setIsLoading(false);
     }
-  }
 
-  const filteredData = data
-    .filter(item =>
-      (item?.name || "")
-        .toLowerCase()
-        .includes(search.toLowerCase())
-    )
-    .filter(item => {
-      if (filter === "ALL") return true
-      return item?.type === filter
-    })
+    fetchApps();
+  }, [typeFilter]);
+
+  const filteredApps = apps.filter((app) =>
+    (app.name || "").toLowerCase().includes(search.toLowerCase())
+  );
 
   return (
-    <div style={{ padding: 20 }}>
+    <div className="space-y-10">
+      {/* HERO */}
+      <section className="bg-card border-4 border-black brutal-shadow-lg p-8 relative">
+        <div className="absolute top-[-50px] right-[-50px] opacity-10">
+          <Zap size={400} />
+        </div>
+
+        <h1 className="text-6xl font-black uppercase">
+          APK<span className="text-purple-500">MONZA</span>
+        </h1>
+
+        <p className="font-mono border-l-4 pl-4 mt-4">
+          Curated collection of modified apps and games. No filler.
+        </p>
+      </section>
 
       {/* SEARCH */}
-      <input
-        placeholder="SEARCH CATALOG..."
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        style={{
-          width: "100%",
-          padding: "14px",
-          border: "3px solid black",
-          boxShadow: "4px 4px 0 black",
-          fontWeight: "bold",
-          marginBottom: 20
-        }}
-      />
+      <section className="flex flex-col md:flex-row gap-4 border-4 border-black p-4 brutal-shadow">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2" />
+          <Input
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+            placeholder="SEARCH CATALOG..."
+            className="pl-10 border-2 border-black"
+          />
+        </div>
 
-      {/* FILTER */}
-      <div style={{ display: "flex", gap: 10 }}>
-        {["ALL", "GAME", "APP"].map(btn => (
-          <button
-            key={btn}
-            onClick={() => setFilter(btn)}
-            style={{
-              padding: "10px 20px",
-              border: "3px solid black",
-              boxShadow: "4px 4px 0 black",
-              background: filter === btn ? "#FFD600" : "#fff",
-              fontWeight: "bold",
-              cursor: "pointer"
-            }}
-          >
-            {btn}
-          </button>
-        ))}
-      </div>
+        <div className="flex gap-2">
+          <Button onClick={() => setTypeFilter("")}>All</Button>
+          <Button onClick={() => setTypeFilter("GAME")}>
+            <Gamepad2 /> Games
+          </Button>
+          <Button onClick={() => setTypeFilter("APP")}>
+            <Box /> Apps
+          </Button>
+        </div>
+      </section>
 
       {/* LIST */}
-      {filteredData.map((item, i) => (
-        <div
-          key={i}
-          style={{
-            border: "3px solid black",
-            boxShadow: "6px 6px 0 black",
-            padding: 16,
-            marginTop: 20,
-            background: "#eee"
-          }}
-        >
-
-          {/* MOD INFO */}
-          <div
-            style={{
-              background: "#d9cfe8",
-              border: "3px solid black",
-              boxShadow: "4px 4px 0 black",
-              padding: 10,
-              marginBottom: 10,
-              fontWeight: "bold"
-            }}
-          >
-            ⚡ MOD INFO
-            <div style={{ fontWeight: "normal" }}>
-              {item?.mod_info || "-"}
-            </div>
+      <section>
+        {isLoading ? (
+          <div className="grid gap-6">
+            {[1, 2].map((i) => (
+              <Skeleton key={i} className="h-40 border-4 border-black" />
+            ))}
           </div>
-
-          <div style={{ display: "flex", gap: 15 }}>
-            {/* ICON */}
-            <div
-              style={{
-                background: item?.icon_color || "yellow",
-                border: "3px solid black",
-                padding: 15,
-                fontWeight: "bold"
-              }}
-            >
-              {item?.icon_initials || "APK"}
-            </div>
-
-            {/* INFO */}
-            <div>
-              <h2 style={{ margin: 0 }}>
-                {item?.name || "No Name"}
-              </h2>
-
-              <p style={{ margin: "5px 0" }}>
-                {(item?.version || "-")} • {(item?.size || "-")}
-              </p>
-
-              <p>{item?.description || "-"}</p>
-
-              {/* TAG */}
-              <div style={{ display: "flex", gap: 10 }}>
-                {[item?.tag1, item?.tag2, item?.tag3]
-                  .filter(Boolean)
-                  .map((tag, i) => (
-                    <span
-                      key={i}
-                      style={{
-                        border: "3px solid black",
-                        padding: "5px 10px",
-                        fontWeight: "bold",
-                        background:
-                          tag === "OFFLINE"
-                            ? "#7B3FE4"
-                            : tag === "GAME"
-                            ? "#FFD600"
-                            : "#fff"
-                      }}
-                    >
-                      {tag}
-                    </span>
-                  ))}
-              </div>
-            </div>
+        ) : filteredApps.length === 0 ? (
+          <div className="border-4 border-black p-10 text-center">
+            No Mods Found
           </div>
+        ) : (
+          <div className="grid gap-6">
+            {filteredApps.map((app) => (
+              <Link key={app.id} href={`/app/${app.id}`}>
+                <Card className="border-4 border-black brutal-shadow flex flex-col sm:flex-row">
 
-        </div>
-      ))}
+                  {/* MOD INFO */}
+                  <div className="bg-purple-200 border-b-4 sm:border-b-0 sm:border-r-4 border-black p-4 sm:w-1/3">
+                    <h3 className="font-black flex gap-2 items-center">
+                      <Zap size={16} /> MOD INFO
+                    </h3>
+                    <p className="text-sm">
+                      {app.mod_features || "UNLOCKED"}
+                    </p>
+                  </div>
 
-      {/* EMPTY STATE */}
-      {filteredData.length === 0 && (
-        <p style={{ marginTop: 20, fontWeight: "bold" }}>
-          Tidak ada data 😐
-        </p>
-      )}
+                  {/* CONTENT */}
+                  <CardContent className="p-4 sm:w-2/3">
+                    <div className="flex gap-4 mb-3">
+                      <div
+                        className="w-14 h-14 border-4 border-black flex items-center justify-center font-black"
+                        style={{
+                          backgroundColor: app.icon_color || "yellow",
+                        }}
+                      >
+                        {app.icon_initials || "AP"}
+                      </div>
+
+                      <div>
+                        <h2 className="font-black text-xl">
+                          {app.name || "NO NAME"}
+                        </h2>
+                        <p className="text-sm">
+                          v{app.version || "1.0"} • {app.size || "??MB"}
+                        </p>
+                      </div>
+                    </div>
+
+                    <p className="text-sm mb-2">
+                      {app.description || "-"}
+                    </p>
+
+                    <div className="flex gap-2 flex-wrap">
+                      <Badge>{app.status || "OFFLINE"}</Badge>
+                      <Badge>{app.type || "-"}</Badge>
+                      <Badge>{app.category || "-"}</Badge>
+                    </div>
+                  </CardContent>
+
+                </Card>
+              </Link>
+            ))}
+          </div>
+        )}
+      </section>
     </div>
-  )
-        }
+  );
+}
