@@ -10,9 +10,10 @@ export default function Home() {
     fetchData()
   }, [])
 
-  const { data, error } = await supabase
-  .from("ListAPKGAME")
-  .select("*")
+  const fetchData = async () => {
+    const { data, error } = await supabase
+      .from("ListAPKGAME")
+      .select("*")
 
     if (error) {
       console.log(error)
