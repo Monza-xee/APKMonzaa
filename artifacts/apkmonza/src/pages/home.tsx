@@ -40,7 +40,7 @@ export function Home() {
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="SEARCH CATALOG..."
+            placeholder="SEARCH CATALOG HAAy..."
             className="pl-10 border-2 border-black rounded-none font-mono uppercase"
           />
         </div>
