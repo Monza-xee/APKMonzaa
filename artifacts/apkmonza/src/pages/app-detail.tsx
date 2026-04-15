@@ -17,7 +17,7 @@ export function AppDetail() {
     async function fetchApp() {
       if (!id) return;
       const { data, error } = await supabase
-        .from("ListAPKGAME")
+        .from("ListAPKGAMES")
         .select("*")
         .eq("id", id)
         .single();
