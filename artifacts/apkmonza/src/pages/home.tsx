@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent } from "@/components/ui/card";
-import { Search, Box, Gamepad2, Zap } from "lucide-react";
+import { Search, Box, Gamepad2 } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 export function Home() {
@@ -16,10 +16,9 @@ export function Home() {
 
   useEffect(() => {
     async function fetchApps() {
-      let query = supabase.from("ListAPKGAMES").select("*");
+      let query = supabase.from("ListAPKGAME").select("*");
       if (typeFilter) query = query.eq("type", typeFilter);
       const { data, error } = await query;
-      console.log(data, error);
       if (!error) setApps(data || []);
       setIsLoading(false);
     }
@@ -40,7 +39,7 @@ export function Home() {
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            placeholder="SEARCH CATALOG Htws..."
+            placeholder="SEARCH CATALOG..."
             className="pl-10 border-2 border-black rounded-none font-mono uppercase"
           />
         </div>
@@ -48,19 +47,31 @@ export function Home() {
         <div className="flex gap-2">
           <Button
             onClick={() => setTypeFilter("")}
-            className="bg-yellow-400 text-black border-2 border-black font-black rounded-none hover:bg-yellow-300"
+            className={`border-2 border-black font-black rounded-none ${
+              typeFilter === ""
+                ? "bg-yellow-400 text-black hover:bg-yellow-300"
+                : "bg-white text-black hover:bg-gray-100"
+            }`}
           >
             ALL
           </Button>
           <Button
             onClick={() => setTypeFilter("GAME")}
-            className="bg-white text-black border-2 border-black font-black rounded-none hover:bg-gray-100"
+            className={`border-2 border-black font-black rounded-none ${
+              typeFilter === "GAME"
+                ? "bg-yellow-400 text-black hover:bg-yellow-300"
+                : "bg-white text-black hover:bg-gray-100"
+            }`}
           >
             <Gamepad2 className="mr-1 h-4 w-4" /> GAMES
           </Button>
           <Button
             onClick={() => setTypeFilter("APP")}
-            className="bg-white text-black border-2 border-black font-black rounded-none hover:bg-gray-100"
+            className={`border-2 border-black font-black rounded-none ${
+              typeFilter === "APP"
+                ? "bg-yellow-400 text-black hover:bg-yellow-300"
+                : "bg-white text-black hover:bg-gray-100"
+            }`}
           >
             <Box className="mr-1 h-4 w-4" /> APPS
           </Button>
@@ -87,10 +98,7 @@ export function Home() {
 
                   {/* MOD INFO */}
                   <div className="bg-purple-100 border-b-4 border-black p-4">
-                    <h3 className="font-black flex gap-2 items-center uppercase text-sm">
-                      <Zap size={14} /> MOD INFO
-                    </h3>
-                    <p className="text-sm mt-1">
+                    <p className="text-sm font-bold">
                       {app.mod_features || "UNLOCKED"}
                     </p>
                   </div>
@@ -99,10 +107,18 @@ export function Home() {
                   <CardContent className="p-4">
                     <div className="flex gap-4 mb-3">
                       <div
-                        className="w-14 h-14 border-4 border-black flex items-center justify-center font-black text-sm shrink-0"
+                        className="w-14 h-14 border-4 border-black flex items-center justify-center font-black text-sm shrink-0 overflow-hidden"
                         style={{ backgroundColor: app.icon_color || "#facc15" }}
                       >
-                        {app.icon_initials || "AP"}
+                        {app.icon_url ? (
+                          <img
+                            src={app.icon_url}
+                            alt={app.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          app.icon_initials || "AP"
+                        )}
                       </div>
 
                       <div>
@@ -115,19 +131,24 @@ export function Home() {
                       </div>
                     </div>
 
-                    <p className="text-sm mb-3 text-gray-600">
-                      {app.description || "-"}
-                    </p>
-
                     <div className="flex gap-2 flex-wrap">
-                      <Badge className="bg-purple-600 text-white border-0 rounded-none font-bold uppercase text-xs">
-                        {app.status || "OFFLINE"}
-                      </Badge>
                       <Badge className="bg-yellow-400 text-black border-0 rounded-none font-bold uppercase text-xs">
                         {app.type || "-"}
                       </Badge>
                       <Badge className="bg-white text-black border-2 border-black rounded-none font-bold uppercase text-xs">
                         {app.category || "-"}
+                      </Badge>
+                      <Badge className="bg-purple-600 text-white border-0 rounded-none font-bold uppercase text-xs">
+                        {app.status || "OFFLINE"}
+                      </Badge>
+                      <Badge className="bg-white text-black border-2 border-black rounded-none font-bold uppercase text-xs">
+                        {app.uploaded_at
+                          ? new Date(app.uploaded_at).toLocaleDateString("id-ID", {
+                              day: "numeric",
+                              month: "short",
+                              year: "numeric",
+                            })
+                          : "-"}
                       </Badge>
                     </div>
                   </CardContent>
@@ -140,4 +161,4 @@ export function Home() {
       </section>
     </div>
   );
-}
+                        }
