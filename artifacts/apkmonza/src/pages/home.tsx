@@ -1,6 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "wouter";
-import { supabase } from "../lib/supabase";
+import { getListAppsQueryKey, useListApps } from "@workspace/api-client-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
@@ -11,35 +11,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 export function Home() {
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState<string>("");
-  const [apps, setApps] = useState<any[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    async function loadApps() {
-      let query = supabase.from("apps").select("*");
-
-      if (typeFilter) {
-        query = query.eq("type", typeFilter);
-      }
-
-      const { data, error } = await query;
-
-      if (error) {
-        console.log("ERROR:", error);
-      } else {
-        setApps(data || []);
-      }
-
-      setIsLoading(false);
-    }
-
-    loadApps();
-  }, [typeFilter]);
-
-  // filter search manual
-  const filteredApps = apps.filter((app) =>
-    app.name.toLowerCase().includes(search.toLowerCase())
-  );
+  const listParams = {
+    search: search || undefined,
+    type: typeFilter || undefined,
+  };
+  const { data: filteredApps = [], isLoading } = useListApps(listParams, {
+    query: { queryKey: getListAppsQueryKey(listParams) },
+  });
 
   return (
     <div className="space-y-10">
@@ -120,7 +98,7 @@ export function Home() {
                       <Zap className="h-4 w-4" /> Mod Info
                     </h3>
                     <p className="font-mono text-sm leading-relaxed whitespace-pre-wrap line-clamp-4">
-                      {app.mod_features || "UNLOCKED / PREMIUM / NO ADS"}
+                      {app.modFeatures || "UNLOCKED / PREMIUM / NO ADS"}
                     </p>
                   </div>
 
@@ -135,7 +113,7 @@ export function Home() {
                               color: "#000",
                             }}
                           >
-                            {app.icon_initials}
+                            {app.iconInitials}
                           </div>
 
                           <div>
@@ -179,3 +157,4 @@ export function Home() {
       </section>
     </div>
   );
+}
