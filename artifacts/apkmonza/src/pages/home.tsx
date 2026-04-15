@@ -97,25 +97,11 @@ export function Home() {
                 <Card className="border-4 border-black brutal-shadow flex flex-col rounded-none cursor-pointer hover:translate-x-1 hover:translate-y-1 transition-transform">
 
                   {/* MOD INFO */}
-                  <div className="bg-purple-100 border-b-4 border-black px-4 py-3 flex items-center gap-3">
-                    <div
-                      className="w-14 h-14 border-4 border-black flex items-center justify-center font-black text-sm shrink-0 overflow-hidden"
-                      style={{ backgroundColor: app.icon_color || "#facc15" }}
-                    >
-                      {app.icon_url ? (
-                        <img
-                          src={app.icon_url}
-                          alt={app.name}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        app.icon_initials || "AP"
-                      )}
-                    </div>
-                    <p className="font-black text-lg uppercase leading-tight">
-                      {app.mod_features || "UNLOCKED"}
-                    </p>
-                  </div>
+<div className="bg-purple-100 border-b-4 border-black px-4 py-3">
+  <p className="font-black text-lg uppercase leading-tight">
+    {app.mod_features || "UNLOCKED"}
+  </p>
+</div>
 
                   {/* CONTENT */}
                   <CardContent className="p-4">
