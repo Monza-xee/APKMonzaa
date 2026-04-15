@@ -16,7 +16,7 @@ export function Home() {
 
   useEffect(() => {
     async function fetchApps() {
-      let query = supabase.from("ListAPKGAME").select("*");
+      let query = supabase.from("ListAPKGAMES").select("*");
       if (typeFilter) query = query.eq("type", typeFilter);
       const { data, error } = await query;
       if (!error) setApps(data || []);
