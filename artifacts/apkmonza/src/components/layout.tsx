@@ -12,11 +12,8 @@ export function Layout({ children }: { children: React.ReactNode }) {
             <span className="font-black text-2xl tracking-tighter uppercase">APK<span className="text-secondary">MONZA</span></span>
           </Link>
           <nav className="flex items-center gap-6">
-            <Link href="/" className="font-bold text-sm tracking-wider uppercase hover:text-primary transition-colors">
+            <Link href="/" className="font-bold text-sm tracking-wider uppercase bg-primary text-primary-foreground px-4 py-2 border-2 border-black brutal-shadow brutal-shadow-hover transition-all">
               Catalog
-            </Link>
-            <Link href="/admin" className="font-bold text-sm tracking-wider uppercase bg-primary text-primary-foreground px-4 py-2 border-2 border-black brutal-shadow brutal-shadow-hover transition-all">
-              Admin
             </Link>
           </nav>
         </div>
