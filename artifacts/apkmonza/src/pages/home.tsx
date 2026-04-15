@@ -94,7 +94,6 @@ export function Home() {
             {filteredApps.map((app) => (
               <Link key={app.id} href={`/app/${app.id}`}>
                 <Card className="border-4 border-black flex flex-col sm:flex-row">
-                  
                   <div className="bg-[#f4e8ff] border-b-4 sm:border-b-0 sm:border-r-4 border-black p-4 sm:w-1/3">
                     <h3 className="font-black uppercase mb-2 flex items-center gap-2">
                       <Zap className="h-4 w-4" /> Mod Info
@@ -108,9 +107,7 @@ export function Home() {
                     <div className="flex gap-4 mb-4">
                       <div
                         className="w-16 h-16 border-4 border-black flex items-center justify-center font-black text-xl"
-                        style={{
-                          backgroundColor: app.icon_color || "orange",
-                        }}
+                        style={{ backgroundColor: app.icon_color || "orange" }}
                       >
                         {app.icon_initials}
                       </div>
@@ -125,9 +122,7 @@ export function Home() {
                       </div>
                     </div>
 
-                    <p className="text-sm mb-4">
-                      {app.description}
-                    </p>
+                    <p className="text-sm mb-4">{app.description}</p>
 
                     <div className="flex gap-2 flex-wrap">
                       <Badge>{app.status}</Badge>
