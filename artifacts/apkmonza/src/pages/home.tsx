@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "wouter";
 import { supabase } from "../lib/supabase";
 import { Button } from "@/components/ui/button";
@@ -28,6 +28,9 @@ export function Home() {
   const filteredApps = apps.filter((app) =>
     (app.name || "").toLowerCase().includes(search.toLowerCase())
   );
+
+  // Recommended = first 6 apps (or however many exist)
+  const recommended = apps.slice(0, 6);
 
   return (
     <div className="space-y-6 pt-0 px-4 pb-4">
@@ -78,8 +81,52 @@ export function Home() {
         </div>
       </section>
 
+      {/* RECOMMENDED - horizontal scroll */}
+      <section>
+        <h2 className="font-black uppercase text-base mb-3 border-l-4 border-yellow-400 pl-2">
+          RECOMMENDED
+        </h2>
+        <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
+          {isLoading
+            ? [1, 2, 3].map((i) => (
+                <Skeleton key={i} className="w-28 h-28 shrink-0 border-4 border-black" />
+              ))
+            : recommended.map((app) => (
+                <Link key={app.id} href={`/app/${app.id}`}>
+                  <div className="w-28 shrink-0 border-4 border-black brutal-shadow bg-white cursor-pointer hover:translate-x-0.5 hover:translate-y-0.5 transition-transform">
+                    <div
+                      className="w-full h-16 flex items-center justify-center font-black text-sm overflow-hidden border-b-4 border-black"
+                      style={{ backgroundColor: app.icon_color || "#facc15" }}
+                    >
+                      {app.icon_url ? (
+                        <img
+                          src={app.icon_url}
+                          alt={app.name}
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        app.icon_initials || "AP"
+                      )}
+                    </div>
+                    <div className="p-1.5">
+                      <p className="font-black text-xs uppercase leading-tight line-clamp-2">
+                        {app.name || "NO NAME"}
+                      </p>
+                      <Badge className="mt-1 bg-yellow-400 text-black border-0 rounded-none font-bold uppercase text-[10px] px-1">
+                        {app.type || "-"}
+                      </Badge>
+                    </div>
+                  </div>
+                </Link>
+              ))}
+        </div>
+      </section>
+
       {/* LIST */}
       <section>
+        <h2 className="font-black uppercase text-base mb-3 border-l-4 border-black pl-2">
+          NEW APPS / GAMES UPDATE
+        </h2>
         {isLoading ? (
           <div className="grid gap-4">
             {[1, 2].map((i) => (
@@ -161,4 +208,4 @@ export function Home() {
       </section>
     </div>
   );
-}
+                }
