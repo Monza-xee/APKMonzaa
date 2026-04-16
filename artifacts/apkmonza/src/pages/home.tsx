@@ -30,7 +30,7 @@ export function Home() {
   );
 
   return (
-    <div className="space-y-6 p-4">
+    <div className="space-y-4 pt-2 px-4 pb-4">
 
       {/* SEARCH + FILTER */}
       <section className="flex flex-col gap-4 border-4 border-black p-4 brutal-shadow bg-white">
@@ -97,11 +97,11 @@ export function Home() {
                 <Card className="border-4 border-black brutal-shadow flex flex-col rounded-none cursor-pointer hover:translate-x-1 hover:translate-y-1 transition-transform">
 
                   {/* MOD INFO */}
-<div className="bg-purple-100 border-b-4 border-black px-4 py-3">
-  <p className="font-black text-lg uppercase leading-tight">
-    {app.mod_features || "UNLOCKED"}
-  </p>
-</div>
+                  <div className="bg-purple-100 border-b-4 border-black px-4 py-3">
+                    <p className="font-black text-lg uppercase leading-tight">
+                      {app.mod_features || "UNLOCKED"}
+                    </p>
+                  </div>
 
                   {/* CONTENT */}
                   <CardContent className="p-4">
