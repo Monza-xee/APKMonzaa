@@ -1,5 +1,8 @@
 {
   "installCommand": "pnpm install --no-frozen-lockfile",
   "buildCommand": "pnpm --filter @workspace/apkmonza run build",
-  "outputDirectory": "artifacts/apkmonza/dist/public"
+  "outputDirectory": "artifacts/apkmonza/dist/public",
+  "rewrites": [
+    { "source": "/(.*)", "destination": "/" }
+  ]
 }
