@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "wouter";
 import { supabase } from "../lib/supabase";
 import { Button } from "@/components/ui/button";
@@ -29,7 +29,6 @@ export function Home() {
     (app.name || "").toLowerCase().includes(search.toLowerCase())
   );
 
-  // Recommended = first 6 apps (or however many exist)
   const recommended = apps.slice(0, 6);
 
   return (
@@ -112,9 +111,16 @@ export function Home() {
                       <p className="font-black text-xs uppercase leading-tight line-clamp-2">
                         {app.name || "NO NAME"}
                       </p>
-                      <Badge className="mt-1 bg-yellow-400 text-black border-0 rounded-none font-bold uppercase text-[10px] px-1">
-                        {app.type || "-"}
-                      </Badge>
+                      <div className="flex gap-1 flex-wrap mt-1">
+                        <Badge className="bg-yellow-400 text-black border-0 rounded-none font-bold uppercase text-[10px] px-1">
+                          {app.type || "-"}
+                        </Badge>
+                        {app.category && (
+                          <Badge className="bg-white text-black border-2 border-black rounded-none font-bold uppercase text-[10px] px-1">
+                            {app.category}
+                          </Badge>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </Link>
