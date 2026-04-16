@@ -28,6 +28,7 @@ type App = {
   status: string;
   description: string;
   mod_features: string;
+  mod_features_full: string;
   icon_color: string;
   icon_initials: string;
   icon_url: string;
@@ -45,6 +46,7 @@ const emptyForm = {
   status: "ONLINE",
   description: "",
   mod_features: "",
+  mod_features_full: "",
   icon_color: "#facc15",
   icon_initials: "",
   icon_url: "",
@@ -97,6 +99,7 @@ export function Admin() {
       status: app.status || "ONLINE",
       description: app.description || "",
       mod_features: app.mod_features || "",
+      mod_features_full: app.mod_features_full || "",
       icon_color: app.icon_color || "#facc15",
       icon_initials: app.icon_initials || "",
       icon_url: app.icon_url || "",
@@ -294,6 +297,7 @@ export function Admin() {
                 { label: "Size (e.g. 84MB)", name: "size" },
                 { label: "Category (e.g. ACTION)", name: "category" },
                 { label: "Mod Features", name: "mod_features" },
+                { label: "Mod Features Full", name: "mod_features_full" },
                 { label: "Description", name: "description" },
                 { label: "Icon Initials (e.g. SF)", name: "icon_initials" },
                 { label: "Icon URL (opsional)", name: "icon_url" },
