@@ -11,253 +11,327 @@ import { Plus, Trash2, ShieldAlert, AlertTriangle, X } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogTitle,
+AlertDialog,
+AlertDialogAction,
+AlertDialogCancel,
+AlertDialogContent,
+AlertDialogDescription,
+AlertDialogFooter,
+AlertDialogHeader,
+AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 
 type App = {
-  id: string;
-  name: string;
-  version: string;
-  size: string;
-  type: string;
-  category: string;
-  status: string;
-  description: string;
-  mod_features: string;
-  icon_color: string;
-  icon_initials: string;
-  icon_url: string;
-  package_name: string;
-  download_url: string;
-  uploaded_at: string;
+id: string;
+name: string;
+version: string;
+size: string;
+type: string;
+category: string;
+status: string;
+description: string;
+mod_features: string;
+icon_color: string;
+icon_initials: string;
+icon_url: string;
+package_name: string;
+download_url: string;
+uploaded_at: string;
 };
 
 const emptyForm = {
-  name: "",
-  version: "",
-  size: "",
-  type: "APP",
-  category: "",
-  status: "ONLINE",
-  description: "",
-  mod_features: "",
-  icon_color: "#facc15",
-  icon_initials: "",
-  icon_url: "",
-  package_name: "",
-  download_url: "",
+name: "",
+version: "",
+size: "",
+type: "APP",
+category: "",
+status: "ONLINE",
+description: "",
+mod_features: "",
+icon_color: "#facc15",
+icon_initials: "",
+icon_url: "",
+package_name: "",
+download_url: "",
 };
 
 export function Admin() {
-  const { toast } = useToast();
-  const [apps, setApps] = useState<App[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [deleteAppId, setDeleteAppId] = useState<string | null>(null);
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [form, setForm] = useState<any>(emptyForm);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [editApp, setEditApp] = useState<App | null>(null);
+const { toast } = useToast();
+const [apps, setApps] = useState<App[]>([]);
+const [isLoading, setIsLoading] = useState(true);
+const [deleteAppId, setDeleteAppId] = useState<string | null>(null);
+const [isFormOpen, setIsFormOpen] = useState(false);
+const [form, setForm] = useState(emptyForm);
+const [isSubmitting, setIsSubmitting] = useState(false);
 
-  async function fetchApps() {
-    setIsLoading(true);
-    const { data } = await supabase.from("ListAPKGAMES").select("*");
-    setApps(data || []);
-    setIsLoading(false);
-  }
+const stats = {
+total: apps.length,
+games: apps.filter((a) => a.type === "GAME").length,
+apps: apps.filter((a) => a.type === "APP").length,
+online: apps.filter((a) => a.status === "ONLINE").length,
+};
 
-  useEffect(() => {
-    fetchApps();
-  }, []);
+async function fetchApps() {
+setIsLoading(true);
+const { data, error } = await supabase.from("ListAPKGAMES").select("*");
+if (!error) setApps(data || []);
+setIsLoading(false);
+}
 
-  async function handleSubmit() {
-    setIsSubmitting(true);
+useEffect(() => {
+fetchApps();
+}, []);
 
-    let error;
+async function handleSubmit() {
+setIsSubmitting(true);
+const { error } = await supabase.from("ListAPKGAMES").insert([
+{ ...form, uploaded_at: new Date().toISOString() },
+]);
+if (error) {
+toast({ title: "Error", description: error.message, variant: "destructive" });
+} else {
+toast({ title: "Berhasil!", description: "App berhasil ditambahkan." });
+setIsFormOpen(false);
+setForm(emptyForm);
+fetchApps();
+}
+setIsSubmitting(false);
+}
 
-    if (editApp) {
-      const res = await supabase
-        .from("ListAPKGAMES")
-        .update(form)
-        .eq("id", editApp.id);
+async function handleDelete() {
+if (!deleteAppId) return;
+const { error } = await supabase.from("ListAPKGAMES").delete().eq("id", deleteAppId);
+if (error) {
+toast({ title: "Error", description: error.message, variant: "destructive" });
+} else {
+toast({ title: "Dihapus", description: "App berhasil dihapus." });
+fetchApps();
+}
+setDeleteAppId(null);
+}
 
-      error = res.error;
-    } else {
-      const res = await supabase.from("ListAPKGAMES").insert([
-        { ...form, uploaded_at: new Date().toISOString() },
-      ]);
+function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
+setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+}
 
-      error = res.error;
-    }
+return (
+<div className="space-y-8">
+{/* Header */}
+<div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-card border-4 border-black p-6 brutal-shadow">
+<div className="flex items-center gap-3">
+<ShieldAlert className="h-8 w-8 text-primary" />
+<h1 className="text-3xl font-black uppercase m-0 leading-none">Admin Panel</h1>
+</div>
+<Button
+onClick={() => setIsFormOpen(true)}
+className="rounded-none border-4 border-black font-black uppercase text-lg h-12 px-6 brutal-shadow-sm brutal-shadow-hover"
+>
+<Plus className="mr-2 h-5 w-5" /> Add New Mod
+</Button>
+</div>
 
-    if (error) {
-      toast({ title: "Error", description: error.message, variant: "destructive" });
-    } else {
-      toast({
-        title: editApp ? "Berhasil diupdate!" : "Berhasil!",
-        description: editApp ? "App berhasil diupdate." : "App berhasil ditambahkan.",
-      });
+{/* Stats */}  
+  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">  
+    <StatCard title="Total Mods" value={stats.total} loading={isLoading} className="bg-secondary text-secondary-foreground" />  
+    <StatCard title="Games" value={stats.games} loading={isLoading} className="bg-card" />  
+    <StatCard title="Apps" value={stats.apps} loading={isLoading} className="bg-card" />  
+    <StatCard title="Online" value={stats.online} loading={isLoading} className="bg-primary text-primary-foreground" />  
+  </div>  
 
-      setIsFormOpen(false);
-      setForm(emptyForm);
-      setEditApp(null);
-      fetchApps();
-    }
+  {/* Table */}  
+  <div className="bg-card border-4 border-black brutal-shadow overflow-hidden">  
+    <div className="overflow-x-auto">  
+      <Table>  
+        <TableHeader className="bg-black border-b-4 border-black">  
+          <TableRow className="hover:bg-black">  
+            <TableHead className="font-black uppercase text-white py-4">App</TableHead>  
+            <TableHead className="font-black uppercase text-white py-4">Version</TableHead>  
+            <TableHead className="font-black uppercase text-white py-4">Type / Cat</TableHead>  
+            <TableHead className="font-black uppercase text-white py-4">Status</TableHead>  
+            <TableHead className="font-black uppercase text-white py-4 text-right">Actions</TableHead>  
+          </TableRow>  
+        </TableHeader>  
+        <TableBody>  
+          {isLoading ? (  
+            Array.from({ length: 4 }).map((_, i) => (  
+              <TableRow key={i}>  
+                <TableCell><Skeleton className="h-10 w-full" /></TableCell>  
+                <TableCell><Skeleton className="h-6 w-16" /></TableCell>  
+                <TableCell><Skeleton className="h-6 w-24" /></TableCell>  
+                <TableCell><Skeleton className="h-6 w-20" /></TableCell>  
+                <TableCell><Skeleton className="h-8 w-16 ml-auto" /></TableCell>  
+              </TableRow>  
+            ))  
+          ) : apps.length === 0 ? (  
+            <TableRow>  
+              <TableCell colSpan={5} className="text-center py-12 font-mono text-muted-foreground uppercase">  
+                No apps found. Add your first mod.  
+              </TableCell>  
+            </TableRow>  
+          ) : (  
+            apps.map((app) => (  
+              <TableRow key={app.id} className="border-b-2 border-black hover:bg-muted/50 transition-colors">  
+                <TableCell>  
+                  <div className="flex items-center gap-3">  
+                    <div  
+                      className="w-10 h-10 border-2 border-black flex items-center justify-center font-black text-sm shrink-0 overflow-hidden"  
+                      style={{ backgroundColor: app.icon_color || "#facc15" }}  
+                    >  
+                      {app.icon_url ? (  
+                        <img src={app.icon_url} alt={app.name} className="w-full h-full object-cover" />  
+                      ) : (  
+                        app.icon_initials || "AP"  
+                      )}  
+                    </div>  
+                    <div>  
+                      <div className="font-black uppercase text-base">{app.name}</div>  
+                      <div className="font-mono text-xs text-muted-foreground">{app.package_name}</div>  
+                    </div>  
+                  </div>  
+                </TableCell>  
+                <TableCell className="font-mono text-sm">{app.version}</TableCell>  
+                <TableCell>  
+                  <div className="flex flex-col gap-1 items-start">  
+                    <Badge className="rounded-none border border-black bg-primary text-primary-foreground font-bold text-[10px] uppercase">  
+                      {app.type}  
+                    </Badge>  
+                    <span className="font-mono text-xs font-bold uppercase">{app.category}</span>  
+                  </div>  
+                </TableCell>  
+                <TableCell>  
+                  <Badge className={`rounded-none border border-black font-bold text-[10px] uppercase ${app.status === "ONLINE" ? "bg-secondary text-secondary-foreground" : "bg-accent text-accent-foreground"}`}>  
+                    {app.status}  
+                  </Badge>  
+                </TableCell>  
+                <TableCell className="text-right">  
+                  <Button  
+                    variant="destructive"  
+                    size="icon"  
+                    onClick={() => setDeleteAppId(app.id)}  
+                    className="rounded-none border-2 border-black h-8 w-8"  
+                  >  
+                    <Trash2 className="h-4 w-4" />  
+                  </Button>  
+                </TableCell>  
+              </TableRow>  
+            ))  
+          )}  
+        </TableBody>  
+      </Table>  
+    </div>  
+  </div>  
 
-    setIsSubmitting(false);
-  }
+  {/* Form Modal */}  
+  {isFormOpen && (  
+    <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">  
+      <div className="bg-white border-4 border-black brutal-shadow w-full max-w-lg max-h-[90vh] overflow-y-auto">  
+        <div className="flex items-center justify-between p-4 border-b-4 border-black bg-primary text-primary-foreground">  
+          <h2 className="font-black uppercase text-xl">Add New Mod</h2>  
+          <button onClick={() => setIsFormOpen(false)}>  
+            <X className="h-6 w-6" />  
+          </button>  
+        </div>  
 
-  async function handleDelete() {
-    if (!deleteAppId) return;
-    await supabase.from("ListAPKGAMES").delete().eq("id", deleteAppId);
-    setDeleteAppId(null);
-    fetchApps();
-  }
+        <div className="p-4 space-y-3">  
+          {[  
+            { label: "Name", name: "name" },  
+            { label: "Version", name: "version" },  
+            { label: "Size (e.g. 84MB)", name: "size" },  
+            { label: "Category (e.g. ACTION)", name: "category" },  
+            { label: "Mod Features", name: "mod_features" },  
+            { label: "Description", name: "description" },  
+            { label: "Icon Initials (e.g. SF)", name: "icon_initials" },  
+            { label: "Icon URL (opsional)", name: "icon_url" },  
+            { label: "Icon Color (hex)", name: "icon_color" },  
+            { label: "Package Name", name: "package_name" },  
+            { label: "Download URL", name: "download_url" },  
+          ].map(({ label, name }) => (  
+            <div key={name}>  
+              <label className="font-black uppercase text-xs block mb-1">{label}</label>  
+              <Input  
+                name={name}  
+                value={(form as any)[name]}  
+                onChange={handleChange}  
+                className="rounded-none border-2 border-black"  
+              />  
+            </div>  
+          ))}  
 
-  function handleChange(e: any) {
-    setForm((prev: any) => ({ ...prev, [e.target.name]: e.target.value }));
-  }
+          <div>  
+            <label className="font-black uppercase text-xs block mb-1">Type</label>  
+            <select  
+              name="type"  
+              value={form.type}  
+              onChange={handleChange}  
+              className="w-full border-2 border-black p-2 font-bold uppercase text-sm"  
+            >  
+              <option value="APP">APP</option>  
+              <option value="GAME">GAME</option>  
+            </select>  
+          </div>  
 
-  return (
-    <div className="space-y-8">
+          <div>  
+            <label className="font-black uppercase text-xs block mb-1">Status</label>  
+            <select  
+              name="status"  
+              value={form.status}  
+              onChange={handleChange}  
+              className="w-full border-2 border-black p-2 font-bold uppercase text-sm"  
+            >  
+              <option value="ONLINE">ONLINE</option>  
+              <option value="OFFLINE">OFFLINE</option>  
+            </select>  
+          </div>  
 
-      {/* HEADER */}
-      <div className="flex justify-between bg-card border-4 border-black p-6">
-        <div className="flex gap-3">
-          <ShieldAlert />
-          <h1 className="text-2xl font-black">Admin Panel</h1>
-        </div>
+          <Button  
+            onClick={handleSubmit}  
+            disabled={isSubmitting}  
+            className="w-full rounded-none border-2 border-black font-black uppercase h-12 mt-2"  
+          >  
+            {isSubmitting ? "Menyimpan..." : "Simpan"}  
+          </Button>  
+        </div>  
+      </div>  
+    </div>  
+  )}  
 
-        <Button
-          onClick={() => {
-            setIsFormOpen(true);
-            setEditApp(null);
-            setForm(emptyForm);
-          }}
-        >
-          <Plus /> Add
-        </Button>
-      </div>
+  {/* Delete Dialog */}  
+  <AlertDialog open={!!deleteAppId} onOpenChange={(open) => !open && setDeleteAppId(null)}>  
+    <AlertDialogContent className="rounded-none border-4 border-black brutal-shadow-lg p-0 overflow-hidden sm:max-w-md">  
+      <div className="bg-destructive text-destructive-foreground p-6 border-b-4 border-black flex items-center gap-3">  
+        <AlertTriangle className="h-8 w-8" />  
+        <AlertDialogTitle className="text-2xl font-black uppercase m-0">Confirm Deletion</AlertDialogTitle>  
+      </div>  
+      <div className="p-6 bg-card">  
+        <AlertDialogDescription className="font-mono text-base text-foreground mb-6">  
+          Yakin mau hapus app ini? Aksi ini tidak bisa dibatalkan.  
+        </AlertDialogDescription>  
+        <AlertDialogFooter>  
+          <AlertDialogCancel className="rounded-none border-2 border-black font-black uppercase">Batal</AlertDialogCancel>  
+          <AlertDialogAction  
+            onClick={handleDelete}  
+            className="rounded-none border-2 border-black bg-destructive text-destructive-foreground font-black uppercase hover:bg-destructive/90"  
+          >  
+            Hapus  
+          </AlertDialogAction>  
+        </AlertDialogFooter>  
+      </div>  
+    </AlertDialogContent>  
+  </AlertDialog>  
+</div>
 
-      {/* TABLE */}
-      <div className="border-4 border-black">
-        <Table>
-          <TableHeader className="bg-black">
-            <TableRow>
-              <TableHead className="text-white">ID</TableHead>
-              <TableHead className="text-white">App</TableHead>
-              <TableHead className="text-white">Version</TableHead>
-              <TableHead className="text-white">Status</TableHead>
-              <TableHead className="text-white text-right">Actions</TableHead>
-            </TableRow>
-          </TableHeader>
+);
+}
 
-          <TableBody>
-            {isLoading ? (
-              <TableRow>
-                <TableCell colSpan={5}>Loading...</TableCell>
-              </TableRow>
-            ) : apps.map((app) => (
-              <TableRow key={app.id}>
-                <TableCell>{app.id.slice(0, 8)}</TableCell>
-
-                <TableCell>{app.name}</TableCell>
-                <TableCell>{app.version}</TableCell>
-
-                <TableCell>
-                  <Badge>{app.status}</Badge>
-                </TableCell>
-
-                <TableCell className="text-right flex gap-2 justify-end">
-
-                  {/* EDIT */}
-                  <Button
-                    size="icon"
-                    onClick={() => {
-                      setEditApp(app);
-                      setForm(app);
-                      setIsFormOpen(true);
-                    }}
-                  >
-                    ✏️
-                  </Button>
-
-                  {/* DELETE */}
-                  <Button
-                    size="icon"
-                    variant="destructive"
-                    onClick={() => setDeleteAppId(app.id)}
-                  >
-                    <Trash2 />
-                  </Button>
-
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
-      </div>
-
-      {/* FORM MODAL */}
-      {isFormOpen && (
-        <div className="fixed inset-0 bg-black/50 flex justify-center items-center">
-          <div className="bg-white p-4 w-full max-w-lg border-4 border-black">
-
-            <div className="flex justify-between mb-4">
-              <h2 className="font-bold">
-                {editApp ? "Edit Mod" : "Add Mod"}
-              </h2>
-
-              <button onClick={() => {
-                setIsFormOpen(false);
-                setEditApp(null);
-                setForm(emptyForm);
-              }}>
-                <X />
-              </button>
-            </div>
-
-            {Object.keys(emptyForm).map((key) => (
-              <Input
-                key={key}
-                name={key}
-                value={form[key]}
-                onChange={handleChange}
-                placeholder={key}
-                className="mb-2"
-              />
-            ))}
-
-            <Button onClick={handleSubmit} disabled={isSubmitting}>
-              {isSubmitting ? "Saving..." : "Save"}
-            </Button>
-
-          </div>
-        </div>
-      )}
-
-      {/* DELETE DIALOG */}
-      <AlertDialog open={!!deleteAppId} onOpenChange={() => setDeleteAppId(null)}>
-        <AlertDialogContent>
-          <AlertDialogTitle>Hapus?</AlertDialogTitle>
-          <AlertDialogDescription>
-            Ga bisa dibalikin loh.
-          </AlertDialogDescription>
-
-          <AlertDialogFooter>
-            <AlertDialogCancel>Batal</AlertDialogCancel>
-            <AlertDialogAction onClick={handleDelete}>
-              Hapus
-            </AlertDialogAction>
-          </AlertDialogFooter>
-        </AlertDialogContent>
-      </AlertDialog>
-
-    </div>
-  );
+function StatCard({ title, value, loading, className = "" }: { title: string; value?: number; loading: boolean; className?: string }) {
+return (
+<Card className={rounded-none border-4 border-black brutal-shadow ${className}}>
+<CardHeader className="pb-2 border-b-2 border-black/10">
+<CardTitle className="text-sm font-black uppercase opacity-80">{title}</CardTitle>
+</CardHeader>
+<CardContent className="pt-4">
+{loading ? <Skeleton className="h-10 w-16" /> : <div className="text-4xl font-black">{value || 0}</div>}
+</CardContent>
+</Card>
+);
 }
