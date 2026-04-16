@@ -105,7 +105,7 @@ export function AppDetail() {
               <Zap className="h-6 w-6" /> Mod Features
             </h2>
             <div className="font-mono text-base md:text-lg whitespace-pre-wrap leading-relaxed">
-              {app.mod_features || "NO MOD FEATURES SPECIFIED."}
+              {app.mod_features_full || "NO MOD FEATURES SPECIFIED."}
             </div>
           </section>
 
