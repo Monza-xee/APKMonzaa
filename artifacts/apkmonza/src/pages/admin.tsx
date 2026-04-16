@@ -1,15 +1,11 @@
-import { useState } from "react";
-import { 
-  useListApps, getListAppsQueryKey, 
-  useGetAppStats, getGetAppStatsQueryKey,
-  useDeleteApp
-} from "@workspace/api-client-react";
-import { useQueryClient } from "@tanstack/react-query";
+import { useState, useEffect } from "react";
+import { supabase } from "../lib/supabase";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Plus, Edit, Trash2, ShieldAlert, AlertTriangle } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Plus, Trash2, ShieldAlert, AlertTriangle, X } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -22,65 +18,110 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { AppForm } from "@/components/app-form";
+
+type App = {
+  id: string;
+  name: string;
+  version: string;
+  size: string;
+  type: string;
+  category: string;
+  status: string;
+  description: string;
+  mod_features: string;
+  icon_color: string;
+  icon_initials: string;
+  icon_url: string;
+  package_name: string;
+  download_url: string;
+  uploaded_at: string;
+};
+
+const emptyForm = {
+  name: "",
+  version: "",
+  size: "",
+  type: "APP",
+  category: "",
+  status: "ONLINE",
+  description: "",
+  mod_features: "",
+  icon_color: "#facc15",
+  icon_initials: "",
+  icon_url: "",
+  package_name: "",
+  download_url: "",
+};
 
 export function Admin() {
   const { toast } = useToast();
-  const queryClient = useQueryClient();
-  
-  const [isFormOpen, setIsFormOpen] = useState(false);
-  const [editingAppId, setEditingAppId] = useState<string | undefined>();
-  
+  const [apps, setApps] = useState<App[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
   const [deleteAppId, setDeleteAppId] = useState<string | null>(null);
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [form, setForm] = useState(emptyForm);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const { data: stats, isLoading: statsLoading } = useGetAppStats({
-    query: { queryKey: getGetAppStatsQueryKey() }
-  });
+  const stats = {
+    total: apps.length,
+    games: apps.filter((a) => a.type === "GAME").length,
+    apps: apps.filter((a) => a.type === "APP").length,
+    online: apps.filter((a) => a.status === "ONLINE").length,
+  };
 
-  const { data: apps, isLoading: appsLoading } = useListApps(undefined, {
-    query: { queryKey: getListAppsQueryKey() }
-  });
+  async function fetchApps() {
+    setIsLoading(true);
+    const { data, error } = await supabase.from("ListAPKGAMES").select("*");
+    if (!error) setApps(data || []);
+    setIsLoading(false);
+  }
 
-  const deleteApp = useDeleteApp({
-    mutation: {
-      onSuccess: () => {
-        toast({ title: "App deleted", description: "The mod has been removed from the catalog." });
-        queryClient.invalidateQueries({ queryKey: getListAppsQueryKey() });
-        queryClient.invalidateQueries({ queryKey: getGetAppStatsQueryKey() });
-        setDeleteAppId(null);
-      },
-      onError: (err) => {
-        toast({ title: "Error deleting app", description: String(err), variant: "destructive" });
-        setDeleteAppId(null);
-      }
+  useEffect(() => {
+    fetchApps();
+  }, []);
+
+  async function handleSubmit() {
+    setIsSubmitting(true);
+    const { error } = await supabase.from("ListAPKGAMES").insert([
+      { ...form, uploaded_at: new Date().toISOString() },
+    ]);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Berhasil!", description: "App berhasil ditambahkan." });
+      setIsFormOpen(false);
+      setForm(emptyForm);
+      fetchApps();
     }
-  });
+    setIsSubmitting(false);
+  }
 
-  const handleEdit = (id: string) => {
-    setEditingAppId(id);
-    setIsFormOpen(true);
-  };
-
-  const handleCreate = () => {
-    setEditingAppId(undefined);
-    setIsFormOpen(true);
-  };
-
-  const handleDeleteConfirm = () => {
-    if (deleteAppId) {
-      deleteApp.mutate({ id: deleteAppId });
+  async function handleDelete() {
+    if (!deleteAppId) return;
+    const { error } = await supabase.from("ListAPKGAMES").delete().eq("id", deleteAppId);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({ title: "Dihapus", description: "App berhasil dihapus." });
+      fetchApps();
     }
-  };
+    setDeleteAppId(null);
+  }
+
+  function handleChange(e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) {
+    setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
+  }
 
   return (
     <div className="space-y-8">
+      {/* Header */}
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-card border-4 border-black p-6 brutal-shadow">
         <div className="flex items-center gap-3">
           <ShieldAlert className="h-8 w-8 text-primary" />
           <h1 className="text-3xl font-black uppercase m-0 leading-none">Admin Panel</h1>
         </div>
-        <Button 
-          onClick={handleCreate}
+        <Button
+          onClick={() => setIsFormOpen(true)}
           className="rounded-none border-4 border-black font-black uppercase text-lg h-12 px-6 brutal-shadow-sm brutal-shadow-hover"
         >
           <Plus className="mr-2 h-5 w-5" /> Add New Mod
@@ -88,14 +129,14 @@ export function Admin() {
       </div>
 
       {/* Stats */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard title="Total Mods" value={stats?.totalMods} loading={statsLoading} className="bg-secondary text-secondary-foreground" />
-        <StatCard title="Games" value={stats?.totalGames} loading={statsLoading} className="bg-card" />
-        <StatCard title="Apps" value={stats?.totalApps} loading={statsLoading} className="bg-card" />
-        <StatCard title="Online" value={stats?.totalOnline} loading={statsLoading} className="bg-primary text-primary-foreground" />
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <StatCard title="Total Mods" value={stats.total} loading={isLoading} className="bg-secondary text-secondary-foreground" />
+        <StatCard title="Games" value={stats.games} loading={isLoading} className="bg-card" />
+        <StatCard title="Apps" value={stats.apps} loading={isLoading} className="bg-card" />
+        <StatCard title="Online" value={stats.online} loading={isLoading} className="bg-primary text-primary-foreground" />
       </div>
 
-      {/* Apps Table */}
+      {/* Table */}
       <div className="bg-card border-4 border-black brutal-shadow overflow-hidden">
         <div className="overflow-x-auto">
           <Table>
@@ -109,36 +150,40 @@ export function Admin() {
               </TableRow>
             </TableHeader>
             <TableBody>
-              {appsLoading ? (
-                Array.from({ length: 5 }).map((_, i) => (
+              {isLoading ? (
+                Array.from({ length: 4 }).map((_, i) => (
                   <TableRow key={i}>
                     <TableCell><Skeleton className="h-10 w-full" /></TableCell>
                     <TableCell><Skeleton className="h-6 w-16" /></TableCell>
                     <TableCell><Skeleton className="h-6 w-24" /></TableCell>
                     <TableCell><Skeleton className="h-6 w-20" /></TableCell>
-                    <TableCell><Skeleton className="h-8 w-24 ml-auto" /></TableCell>
+                    <TableCell><Skeleton className="h-8 w-16 ml-auto" /></TableCell>
                   </TableRow>
                 ))
-              ) : apps?.length === 0 ? (
+              ) : apps.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={5} className="text-center py-12 font-mono text-muted-foreground uppercase">
                     No apps found. Add your first mod.
                   </TableCell>
                 </TableRow>
               ) : (
-                apps?.map((app) => (
+                apps.map((app) => (
                   <TableRow key={app.id} className="border-b-2 border-black hover:bg-muted/50 transition-colors">
                     <TableCell>
                       <div className="flex items-center gap-3">
-                        <div 
-                          className="w-10 h-10 border-2 border-black flex items-center justify-center font-black text-sm shrink-0"
-                          style={{ backgroundColor: app.iconColor || 'hsl(var(--primary))', color: '#000' }}
+                        <div
+                          className="w-10 h-10 border-2 border-black flex items-center justify-center font-black text-sm shrink-0 overflow-hidden"
+                          style={{ backgroundColor: app.icon_color || "#facc15" }}
                         >
-                          {app.iconInitials}
+                          {app.icon_url ? (
+                            <img src={app.icon_url} alt={app.name} className="w-full h-full object-cover" />
+                          ) : (
+                            app.icon_initials || "AP"
+                          )}
                         </div>
                         <div>
                           <div className="font-black uppercase text-base">{app.name}</div>
-                          <div className="font-mono text-xs text-muted-foreground break-all">{app.packageName}</div>
+                          <div className="font-mono text-xs text-muted-foreground">{app.package_name}</div>
                         </div>
                       </div>
                     </TableCell>
@@ -152,29 +197,19 @@ export function Admin() {
                       </div>
                     </TableCell>
                     <TableCell>
-                      <Badge className={`rounded-none border border-black font-bold text-[10px] uppercase ${app.status === 'ONLINE' ? 'bg-secondary text-secondary-foreground' : 'bg-accent text-accent-foreground'}`}>
+                      <Badge className={`rounded-none border border-black font-bold text-[10px] uppercase ${app.status === "ONLINE" ? "bg-secondary text-secondary-foreground" : "bg-accent text-accent-foreground"}`}>
                         {app.status}
                       </Badge>
                     </TableCell>
                     <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button 
-                          variant="outline" 
-                          size="icon"
-                          onClick={() => handleEdit(app.id)}
-                          className="rounded-none border-2 border-black h-8 w-8 hover:bg-primary hover:text-primary-foreground transition-colors"
-                        >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button 
-                          variant="destructive" 
-                          size="icon"
-                          onClick={() => setDeleteAppId(app.id)}
-                          className="rounded-none border-2 border-black h-8 w-8 hover:bg-destructive hover:text-destructive-foreground transition-colors"
-                        >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
+                      <Button
+                        variant="destructive"
+                        size="icon"
+                        onClick={() => setDeleteAppId(app.id)}
+                        className="rounded-none border-2 border-black h-8 w-8"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
                     </TableCell>
                   </TableRow>
                 ))
@@ -184,14 +219,81 @@ export function Admin() {
         </div>
       </div>
 
+      {/* Form Modal */}
       {isFormOpen && (
-        <AppForm 
-          appId={editingAppId} 
-          open={isFormOpen} 
-          onOpenChange={setIsFormOpen} 
-        />
+        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
+          <div className="bg-white border-4 border-black brutal-shadow w-full max-w-lg max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between p-4 border-b-4 border-black bg-primary text-primary-foreground">
+              <h2 className="font-black uppercase text-xl">Add New Mod</h2>
+              <button onClick={() => setIsFormOpen(false)}>
+                <X className="h-6 w-6" />
+              </button>
+            </div>
+
+            <div className="p-4 space-y-3">
+              {[
+                { label: "Name", name: "name" },
+                { label: "Version", name: "version" },
+                { label: "Size (e.g. 84MB)", name: "size" },
+                { label: "Category (e.g. ACTION)", name: "category" },
+                { label: "Mod Features", name: "mod_features" },
+                { label: "Description", name: "description" },
+                { label: "Icon Initials (e.g. SF)", name: "icon_initials" },
+                { label: "Icon URL (opsional)", name: "icon_url" },
+                { label: "Icon Color (hex)", name: "icon_color" },
+                { label: "Package Name", name: "package_name" },
+                { label: "Download URL", name: "download_url" },
+              ].map(({ label, name }) => (
+                <div key={name}>
+                  <label className="font-black uppercase text-xs block mb-1">{label}</label>
+                  <Input
+                    name={name}
+                    value={(form as any)[name]}
+                    onChange={handleChange}
+                    className="rounded-none border-2 border-black"
+                  />
+                </div>
+              ))}
+
+              <div>
+                <label className="font-black uppercase text-xs block mb-1">Type</label>
+                <select
+                  name="type"
+                  value={form.type}
+                  onChange={handleChange}
+                  className="w-full border-2 border-black p-2 font-bold uppercase text-sm"
+                >
+                  <option value="APP">APP</option>
+                  <option value="GAME">GAME</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="font-black uppercase text-xs block mb-1">Status</label>
+                <select
+                  name="status"
+                  value={form.status}
+                  onChange={handleChange}
+                  className="w-full border-2 border-black p-2 font-bold uppercase text-sm"
+                >
+                  <option value="ONLINE">ONLINE</option>
+                  <option value="OFFLINE">OFFLINE</option>
+                </select>
+              </div>
+
+              <Button
+                onClick={handleSubmit}
+                disabled={isSubmitting}
+                className="w-full rounded-none border-2 border-black font-black uppercase h-12 mt-2"
+              >
+                {isSubmitting ? "Menyimpan..." : "Simpan"}
+              </Button>
+            </div>
+          </div>
+        </div>
       )}
 
+      {/* Delete Dialog */}
       <AlertDialog open={!!deleteAppId} onOpenChange={(open) => !open && setDeleteAppId(null)}>
         <AlertDialogContent className="rounded-none border-4 border-black brutal-shadow-lg p-0 overflow-hidden sm:max-w-md">
           <div className="bg-destructive text-destructive-foreground p-6 border-b-4 border-black flex items-center gap-3">
@@ -200,15 +302,15 @@ export function Admin() {
           </div>
           <div className="p-6 bg-card">
             <AlertDialogDescription className="font-mono text-base text-foreground mb-6">
-              Are you sure you want to delete this app? This action cannot be undone.
+              Yakin mau hapus app ini? Aksi ini tidak bisa dibatalkan.
             </AlertDialogDescription>
             <AlertDialogFooter>
-              <AlertDialogCancel className="rounded-none border-2 border-black font-black uppercase">Cancel</AlertDialogCancel>
-              <AlertDialogAction 
-                onClick={handleDeleteConfirm}
+              <AlertDialogCancel className="rounded-none border-2 border-black font-black uppercase">Batal</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDelete}
                 className="rounded-none border-2 border-black bg-destructive text-destructive-foreground font-black uppercase hover:bg-destructive/90"
               >
-                {deleteApp.isPending ? "Deleting..." : "Delete Mod"}
+                Hapus
               </AlertDialogAction>
             </AlertDialogFooter>
           </div>
@@ -218,18 +320,14 @@ export function Admin() {
   );
 }
 
-function StatCard({ title, value, loading, className = "" }: { title: string, value?: number, loading: boolean, className?: string }) {
+function StatCard({ title, value, loading, className = "" }: { title: string; value?: number; loading: boolean; className?: string }) {
   return (
     <Card className={`rounded-none border-4 border-black brutal-shadow ${className}`}>
       <CardHeader className="pb-2 border-b-2 border-black/10">
         <CardTitle className="text-sm font-black uppercase opacity-80">{title}</CardTitle>
       </CardHeader>
       <CardContent className="pt-4">
-        {loading ? (
-          <Skeleton className="h-10 w-16" />
-        ) : (
-          <div className="text-4xl font-black">{value || 0}</div>
-        )}
+        {loading ? <Skeleton className="h-10 w-16" /> : <div className="text-4xl font-black">{value || 0}</div>}
       </CardContent>
     </Card>
   );
