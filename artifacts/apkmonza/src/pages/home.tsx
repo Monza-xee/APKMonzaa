@@ -30,10 +30,10 @@ export function Home() {
   );
 
   return (
-    <div className="space-y-4 pt-2 px-4 pb-4">
+    <div className="space-y-6 pt-0 px-4 pb-4">
 
       {/* SEARCH + FILTER */}
-      <section className="flex flex-col gap-4 border-4 border-black p-4 brutal-shadow bg-white">
+      <section className="flex flex-col gap-4 border-4 border-black p-4 brutal-shadow bg-white -mt-4">
         <div className="relative">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
