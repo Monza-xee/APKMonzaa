@@ -11,6 +11,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 export function Home() {
   const [search, setSearch] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
+  const [categoryFilter, setCategoryFilter] = useState("");
   const [apps, setApps] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -25,9 +26,15 @@ export function Home() {
     fetchApps();
   }, [typeFilter]);
 
-  const filteredApps = apps.filter((app) =>
-    (app.name || "").toLowerCase().includes(search.toLowerCase())
-  );
+  const categories = Array.from(
+    new Set(apps.map((app) => app.category).filter(Boolean))
+  ) as string[];
+
+  const filteredApps = apps.filter((app) => {
+    const matchSearch = (app.name || "").toLowerCase().includes(search.toLowerCase());
+    const matchCategory = categoryFilter ? app.category === categoryFilter : true;
+    return matchSearch && matchCategory;
+  });
 
   const recommended = apps.slice(0, 6);
 
@@ -78,6 +85,35 @@ export function Home() {
             <Box className="mr-1 h-4 w-4" /> APPS
           </Button>
         </div>
+
+        {/* FILTER KATEGORI */}
+        {categories.length > 0 && (
+          <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+            <button
+              onClick={() => setCategoryFilter("")}
+              className={`shrink-0 px-3 py-1 border-2 border-black font-black text-xs uppercase rounded-none transition-colors ${
+                categoryFilter === ""
+                  ? "bg-black text-yellow-400"
+                  : "bg-white text-black hover:bg-gray-100"
+              }`}
+            >
+              SEMUA
+            </button>
+            {categories.map((cat) => (
+              <button
+                key={cat}
+                onClick={() => setCategoryFilter(cat === categoryFilter ? "" : cat)}
+                className={`shrink-0 px-3 py-1 border-2 border-black font-black text-xs uppercase rounded-none transition-colors ${
+                  categoryFilter === cat
+                    ? "bg-black text-yellow-400"
+                    : "bg-white text-black hover:bg-gray-100"
+                }`}
+              >
+                {cat}
+              </button>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* RECOMMENDED - horizontal scroll */}
@@ -88,13 +124,13 @@ export function Home() {
         <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
           {isLoading
             ? [1, 2, 3].map((i) => (
-                <Skeleton key={i} className="w-28 h-28 shrink-0 border-4 border-black" />
+                <Skeleton key={i} className="w-44 h-36 shrink-0 border-4 border-black" />
               ))
             : recommended.map((app) => (
                 <Link key={app.id} href={`/app/${app.id}`}>
-                  <div className="w-28 shrink-0 border-4 border-black brutal-shadow bg-white cursor-pointer hover:translate-x-0.5 hover:translate-y-0.5 transition-transform">
+                  <div className="w-44 shrink-0 border-4 border-black brutal-shadow bg-white cursor-pointer hover:translate-x-0.5 hover:translate-y-0.5 transition-transform">
                     <div
-                      className="w-full h-16 flex items-center justify-center font-black text-sm overflow-hidden border-b-4 border-black"
+                      className="w-full h-24 flex items-center justify-center font-black text-sm overflow-hidden border-b-4 border-black"
                       style={{ backgroundColor: app.icon_color || "#facc15" }}
                     >
                       {app.icon_url ? (
@@ -107,7 +143,7 @@ export function Home() {
                         app.icon_initials || "AP"
                       )}
                     </div>
-                    <div className="p-1.5">
+                    <div className="p-2">
                       <p className="font-black text-xs uppercase leading-tight line-clamp-2">
                         {app.name || "NO NAME"}
                       </p>
@@ -214,4 +250,4 @@ export function Home() {
       </section>
     </div>
   );
-                }
+              }
