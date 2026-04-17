@@ -124,9 +124,9 @@ export function Admin() {
     setIsSubmitting(true);
     if (editingApp) {
       const { error } = await supabase
-        .from("ListAPKGAMES")
-        .update({ ...form })
-        .eq("id", editingApp.id);
+  .from("ListAPKGAMES")
+  .update({ ...form, uploaded_at: new Date().toISOString() })
+  .eq("id", editingApp.id);
       if (error) {
         toast({ title: "Error", description: error.message, variant: "destructive" });
       } else {
