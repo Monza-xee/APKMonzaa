@@ -177,7 +177,7 @@ export function Home() {
       {/* LIST */}
       <section>
         <h2 className="font-black uppercase text-base mb-3 border-l-4 border-black pl-2">
-          NEW APPS / GAMES UPDATE
+          MOST RECENT UPDATES
         </h2>
         {isLoading ? (
           <div className="grid gap-4">
