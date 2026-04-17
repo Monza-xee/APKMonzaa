@@ -13,10 +13,20 @@ export function Home() {
   const [typeFilter, setTypeFilter] = useState("");
   const [categoryFilter, setCategoryFilter] = useState("");
   const [apps, setApps] = useState<any[]>([]);
+  const [allApps, setAllApps] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
+    async function fetchAllApps() {
+      const { data, error } = await supabase.from("ListAPKGAMES").select("*");
+      if (!error) setAllApps(data || []);
+    }
+    fetchAllApps();
+  }, []);
+
+  useEffect(() => {
     async function fetchApps() {
+      setIsLoading(true);
       let query = supabase.from("ListAPKGAMES").select("*");
       if (typeFilter) query = query.eq("type", typeFilter);
       const { data, error } = await query;
@@ -36,7 +46,7 @@ export function Home() {
     return matchSearch && matchCategory;
   });
 
-  const recommended = apps.slice(0, 6);
+  const recommended = allApps.slice(0, 6);
 
   return (
     <div className="space-y-6 pt-0 px-4 pb-4">
@@ -122,7 +132,7 @@ export function Home() {
           RECOMMENDED
         </h2>
         <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
-          {isLoading
+          {allApps.length === 0
             ? [1, 2, 3].map((i) => (
                 <Skeleton key={i} className="w-44 h-36 shrink-0 border-4 border-black" />
               ))
@@ -250,4 +260,4 @@ export function Home() {
       </section>
     </div>
   );
-              }
+}
