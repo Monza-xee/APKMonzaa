@@ -46,7 +46,7 @@ export function Home() {
     return matchSearch && matchCategory;
   });
 
-  const recommended = allApps.slice(0, 6);
+  const recommended = allApps.filter((app) => app.is_recommended);
 
   return (
     <div className="space-y-6 pt-0 px-4 pb-4">
