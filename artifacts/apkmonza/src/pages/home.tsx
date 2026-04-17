@@ -27,7 +27,7 @@ export function Home() {
   useEffect(() => {
     async function fetchApps() {
       setIsLoading(true);
-      let query = supabase.from("ListAPKGAMES").select("*");
+      let query = supabase.from("ListAPKGAMES").select("*").order("uploaded_at", { ascending: false });
       if (typeFilter) query = query.eq("type", typeFilter);
       const { data, error } = await query;
       if (!error) setApps(data || []);
