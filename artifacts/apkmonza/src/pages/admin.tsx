@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import { Plus, Trash2, ShieldAlert, AlertTriangle, X, Edit, Search } from "lucide-react";
+import { Plus, Trash2, ShieldAlert, AlertTriangle, X, Edit, Search, Star } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -35,6 +35,7 @@ type App = {
   package_name: string;
   download_url: string;
   uploaded_at: string;
+  is_recommended: boolean;
 };
 
 const emptyForm = {
@@ -52,6 +53,7 @@ const emptyForm = {
   icon_url: "",
   package_name: "",
   download_url: "",
+  is_recommended: false,
 };
 
 export function Admin() {
@@ -113,6 +115,7 @@ export function Admin() {
       icon_url: app.icon_url || "",
       package_name: app.package_name || "",
       download_url: app.download_url || "",
+      is_recommended: app.is_recommended || false,
     });
     setIsFormOpen(true);
   }
@@ -163,6 +166,23 @@ export function Admin() {
     setForm((prev) => ({ ...prev, [e.target.name]: e.target.value }));
   }
 
+  async function toggleRecommended(app: App) {
+    const newVal = !app.is_recommended;
+    const { error } = await supabase
+      .from("ListAPKGAMES")
+      .update({ is_recommended: newVal })
+      .eq("id", app.id);
+    if (error) {
+      toast({ title: "Error", description: error.message, variant: "destructive" });
+    } else {
+      toast({
+        title: newVal ? "Ditambahkan ke Recommended" : "Dihapus dari Recommended",
+        description: `${app.name} ${newVal ? "sekarang tampil" : "tidak lagi tampil"} di Recommended.`,
+      });
+      fetchApps();
+    }
+  }
+
   return (
     <div className="space-y-8">
       {/* Header */}
@@ -205,9 +225,7 @@ export function Admin() {
             <button
               onClick={() => setStatusFilter("")}
               className={`px-3 py-1 border-2 border-black font-black text-xs uppercase rounded-none transition-colors ${
-                statusFilter === ""
-                  ? "bg-black text-white"
-                  : "bg-white text-black hover:bg-gray-100"
+                statusFilter === "" ? "bg-black text-white" : "bg-white text-black hover:bg-gray-100"
               }`}
             >
               SEMUA
@@ -215,9 +233,7 @@ export function Admin() {
             <button
               onClick={() => setStatusFilter(statusFilter === "ONLINE" ? "" : "ONLINE")}
               className={`px-3 py-1 border-2 border-black font-black text-xs uppercase rounded-none transition-colors ${
-                statusFilter === "ONLINE"
-                  ? "bg-green-500 text-white border-green-600"
-                  : "bg-white text-black hover:bg-gray-100"
+                statusFilter === "ONLINE" ? "bg-green-500 text-white border-green-600" : "bg-white text-black hover:bg-gray-100"
               }`}
             >
               ONLINE
@@ -225,9 +241,7 @@ export function Admin() {
             <button
               onClick={() => setStatusFilter(statusFilter === "OFFLINE" ? "" : "OFFLINE")}
               className={`px-3 py-1 border-2 border-black font-black text-xs uppercase rounded-none transition-colors ${
-                statusFilter === "OFFLINE"
-                  ? "bg-red-500 text-white border-red-600"
-                  : "bg-white text-black hover:bg-gray-100"
+                statusFilter === "OFFLINE" ? "bg-red-500 text-white border-red-600" : "bg-white text-black hover:bg-gray-100"
               }`}
             >
               OFFLINE
@@ -249,6 +263,7 @@ export function Admin() {
                 <TableHead className="font-black uppercase text-white py-4">Version</TableHead>
                 <TableHead className="font-black uppercase text-white py-4">Type / Cat</TableHead>
                 <TableHead className="font-black uppercase text-white py-4">Status</TableHead>
+                <TableHead className="font-black uppercase text-white py-4 text-center">Rec</TableHead>
                 <TableHead className="font-black uppercase text-white py-4 text-right">Actions</TableHead>
               </TableRow>
             </TableHeader>
@@ -261,23 +276,20 @@ export function Admin() {
                     <TableCell><Skeleton className="h-6 w-16" /></TableCell>
                     <TableCell><Skeleton className="h-6 w-24" /></TableCell>
                     <TableCell><Skeleton className="h-6 w-20" /></TableCell>
+                    <TableCell><Skeleton className="h-6 w-8 mx-auto" /></TableCell>
                     <TableCell><Skeleton className="h-8 w-20 ml-auto" /></TableCell>
                   </TableRow>
                 ))
               ) : filteredTableApps.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-12 font-mono text-muted-foreground uppercase">
-                    {tableSearch || statusFilter
-                      ? "Tidak ada mod yang sesuai filter."
-                      : "No apps found. Add your first mod."}
+                  <TableCell colSpan={7} className="text-center py-12 font-mono text-muted-foreground uppercase">
+                    {tableSearch || statusFilter ? "Tidak ada mod yang sesuai filter." : "No apps found. Add your first mod."}
                   </TableCell>
                 </TableRow>
               ) : (
                 filteredTableApps.map((app) => (
                   <TableRow key={app.id} className="border-b-2 border-black hover:bg-muted/50 transition-colors">
-                    <TableCell className="font-black text-sm text-muted-foreground">
-                      #{app.id}
-                    </TableCell>
+                    <TableCell className="font-black text-sm text-muted-foreground">#{app.id}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-3">
                         <div
@@ -309,6 +321,19 @@ export function Admin() {
                       <Badge className={`rounded-none border border-black font-bold text-[10px] uppercase ${app.status === "ONLINE" ? "bg-secondary text-secondary-foreground" : "bg-accent text-accent-foreground"}`}>
                         {app.status}
                       </Badge>
+                    </TableCell>
+                    <TableCell className="text-center">
+                      <button
+                        onClick={() => toggleRecommended(app)}
+                        title={app.is_recommended ? "Hapus dari Recommended" : "Tambah ke Recommended"}
+                        className={`p-1 border-2 border-black rounded-none transition-colors ${
+                          app.is_recommended
+                            ? "bg-yellow-400 text-black hover:bg-yellow-300"
+                            : "bg-white text-gray-300 hover:bg-gray-100"
+                        }`}
+                      >
+                        <Star className="h-4 w-4" fill={app.is_recommended ? "currentColor" : "none"} />
+                      </button>
                     </TableCell>
                     <TableCell className="text-right">
                       <div className="flex justify-end gap-2">
@@ -403,6 +428,26 @@ export function Admin() {
                 </select>
               </div>
 
+              {/* Toggle Recommended */}
+              <div className="flex items-center justify-between border-2 border-black p-3">
+                <div>
+                  <p className="font-black uppercase text-xs">Tampilkan di Recommended</p>
+                  <p className="text-xs text-muted-foreground">Muncul di bagian Recommended halaman utama</p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setForm((prev) => ({ ...prev, is_recommended: !prev.is_recommended }))}
+                  className={`flex items-center gap-1 px-3 py-1 border-2 border-black font-black text-xs uppercase rounded-none transition-colors ${
+                    form.is_recommended
+                      ? "bg-yellow-400 text-black"
+                      : "bg-white text-black hover:bg-gray-100"
+                  }`}
+                >
+                  <Star className="h-3 w-3" fill={form.is_recommended ? "currentColor" : "none"} />
+                  {form.is_recommended ? "YA" : "TIDAK"}
+                </button>
+              </div>
+
               <Button
                 onClick={handleSubmit}
                 disabled={isSubmitting}
@@ -415,352 +460,4 @@ export function Admin() {
         </div>
       )}
 
-      {/* Delete Dialog */}
-      <AlertDialog open={!!deleteAppId} onOpenChange={(open) => !open && setDeleteAppId(null)}>
-        <AlertDialogContent className="rounded-none border-4 border-black brutal-shadow-lg p-0 overflow-hidden sm:max-w-md">
-          <div className="bg-destructive text-destructive-foreground p-6 border-b-4 border-black flex items-center gap-3">
-            <AlertTriangle className="h-8 w-8" />
-            <AlertDialogTitle className="text-2xl font-black uppercase m-0">Confirm Deletion</AlertDialogTitle>
-          </div>
-          <div className="p-6 bg-card">
-            <AlertDialogDescription className="font-mono text-base text-foreground mb-6">
-              Yakin mau hapus app ini? Aksi ini tidak bisa dibatalkan.
-            </AlertDialogDescription>
-            <AlertDialogFooter>
-              <AlertDialogCancel className="rounded-none border-2 border-black font-black uppercase">Batal</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={handleDelete}
-                className="rounded-none border-2 border-black bg-destructive text-destructive-foreground font-black uppercase hover:bg-destructive/90"
-              >
-                Hapus
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </div>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
-  );
-}
-
-function StatCard({ title, value, loading, className = "" }: { title: string; value?: number; loading: boolean; className?: string }) {
-  return (
-    <Card className={`rounded-none border-4 border-black brutal-shadow ${className}`}>
-      <CardHeader className="pb-2 border-b-2 border-black/10">
-        <CardTitle className="text-sm font-black uppercase opacity-80">{title}</CardTitle>
-      </CardHeader>
-      <CardContent className="pt-4">
-        {loading ? <Skeleton className="h-10 w-16" /> : <div className="text-4xl font-black">{value || 0}</div>}
-      </CardContent>
-    </Card>
-  );
-}
-
-      {/* Delete Dialog */}
-      <AlertDialog open={!!deleteAppId} onOpenChange={(open) => !open && setDeleteAppId(null)}>
-        <AlertDialogContent className="rounded-none border-4 border-black brutal-shadow-lg p-0 overflow-hidden sm:max-w-md">
-          <div className="bg-destructive text-destructive-foreground p-6 border-b-4 border-black flex items-center gap-3">
-            <AlertTriangle className="h-8 w-8" />
-            <AlertDialogTitle className="text-2xl font-black uppercase m-0">Confirm Deletion</AlertDialogTitle>
-          </div>
-          <div className="p-6 bg-card">
-            <AlertDialogDescription className="font-mono text-base text-foreground mb-6">
-              Yakin mau hapus app ini? Aksi ini tidak bisa dibatalkan.
-            </AlertDialogDescription>
-            <AlertDialogFooter>
-              <AlertDialogCancel className="rounded-none border-2 border-black font-black uppercase">Batal</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={handleDelete}
-                className="rounded-none border-2 border-black bg-destructive text-destructive-foreground font-black uppercase hover:bg-destructive/90"
-              >
-                Hapus
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </div>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
-  );
-}
-function StatCard({ title, value, loading, className = "" }: { title: string; value?: number; loading: boolean; className?: string }) {
-  return (
-    <Card className={`rounded-none border-4 border-black brutal-shadow ${className}`}>
-      <CardHeader className="pb-2 border-b-2 border-black/10">
-        <CardTitle className="text-sm font-black uppercase opacity-80">{title}</CardTitle>
-      </CardHeader>
-      <CardContent className="pt-4">
-        {loading ? <Skeleton className="h-10 w-16" /> : <div className="text-4xl font-black">{value || 0}</div>}
-      </CardContent>
-    </Card>
-  );
-}
-Home.tsx — bagian recommended diubah supaya pakai data is_recommended:
-
-Ganti baris ini:
-
-const recommended = allApps.slice(0, 6);
-Jadi:
-
-const recommended = allApps.filter((app) => app.is_recommended);
-Yang ditambahkan/diubah:
-
-Kolom bintang (★) di tabel — klik langsung toggle masuk/keluar Recommended tanpa buka form edit, langsung tersimpan ke Supabase
-Toggle di dalam form — bisa diatur juga saat tambah atau edit mod
-Home.tsx — Recommended sekarang hanya tampilkan yang is_recommended = true
-Jangan lupa tambah kolom is_recommended (boolean, default false) di tabel Supabase dulu ya!
-
-Selanjutnya, saya bisa tambahkan badge "BARU" merah otomatis di kartu yang diupload dalam 7 hari terakhir. Mau ditambahkan?
-
-import { useState, useEffect } from "react";
-import { Link } from "wouter";
-import { supabase } from "../lib/supabase";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent } from "@/components/ui/card";
-import { Search, Box, Gamepad2 } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
-
-export function Home() {
-const [search, setSearch] = useState("");
-const [typeFilter, setTypeFilter] = useState("");
-const [categoryFilter, setCategoryFilter] = useState("");
-const [apps, setApps] = useState<any[]>([]);
-const [allApps, setAllApps] = useState<any[]>([]);
-const [isLoading, setIsLoading] = useState(true);
-
-useEffect(() => {
-async function fetchAllApps() {
-const { data, error } = await supabase.from("ListAPKGAMES").select("*");
-if (!error) setAllApps(data || []);
-}
-fetchAllApps();
-}, []);
-
-useEffect(() => {
-async function fetchApps() {
-setIsLoading(true);
-let query = supabase.from("ListAPKGAMES").select("*");
-if (typeFilter) query = query.eq("type", typeFilter);
-const { data, error } = await query;
-if (!error) setApps(data || []);
-setIsLoading(false);
-}
-fetchApps();
-}, [typeFilter]);
-
-const categories = Array.from(
-new Set(apps.map((app) => app.category).filter(Boolean))
-) as string[];
-
-const filteredApps = apps.filter((app) => {
-const matchSearch = (app.name || "").toLowerCase().includes(search.toLowerCase());
-const matchCategory = categoryFilter ? app.category === categoryFilter : true;
-return matchSearch && matchCategory;
-});
-
-const recommended = allApps.filter((app) => app.is_recommended);
-
-return (
-<div className="space-y-6 pt-0 px-4 pb-4">
-
-  {/* SEARCH + FILTER */}
-  <section className="flex flex-col gap-4 border-4 border-black p-4 brutal-shadow bg-white -mt-4">
-    <div className="relative">
-      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-      <Input
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-        placeholder="SEARCH GAMES OR APPS..."
-        className="pl-10 border-2 border-black rounded-none font-mono uppercase"
-      />
-    </div>
-    <div className="flex gap-2">
-      <Button
-        onClick={() => setTypeFilter("")}
-        className={`border-2 border-black font-black rounded-none ${
-          typeFilter === ""
-            ? "bg-yellow-400 text-black hover:bg-yellow-300"
-            : "bg-white text-black hover:bg-gray-100"
-        }`}
-      >
-        ALL
-      </Button>
-      <Button
-        onClick={() => setTypeFilter("GAME")}
-        className={`border-2 border-black font-black rounded-none ${
-          typeFilter === "GAME"
-            ? "bg-yellow-400 text-black hover:bg-yellow-300"
-            : "bg-white text-black hover:bg-gray-100"
-        }`}
-      >
-        <Gamepad2 className="mr-1 h-4 w-4" /> GAMES
-      </Button>
-      <Button
-        onClick={() => setTypeFilter("APP")}
-        className={`border-2 border-black font-black rounded-none ${
-          typeFilter === "APP"
-            ? "bg-yellow-400 text-black hover:bg-yellow-300"
-            : "bg-white text-black hover:bg-gray-100"
-        }`}
-      >
-        <Box className="mr-1 h-4 w-4" /> APPS
-      </Button>
-    </div>
-    {/* FILTER KATEGORI */}
-    {categories.length > 0 && (
-      <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-        <button
-          onClick={() => setCategoryFilter("")}
-          className={`shrink-0 px-3 py-1 border-2 border-black font-black text-xs uppercase rounded-none transition-colors ${
-            categoryFilter === ""
-              ? "bg-black text-yellow-400"
-              : "bg-white text-black hover:bg-gray-100"
-          }`}
-        >
-          SEMUA
-        </button>
-        {categories.map((cat) => (
-          <button
-            key={cat}
-            onClick={() => setCategoryFilter(cat === categoryFilter ? "" : cat)}
-            className={`shrink-0 px-3 py-1 border-2 border-black font-black text-xs uppercase rounded-none transition-colors ${
-              categoryFilter === cat
-                ? "bg-black text-yellow-400"
-                : "bg-white text-black hover:bg-gray-100"
-            }`}
-          >
-            {cat}
-          </button>
-        ))}
-      </div>
-    )}
-  </section>
-  {/* RECOMMENDED - horizontal scroll */}
-  <section>
-    <h2 className="font-black uppercase text-base mb-3 border-l-4 border-yellow-400 pl-2">
-      RECOMMENDED
-    </h2>
-    <div className="flex gap-3 overflow-x-auto pb-2 scrollbar-none">
-      {allApps.length === 0
-        ? [1, 2, 3].map((i) => (
-            <Skeleton key={i} className="w-44 h-36 shrink-0 border-4 border-black" />
-          ))
-        : recommended.map((app) => (
-            <Link key={app.id} href={`/app/${app.id}`}>
-              <div className="w-44 shrink-0 border-4 border-black brutal-shadow bg-white cursor-pointer hover:translate-x-0.5 hover:translate-y-0.5 transition-transform">
-                <div
-                  className="w-full h-24 flex items-center justify-center font-black text-sm overflow-hidden border-b-4 border-black"
-                  style={{ backgroundColor: app.icon_color || "#facc15" }}
-                >
-                  {app.icon_url ? (
-                    <img
-                      src={app.icon_url}
-                      alt={app.name}
-                      className="w-full h-full object-cover"
-                    />
-                  ) : (
-                    app.icon_initials || "AP"
-                  )}
-                </div>
-                <div className="p-2">
-                  <p className="font-black text-xs uppercase leading-tight line-clamp-2">
-                    {app.name || "NO NAME"}
-                  </p>
-                  <div className="flex gap-1 flex-wrap mt-1">
-                    <Badge className="bg-yellow-400 text-black border-0 rounded-none font-bold uppercase text-[10px] px-1">
-                      {app.type || "-"}
-                    </Badge>
-                    {app.category && (
-                      <Badge className="bg-white text-black border-2 border-black rounded-none font-bold uppercase text-[10px] px-1">
-                        {app.category}
-                      </Badge>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </Link>
-          ))}
-    </div>
-  </section>
-  {/* LIST */}
-  <section>
-    <h2 className="font-black uppercase text-base mb-3 border-l-4 border-black pl-2">
-      NEW APPS / GAMES UPDATE
-    </h2>
-    {isLoading ? (
-      <div className="grid gap-4">
-        {[1, 2].map((i) => (
-          <Skeleton key={i} className="h-40 border-4 border-black" />
-        ))}
-      </div>
-    ) : filteredApps.length === 0 ? (
-      <div className="border-4 border-black p-10 text-center font-black uppercase">
-        No Mods Found
-      </div>
-    ) : (
-      <div className="grid gap-4">
-        {filteredApps.map((app) => (
-          <Link key={app.id} href={`/app/${app.id}`}>
-            <Card className="border-4 border-black brutal-shadow flex flex-col rounded-none cursor-pointer hover:translate-x-1 hover:translate-y-1 transition-transform">
-              {/* MOD INFO */}
-              <div className="bg-purple-100 border-b-4 border-black px-4 py-3">
-                <p className="font-black text-lg uppercase leading-tight">
-                  {app.mod_features || "UNLOCKED"}
-                </p>
-              </div>
-              {/* CONTENT */}
-              <CardContent className="p-4">
-                <div className="flex gap-4 mb-3 items-center">
-                  <div
-                    className="w-14 h-14 border-4 border-black flex items-center justify-center font-black text-sm shrink-0 overflow-hidden"
-                    style={{ backgroundColor: app.icon_color || "#facc15" }}
-                  >
-                    {app.icon_url ? (
-                      <img
-                        src={app.icon_url}
-                        alt={app.name}
-                        className="w-full h-full object-cover"
-                      />
-                    ) : (
-                      app.icon_initials || "AP"
-                    )}
-                  </div>
-                  <div className="flex flex-col justify-center">
-                    <h2 className="font-black text-lg uppercase leading-tight">
-                      {app.name || "NO NAME"}
-                    </h2>
-                    <p className="text-sm text-gray-500">
-                      v{app.version || "1.0"} • {app.size || "??MB"}
-                    </p>
-                  </div>
-                </div>
-                <div className="flex gap-2 flex-wrap">
-                  <Badge className="bg-yellow-400 text-black border-0 rounded-none font-bold uppercase text-xs">
-                    {app.type || "-"}
-                  </Badge>
-                  <Badge className="bg-white text-black border-2 border-black rounded-none font-bold uppercase text-xs">
-                    {app.category || "-"}
-                  </Badge>
-                  <Badge className="bg-purple-600 text-white border-0 rounded-none font-bold uppercase text-xs">
-                    {app.status || "OFFLINE"}
-                  </Badge>
-                  <Badge className="bg-white text-black border-2 border-black rounded-none font-bold uppercase text-xs">
-                    {app.uploaded_at
-                      ? new Date(app.uploaded_at).toLocaleDateString("id-ID", {
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                        })
-                      : "-"}
-                  </Badge>
-                </div>
-              </CardContent>
-            </Card>
-          </Link>
-        ))}
-      </div>
-    )}
-  </section>
-</div>
-);
-  }
+      
