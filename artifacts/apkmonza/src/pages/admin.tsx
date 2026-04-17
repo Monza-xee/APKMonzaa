@@ -454,3 +454,44 @@ function StatCard({ title, value, loading, className = "" }: { title: string; va
     </Card>
   );
 }
+{/* Delete Dialog */}
+      <AlertDialog open={!!deleteAppId} onOpenChange={(open) => !open && setDeleteAppId(null)}>
+        <AlertDialogContent className="rounded-none border-4 border-black brutal-shadow-lg p-0 overflow-hidden sm:max-w-md">
+          <div className="bg-destructive text-destructive-foreground p-6 border-b-4 border-black flex items-center gap-3">
+            <AlertTriangle className="h-8 w-8" />
+            <AlertDialogTitle className="text-2xl font-black uppercase m-0">Confirm Deletion</AlertDialogTitle>
+          </div>
+          <div className="p-6 bg-card">
+            <AlertDialogDescription className="font-mono text-base text-foreground mb-6">
+              Yakin mau hapus app ini? Aksi ini tidak bisa dibatalkan.
+            </AlertDialogDescription>
+            <AlertDialogFooter>
+              <AlertDialogCancel className="rounded-none border-2 border-black font-black uppercase">Batal</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDelete}
+                className="rounded-none border-2 border-black bg-destructive text-destructive-foreground font-black uppercase hover:bg-destructive/90"
+              >
+                Hapus
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
+}
+function StatCard({ title, value, loading, className = "" }: { title: string; value?: number; loading: boolean; className?: string }) {
+  return (
+    <Card className={`rounded-none border-4 border-black brutal-shadow ${className}`}>
+      <CardHeader className="pb-2 border-b-2 border-black/10">
+        <CardTitle className="text-sm font-black uppercase opacity-80">{title}</CardTitle>
+      </CardHeader>
+      <CardContent className="pt-4">
+        {loading ? <Skeleton className="h-10 w-16" /> : <div className="text-4xl font-black">{value || 0}</div>}
+      </CardContent>
+    </Card>
+  );
+}
+
+
+  
