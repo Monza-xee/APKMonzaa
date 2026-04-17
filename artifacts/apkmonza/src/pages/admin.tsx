@@ -5,7 +5,7 @@ import { Badge } from "@/components/ui/badge";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
-import { Plus, Trash2, ShieldAlert, AlertTriangle, X, Edit } from "lucide-react";
+import { Plus, Trash2, ShieldAlert, AlertTriangle, X, Edit, Search } from "lucide-react";
 import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -63,13 +63,21 @@ export function Admin() {
   const [editingApp, setEditingApp] = useState<App | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [tableSearch, setTableSearch] = useState("");
+  const [statusFilter, setStatusFilter] = useState("");
 
   const stats = {
     total: apps.length,
     games: apps.filter((a) => a.type === "GAME").length,
     apps: apps.filter((a) => a.type === "APP").length,
-    online: apps.filter((a) => a.status === "ONLINE").length,
+    categories: new Set(apps.map((a) => a.category).filter(Boolean)).size,
   };
+
+  const filteredTableApps = apps.filter((a) => {
+    const matchName = (a.name || "").toLowerCase().includes(tableSearch.toLowerCase());
+    const matchStatus = statusFilter ? a.status === statusFilter : true;
+    return matchName && matchStatus;
+  });
 
   async function fetchApps() {
     setIsLoading(true);
@@ -176,11 +184,62 @@ export function Admin() {
         <StatCard title="Total Mods" value={stats.total} loading={isLoading} className="bg-secondary text-secondary-foreground" />
         <StatCard title="Games" value={stats.games} loading={isLoading} className="bg-card" />
         <StatCard title="Apps" value={stats.apps} loading={isLoading} className="bg-card" />
-        <StatCard title="Online" value={stats.online} loading={isLoading} className="bg-primary text-primary-foreground" />
+        <StatCard title="Kategori" value={stats.categories} loading={isLoading} className="bg-primary text-primary-foreground" />
       </div>
 
       {/* Table */}
       <div className="bg-card border-4 border-black brutal-shadow overflow-hidden">
+
+        {/* Search + Filter Status */}
+        <div className="p-4 border-b-4 border-black space-y-3">
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
+            <Input
+              value={tableSearch}
+              onChange={(e) => setTableSearch(e.target.value)}
+              placeholder="CARI MOD BERDASARKAN NAMA..."
+              className="pl-10 border-2 border-black rounded-none font-mono uppercase"
+            />
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => setStatusFilter("")}
+              className={`px-3 py-1 border-2 border-black font-black text-xs uppercase rounded-none transition-colors ${
+                statusFilter === ""
+                  ? "bg-black text-white"
+                  : "bg-white text-black hover:bg-gray-100"
+              }`}
+            >
+              SEMUA
+            </button>
+            <button
+              onClick={() => setStatusFilter(statusFilter === "ONLINE" ? "" : "ONLINE")}
+              className={`px-3 py-1 border-2 border-black font-black text-xs uppercase rounded-none transition-colors ${
+                statusFilter === "ONLINE"
+                  ? "bg-green-500 text-white border-green-600"
+                  : "bg-white text-black hover:bg-gray-100"
+              }`}
+            >
+              ONLINE
+            </button>
+            <button
+              onClick={() => setStatusFilter(statusFilter === "OFFLINE" ? "" : "OFFLINE")}
+              className={`px-3 py-1 border-2 border-black font-black text-xs uppercase rounded-none transition-colors ${
+                statusFilter === "OFFLINE"
+                  ? "bg-red-500 text-white border-red-600"
+                  : "bg-white text-black hover:bg-gray-100"
+              }`}
+            >
+              OFFLINE
+            </button>
+            {(tableSearch || statusFilter) && (
+              <span className="ml-auto text-xs font-bold uppercase text-muted-foreground self-center">
+                {filteredTableApps.length} hasil
+              </span>
+            )}
+          </div>
+        </div>
+
         <div className="overflow-x-auto">
           <Table>
             <TableHeader className="bg-black border-b-4 border-black">
@@ -205,14 +264,16 @@ export function Admin() {
                     <TableCell><Skeleton className="h-8 w-20 ml-auto" /></TableCell>
                   </TableRow>
                 ))
-              ) : apps.length === 0 ? (
+              ) : filteredTableApps.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={6} className="text-center py-12 font-mono text-muted-foreground uppercase">
-                    No apps found. Add your first mod.
+                    {tableSearch || statusFilter
+                      ? "Tidak ada mod yang sesuai filter."
+                      : "No apps found. Add your first mod."}
                   </TableCell>
                 </TableRow>
               ) : (
-                apps.map((app) => (
+                filteredTableApps.map((app) => (
                   <TableRow key={app.id} className="border-b-2 border-black hover:bg-muted/50 transition-colors">
                     <TableCell className="font-black text-sm text-muted-foreground">
                       #{app.id}
