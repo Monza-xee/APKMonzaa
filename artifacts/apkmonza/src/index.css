@@ -131,6 +131,19 @@
 @layer base {
   * {
     @apply border-border;
+    outline: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+  }
+
+  button {
+    outline: none !important;
+    -webkit-tap-highlight-color: transparent !important;
+    border: none;
+  }
+
+  input, textarea, select {
+    outline: none !important;
+    -webkit-tap-highlight-color: transparent !important;
   }
 
   body {
@@ -139,7 +152,6 @@
       radial-gradient(ellipse at 15% 40%, rgba(124, 58, 237, 0.18) 0%, transparent 55%),
       radial-gradient(ellipse at 85% 15%, rgba(99, 102, 241, 0.12) 0%, transparent 50%),
       radial-gradient(ellipse at 50% 90%, rgba(79, 70, 229, 0.1) 0%, transparent 50%);
-    background-attachment: fixed;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -163,3 +175,12 @@
   box-shadow: 0 8px 32px rgba(124, 58, 237, 0.3);
   transform: translateY(-1px);
 }
+
+.scrollbar-none {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none;
+                      }
