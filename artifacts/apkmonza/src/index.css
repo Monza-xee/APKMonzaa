@@ -44,117 +44,122 @@
   --font-sans: 'Outfit', sans-serif;
   --font-mono: 'Space Mono', monospace;
 
-  --radius-sm: 0px;
-  --radius-md: 0px;
-  --radius-lg: 0px;
-  --radius-xl: 0px;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.25rem;
 }
 
 :root {
-  --background: 43 30% 91%;
-  --foreground: 0 0% 0%;
-  
-  --border: 0 0% 0%;
-  --input: 0 0% 100%; 
+  --background: 240 35% 10%;
+  --foreground: 0 0% 95%;
+
+  --border: 0 0% 100% / 0.12;
+  --input: 240 30% 16%;
   --ring: 263 88% 58%;
 
-  --card: 0 0% 100%;
-  --card-foreground: 0 0% 0%;
-  --card-border: 0 0% 0%;
+  --card: 240 30% 14%;
+  --card-foreground: 0 0% 95%;
+  --card-border: 0 0% 100% / 0.1;
 
-  --popover: 0 0% 100%;
-  --popover-foreground: 0 0% 0%;
-  --popover-border: 0 0% 0%;
+  --popover: 240 30% 14%;
+  --popover-foreground: 0 0% 95%;
+  --popover-border: 0 0% 100% / 0.1;
 
-  --primary: 47 100% 50%;
-  --primary-foreground: 0 0% 0%;
-  
-  --secondary: 263 88% 58%;
-  --secondary-foreground: 0 0% 100%;
+  --primary: 263 88% 58%;
+  --primary-foreground: 0 0% 100%;
 
-  --muted: 42 24% 84%;
-  --muted-foreground: 0 0% 38%;
+  --secondary: 240 30% 20%;
+  --secondary-foreground: 0 0% 80%;
 
-  --accent: 172 72% 41%;
-  --accent-foreground: 0 0% 0%;
+  --muted: 240 25% 18%;
+  --muted-foreground: 0 0% 55%;
+
+  --accent: 263 88% 58%;
+  --accent-foreground: 0 0% 100%;
 
   --destructive: 0 92% 60%;
-  --destructive-foreground: 0 0% 0%;
+  --destructive-foreground: 0 0% 100%;
 
-  --radius: 0rem;
-  
-  --shadow-sm: 2px 2px 0px 0px hsl(0 0% 0%);
-  --shadow: 4px 4px 0px 0px hsl(0 0% 0%);
-  --shadow-md: 6px 6px 0px 0px hsl(0 0% 0%);
-  --shadow-lg: 8px 8px 0px 0px hsl(0 0% 0%);
+  --radius: 0.75rem;
 
-  --button-outline: rgba(255,255,255, .10);
-  --badge-outline: rgba(255,255,255, .05);
+  --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.4);
+  --shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 8px 24px rgba(0, 0, 0, 0.5);
+  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
+
+  --button-outline: rgba(255, 255, 255, 0.08);
+  --badge-outline: rgba(255, 255, 255, 0.05);
 
   --opaque-button-border-intensity: 9;
-  --elevate-1: rgba(255,255,255, .04);
-  --elevate-2: rgba(255,255,255, .09);
+  --elevate-1: rgba(255, 255, 255, 0.04);
+  --elevate-2: rgba(255, 255, 255, 0.09);
 }
 
 .dark {
-  --background: 43 30% 91%;
-  --foreground: 0 0% 0%;
-  
-  --border: 0 0% 0%;
-  --input: 0 0% 100%; 
+  --background: 240 35% 10%;
+  --foreground: 0 0% 95%;
+
+  --border: 0 0% 100% / 0.12;
+  --input: 240 30% 16%;
   --ring: 263 88% 58%;
 
-  --card: 0 0% 100%;
-  --card-foreground: 0 0% 0%;
-  --card-border: 0 0% 0%;
+  --card: 240 30% 14%;
+  --card-foreground: 0 0% 95%;
+  --card-border: 0 0% 100% / 0.1;
 
-  --popover: 0 0% 100%;
-  --popover-foreground: 0 0% 0%;
-  --popover-border: 0 0% 0%;
+  --popover: 240 30% 14%;
+  --popover-foreground: 0 0% 95%;
+  --popover-border: 0 0% 100% / 0.1;
 
-  --primary: 47 100% 50%;
-  --primary-foreground: 0 0% 0%;
-  
-  --secondary: 263 88% 58%;
-  --secondary-foreground: 0 0% 100%;
+  --primary: 263 88% 58%;
+  --primary-foreground: 0 0% 100%;
 
-  --muted: 42 24% 84%;
-  --muted-foreground: 0 0% 38%;
+  --secondary: 240 30% 20%;
+  --secondary-foreground: 0 0% 80%;
 
-  --accent: 172 72% 41%;
-  --accent-foreground: 0 0% 0%;
+  --muted: 240 25% 18%;
+  --muted-foreground: 0 0% 55%;
+
+  --accent: 263 88% 58%;
+  --accent-foreground: 0 0% 100%;
 
   --destructive: 0 92% 60%;
-  --destructive-foreground: 0 0% 0%;
+  --destructive-foreground: 0 0% 100%;
 }
 
 @layer base {
   * {
     @apply border-border;
   }
+
   body {
     @apply font-sans antialiased bg-background text-foreground;
-    background-image: radial-gradient(#000 0.75px, transparent 0.75px);
-    background-size: 22px 22px;
+    background-image:
+      radial-gradient(ellipse at 15% 40%, rgba(124, 58, 237, 0.18) 0%, transparent 55%),
+      radial-gradient(ellipse at 85% 15%, rgba(99, 102, 241, 0.12) 0%, transparent 50%),
+      radial-gradient(ellipse at 50% 90%, rgba(79, 70, 229, 0.1) 0%, transparent 50%);
+    background-attachment: fixed;
   }
+
   h1, h2, h3, h4, h5, h6 {
     @apply font-black tracking-tight uppercase;
   }
 }
 
 .brutal-border {
-  @apply border-4 border-black;
+  border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
 .brutal-shadow {
-  box-shadow: 5px 5px 0px 0px #000;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 .brutal-shadow-lg {
-  box-shadow: 9px 9px 0px 0px #000;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
 }
 
 .brutal-shadow-hover:hover {
-  box-shadow: 2px 2px 0px 0px #000;
-  transform: translate(2px, 2px);
+  box-shadow: 0 8px 32px rgba(124, 58, 237, 0.3);
+  transform: translateY(-1px);
 }
