@@ -230,29 +230,32 @@ export function AppDetail() {
           </section>
 
           {/* MOD FEATURES */}
-          <section
-            style={{
-              background: "rgba(124,58,237,0.12)",
-              backdropFilter: "blur(20px)",
-              WebkitBackdropFilter: "blur(20px)",
-              border: "1px solid rgba(124,58,237,0.25)",
-              borderRadius: "16px",
-              overflow: "hidden",
-            }}
-          >
-            <div
-              className="px-6 py-4 flex items-center gap-3"
-              style={{ borderBottom: "1px solid rgba(124,58,237,0.2)" }}
-            >
-              <Zap className="h-5 w-5" style={{ color: "#c4b5fd" }} />
-              <h2 className="text-base font-black uppercase tracking-widest" style={{ color: "#c4b5fd" }}>
-                Mod Features
-              </h2>
-            </div>
-            <div className="p-6 font-mono text-sm leading-relaxed whitespace-pre-wrap" style={{ color: "rgba(255,255,255,0.75)" }}>
-              {app.mod_features_full || "NO MOD FEATURES SPECIFIED."}
-            </div>
-          </section>
+<section
+  style={{
+    background: "rgba(255,255,255,0.05)",
+    backdropFilter: "blur(20px)",
+    WebkitBackdropFilter: "blur(20px)",
+    border: "1px solid rgba(255,255,255,0.09)",
+    borderRadius: "16px",
+    overflow: "hidden",
+  }}
+>
+  <div
+    className="px-6 py-4 flex items-center gap-3"
+    style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}
+  >
+    <Zap className="h-5 w-5" style={{ color: "rgba(255,255,255,0.5)" }} />
+    <h2 className="text-base font-black uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.8)" }}>
+      Mod Features
+    </h2>
+  </div>
+  <div
+    className="p-6 font-mono text-sm leading-relaxed whitespace-pre-wrap"
+    style={{ color: "rgba(255,255,255,0.75)" }}
+  >
+    {app.mod_features_full || "NO MOD FEATURES SPECIFIED."}
+  </div>
+</section>
 
           {/* DESCRIPTION */}
           <section
