@@ -1,7 +1,7 @@
 import { useRoute, Link } from "wouter";
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { CalendarClock, ChevronLeft, Download, HardDrive, Info, Package, Server, Tags, Zap } from "lucide-react";
+import { CalendarClock, ChevronLeft, Download, HardDrive, Info, Package, Server, Tags, User, Zap } from "lucide-react";
 
 export function AppDetail() {
   const [, params] = useRoute("/app/:id");
@@ -173,27 +173,8 @@ export function AppDetail() {
 
         {/* LEFT */}
         <div className="md:col-span-2 space-y-6">
-          <section
-            style={{
-              background: "rgba(124,58,237,0.12)",
-              backdropFilter: "blur(20px)",
-              WebkitBackdropFilter: "blur(20px)",
-              border: "1px solid rgba(124,58,237,0.25)",
-              borderRadius: "16px",
-              overflow: "hidden",
-            }}
-          >
-            <div className="px-6 py-4 flex items-center gap-3" style={{ borderBottom: "1px solid rgba(124,58,237,0.2)" }}>
-              <Zap className="h-5 w-5" style={{ color: "#c4b5fd" }} />
-              <h2 className="text-base font-black uppercase tracking-widest" style={{ color: "#c4b5fd" }}>
-                Mod Features
-              </h2>
-            </div>
-            <div className="p-6 font-mono text-sm leading-relaxed whitespace-pre-wrap" style={{ color: "rgba(255,255,255,0.75)" }}>
-              {app.mod_features_full || "NO MOD FEATURES SPECIFIED."}
-            </div>
-          </section>
 
+          {/* DEVELOPER BOX */}
           <section
             style={{
               background: "rgba(255,255,255,0.05)",
@@ -204,7 +185,90 @@ export function AppDetail() {
               overflow: "hidden",
             }}
           >
-            <div className="px-6 py-4 flex items-center gap-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+            <div
+              className="px-6 py-4 flex items-center gap-3"
+              style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}
+            >
+              <User className="h-5 w-5" style={{ color: "rgba(255,255,255,0.5)" }} />
+              <h2 className="text-base font-black uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.8)" }}>
+                Developer
+              </h2>
+            </div>
+            <div className="p-6 flex items-center gap-4">
+              <div
+                className="w-12 h-12 flex items-center justify-center shrink-0"
+                style={{
+                  background: "rgba(124,58,237,0.2)",
+                  border: "1px solid rgba(124,58,237,0.3)",
+                  borderRadius: "12px",
+                }}
+              >
+                <User className="h-6 w-6" style={{ color: "#c4b5fd" }} />
+              </div>
+              <div>
+                <p className="font-black text-sm uppercase tracking-wide text-white">
+                  {app.developer || "UNKNOWN DEVELOPER"}
+                </p>
+                {app.developer_url && (
+                  <a
+                    href={app.developer_url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-xs font-bold transition-all hover:opacity-80"
+                    style={{ color: "#a78bfa" }}
+                  >
+                    {app.developer_url}
+                  </a>
+                )}
+                {!app.developer_url && (
+                  <p className="text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>
+                    No developer info available
+                  </p>
+                )}
+              </div>
+            </div>
+          </section>
+
+          {/* MOD FEATURES */}
+          <section
+            style={{
+              background: "rgba(124,58,237,0.12)",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              border: "1px solid rgba(124,58,237,0.25)",
+              borderRadius: "16px",
+              overflow: "hidden",
+            }}
+          >
+            <div
+              className="px-6 py-4 flex items-center gap-3"
+              style={{ borderBottom: "1px solid rgba(124,58,237,0.2)" }}
+            >
+              <Zap className="h-5 w-5" style={{ color: "#c4b5fd" }} />
+              <h2 className="text-base font-black uppercase tracking-widest" style={{ color: "#c4b5fd" }}>
+                Mod Features
+              </h2>
+            </div>
+            <div className="p-6 font-mono text-sm leading-relaxed whitespace-pre-wrap" style={{ color: "rgba(255,255,255,0.75)" }}>
+              {app.mod_features_full || "NO MOD FEATURES SPECIFIED."}
+            </div>
+          </section>
+
+          {/* DESCRIPTION */}
+          <section
+            style={{
+              background: "rgba(255,255,255,0.05)",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              border: "1px solid rgba(255,255,255,0.09)",
+              borderRadius: "16px",
+              overflow: "hidden",
+            }}
+          >
+            <div
+              className="px-6 py-4 flex items-center gap-3"
+              style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}
+            >
               <Info className="h-5 w-5" style={{ color: "rgba(255,255,255,0.5)" }} />
               <h2 className="text-base font-black uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.8)" }}>
                 Description
@@ -218,6 +282,8 @@ export function AppDetail() {
 
         {/* RIGHT */}
         <div className="space-y-6">
+
+          {/* TECH SPECS */}
           <section
             style={{
               background: "rgba(255,255,255,0.05)",
@@ -228,7 +294,10 @@ export function AppDetail() {
               overflow: "hidden",
             }}
           >
-            <div className="px-5 py-4 flex items-center gap-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+            <div
+              className="px-5 py-4 flex items-center gap-2"
+              style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}
+            >
               <Server className="h-4 w-4" style={{ color: "rgba(255,255,255,0.5)" }} />
               <h2 className="text-sm font-black uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.8)" }}>
                 Tech Specs
@@ -276,7 +345,10 @@ export function AppDetail() {
               overflow: "hidden",
             }}
           >
-            <div className="px-5 py-4 flex items-center gap-2" style={{ borderBottom: "1px solid rgba(124,58,237,0.2)" }}>
+            <div
+              className="px-5 py-4 flex items-center gap-2"
+              style={{ borderBottom: "1px solid rgba(124,58,237,0.2)" }}
+            >
               <Download className="h-4 w-4" style={{ color: "#c4b5fd" }} />
               <h2 className="text-sm font-black uppercase tracking-widest" style={{ color: "#c4b5fd" }}>
                 Link Download
@@ -312,8 +384,9 @@ export function AppDetail() {
               )}
             </div>
           </section>
+
         </div>
       </div>
     </div>
   );
-              }
+                    }
