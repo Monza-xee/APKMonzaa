@@ -26,7 +26,7 @@ export function Home() {
       let query = supabase
         .from("ListAPKGAMES")
         .select("*")
-        .order("id", { ascending: true })
+        .order("id", { ascending: false })
       if (typeFilter) query = query.eq("type", typeFilter);
       const { data, error } = await query;
       if (!error) setApps(data || []);
