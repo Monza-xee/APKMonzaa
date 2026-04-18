@@ -13,12 +13,15 @@ export function Home() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    async function fetchAllApps() {
-      const { data, error } = await supabase.from("ListAPKGAMES").select("*");
-      if (!error) setAllApps(data || []);
-    }
-    fetchAllApps();
-  }, []);
+  async function fetchAllApps() {
+    const { data, error } = await supabase
+      .from("ListAPKGAMES")
+      .select("*")
+      .order("id", { ascending: false });
+    if (!error) setAllApps(data || []);
+  }
+  fetchAllApps();
+}, []);
 
   useEffect(() => {
     async function fetchApps() {
