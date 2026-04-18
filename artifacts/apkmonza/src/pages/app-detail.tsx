@@ -1,10 +1,7 @@
 import { useRoute, Link } from "wouter";
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
 import { CalendarClock, ChevronLeft, Download, HardDrive, Info, Package, Server, Tags, Zap } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
 
 export function AppDetail() {
   const [, params] = useRoute("/app/:id");
@@ -29,161 +26,320 @@ export function AppDetail() {
 
   if (isLoading) {
     return (
-      <div className="space-y-8">
-        <Skeleton className="h-8 w-64 border-4 border-black rounded-none" />
-        <Skeleton className="h-64 w-full border-4 border-black rounded-none" />
+      <div className="space-y-6 max-w-5xl mx-auto">
+        {[1, 2, 3].map((i) => (
+          <div
+            key={i}
+            className="animate-pulse"
+            style={{
+              height: i === 1 ? "32px" : i === 2 ? "260px" : "180px",
+              background: "rgba(255,255,255,0.07)",
+              borderRadius: "16px",
+              width: i === 1 ? "200px" : "100%",
+            }}
+          />
+        ))}
       </div>
     );
   }
 
   if (!app) {
     return (
-      <div className="bg-card border-4 border-black p-12 text-center brutal-shadow">
-        <h2 className="text-3xl font-black mb-4 uppercase">App Not Found</h2>
+      <div
+        className="p-12 text-center max-w-md mx-auto mt-12"
+        style={{
+          background: "rgba(255,255,255,0.06)",
+          backdropFilter: "blur(20px)",
+          WebkitBackdropFilter: "blur(20px)",
+          border: "1px solid rgba(255,255,255,0.1)",
+          borderRadius: "20px",
+        }}
+      >
+        <h2 className="text-2xl font-black mb-6 uppercase text-white">App Not Found</h2>
         <Link href="/">
-          <Button className="rounded-none border-2 border-black font-black uppercase brutal-shadow-sm">
+          <span
+            className="inline-block font-black text-xs uppercase px-6 py-3 text-white cursor-pointer transition-all hover:scale-105"
+            style={{
+              background: "linear-gradient(135deg, #7c3aed, #6366f1)",
+              borderRadius: "12px",
+              boxShadow: "0 4px 15px rgba(124,58,237,0.4)",
+            }}
+          >
             Return to Catalog
-          </Button>
+          </span>
         </Link>
       </div>
     );
   }
 
   return (
-    <div className="space-y-8 max-w-5xl mx-auto">
-      {/* Breadcrumb */}
-      <div className="flex items-center gap-2 font-mono text-sm font-bold uppercase">
-        <Link href="/" className="hover:text-primary transition-colors flex items-center">
-          <ChevronLeft className="h-4 w-4 mr-1" /> Catalog
+    <div className="space-y-6 max-w-5xl mx-auto">
+
+      {/* BREADCRUMB */}
+      <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest">
+        <Link href="/">
+          <span
+            className="flex items-center gap-1 cursor-pointer transition-all hover:opacity-80"
+            style={{ color: "#a78bfa" }}
+          >
+            <ChevronLeft className="h-3.5 w-3.5" /> Catalog
+          </span>
         </Link>
-        <span className="text-muted-foreground">/</span>
-        <span className="text-muted-foreground">{app.category}</span>
-        <span className="text-muted-foreground">/</span>
-        <span className="text-foreground">{app.name}</span>
+        <span style={{ color: "rgba(255,255,255,0.2)" }}>/</span>
+        <span style={{ color: "rgba(255,255,255,0.4)" }}>{app.category}</span>
+        <span style={{ color: "rgba(255,255,255,0.2)" }}>/</span>
+        <span style={{ color: "rgba(255,255,255,0.8)" }}>{app.name}</span>
       </div>
 
-      {/* Hero Card */}
-      <div className="bg-card border-4 border-black brutal-shadow overflow-hidden relative">
-        <div className="absolute top-0 left-0 w-full h-32 bg-primary border-b-4 border-black z-0"></div>
+      {/* HERO CARD */}
+      <div
+        className="overflow-hidden relative"
+        style={{
+          background: "rgba(255,255,255,0.06)",
+          backdropFilter: "blur(24px)",
+          WebkitBackdropFilter: "blur(24px)",
+          border: "1px solid rgba(255,255,255,0.1)",
+          borderRadius: "20px",
+          boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
+        }}
+      >
+        {/* Top gradient banner */}
+        <div
+          className="absolute top-0 left-0 w-full h-28"
+          style={{
+            background: "linear-gradient(135deg, rgba(124,58,237,0.5), rgba(99,102,241,0.3))",
+            borderBottom: "1px solid rgba(255,255,255,0.08)",
+          }}
+        />
 
-        <div className="relative z-10 pt-16 px-6 pb-6 md:px-12 md:pb-12 flex flex-col md:flex-row gap-8 items-start">
+        <div className="relative z-10 pt-14 px-6 pb-6 md:px-10 md:pb-10 flex flex-col md:flex-row gap-6 items-start">
+          {/* Icon */}
           <div
-            className="w-32 h-32 md:w-48 md:h-48 shrink-0 border-4 border-black flex items-center justify-center font-black text-5xl md:text-7xl shadow-[4px_4px_0px_0px_#000] overflow-hidden"
-            style={{ backgroundColor: app.icon_color || "hsl(var(--primary))", color: "#000" }}
+            className="w-28 h-28 md:w-40 md:h-40 shrink-0 flex items-center justify-center font-black text-4xl md:text-6xl overflow-hidden"
+            style={{
+              backgroundColor: app.icon_color || "#7c3aed",
+              borderRadius: "20px",
+              border: "1px solid rgba(255,255,255,0.15)",
+              boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
+            }}
           >
             {app.icon_url ? (
               <img src={app.icon_url} alt={app.name} className="w-full h-full object-cover" />
             ) : (
-              app.icon_initials || "AP"
+              <span className="text-white">{app.icon_initials || "AP"}</span>
             )}
           </div>
 
-          <div className="flex-1 mt-4 md:mt-20">
-            <h1 className="text-4xl md:text-6xl font-black uppercase leading-none mb-4">{app.name}</h1>
-
-            <div className="flex flex-wrap gap-3 mb-6">
-              <Badge className="rounded-none px-3 py-1 text-sm border-2 border-black bg-secondary text-secondary-foreground font-bold uppercase shadow-[2px_2px_0px_0px_#000]">
-                {app.status}
-              </Badge>
-              <Badge className="rounded-none px-3 py-1 text-sm border-2 border-black bg-primary text-primary-foreground font-bold uppercase shadow-[2px_2px_0px_0px_#000]">
-                {app.type}
-              </Badge>
-              <Badge variant="outline" className="rounded-none px-3 py-1 text-sm border-2 border-black font-bold uppercase bg-background shadow-[2px_2px_0px_0px_#000]">
-                {app.category}
-              </Badge>
+          {/* Info */}
+          <div className="flex-1 mt-2 md:mt-16">
+            <h1
+              className="text-3xl md:text-5xl font-black uppercase leading-none mb-4"
+              style={{ color: "rgba(255,255,255,0.95)" }}
+            >
+              {app.name}
+            </h1>
+            <div className="flex flex-wrap gap-2">
+              {[
+                { text: app.status, bg: "rgba(99,102,241,0.3)", color: "#a5b4fc", border: "rgba(99,102,241,0.4)" },
+                { text: app.type, bg: "rgba(124,58,237,0.3)", color: "#c4b5fd", border: "rgba(124,58,237,0.4)" },
+                { text: app.category, bg: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.6)", border: "rgba(255,255,255,0.12)" },
+              ].map((badge, i) => (
+                <span
+                  key={i}
+                  className="text-xs font-black uppercase px-3 py-1"
+                  style={{
+                    background: badge.bg,
+                    color: badge.color,
+                    border: `1px solid ${badge.border}`,
+                    borderRadius: "999px",
+                  }}
+                >
+                  {badge.text}
+                </span>
+              ))}
             </div>
           </div>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-        {/* Left Column */}
-        <div className="md:col-span-2 space-y-8">
+      {/* BODY GRID */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+        {/* LEFT COLUMN */}
+        <div className="md:col-span-2 space-y-6">
+
           {/* Mod Features */}
-          <section className="bg-[#f4e8ff] border-4 border-black p-6 md:p-8 brutal-shadow">
-            <h2 className="text-2xl font-black uppercase mb-6 flex items-center gap-3 text-black">
-              <Zap className="h-6 w-6" /> Mod Features
-            </h2>
-            <div className="font-mono text-base md:text-lg whitespace-pre-wrap leading-relaxed">
+          <section
+            style={{
+              background: "rgba(124,58,237,0.12)",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              border: "1px solid rgba(124,58,237,0.25)",
+              borderRadius: "16px",
+              overflow: "hidden",
+            }}
+          >
+            <div
+              className="px-6 py-4 flex items-center gap-3"
+              style={{ borderBottom: "1px solid rgba(124,58,237,0.2)" }}
+            >
+              <Zap className="h-5 w-5" style={{ color: "#c4b5fd" }} />
+              <h2 className="text-base font-black uppercase tracking-widest" style={{ color: "#c4b5fd" }}>
+                Mod Features
+              </h2>
+            </div>
+            <div
+              className="p-6 font-mono text-sm leading-relaxed whitespace-pre-wrap"
+              style={{ color: "rgba(255,255,255,0.75)" }}
+            >
               {app.mod_features_full || "NO MOD FEATURES SPECIFIED."}
             </div>
           </section>
 
           {/* Description */}
-          <section className="bg-card border-4 border-black p-6 md:p-8 brutal-shadow">
-            <h2 className="text-2xl font-black uppercase mb-6 flex items-center gap-3">
-              <Info className="h-6 w-6" /> Description
-            </h2>
-            <div className="text-muted-foreground whitespace-pre-wrap leading-relaxed text-lg">
+          <section
+            style={{
+              background: "rgba(255,255,255,0.05)",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              border: "1px solid rgba(255,255,255,0.09)",
+              borderRadius: "16px",
+              overflow: "hidden",
+            }}
+          >
+            <div
+              className="px-6 py-4 flex items-center gap-3"
+              style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}
+            >
+              <Info className="h-5 w-5" style={{ color: "rgba(255,255,255,0.5)" }} />
+              <h2 className="text-base font-black uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.8)" }}>
+                Description
+              </h2>
+            </div>
+            <div
+              className="p-6 text-sm leading-relaxed whitespace-pre-wrap"
+              style={{ color: "rgba(255,255,255,0.5)" }}
+            >
               {app.description || "NO DESCRIPTION AVAILABLE."}
             </div>
           </section>
         </div>
 
-        {/* Right Column */}
-        <div className="space-y-8">
-          <section className="bg-card border-4 border-black brutal-shadow">
-            <div className="border-b-4 border-black p-4 bg-muted">
-              <h2 className="text-xl font-black uppercase flex items-center gap-2">
-                <Server className="h-5 w-5" /> Tech Specs
+        {/* RIGHT COLUMN */}
+        <div className="space-y-6">
+
+          {/* Tech Specs */}
+          <section
+            style={{
+              background: "rgba(255,255,255,0.05)",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              border: "1px solid rgba(255,255,255,0.09)",
+              borderRadius: "16px",
+              overflow: "hidden",
+            }}
+          >
+            <div
+              className="px-5 py-4 flex items-center gap-2"
+              style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}
+            >
+              <Server className="h-4 w-4" style={{ color: "rgba(255,255,255,0.5)" }} />
+              <h2 className="text-sm font-black uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.8)" }}>
+                Tech Specs
               </h2>
             </div>
-            <div className="p-0">
-              <dl className="font-mono text-sm">
-                <div className="border-b-2 border-black p-4 flex justify-between gap-4">
-                  <dt className="font-bold uppercase text-muted-foreground flex items-center gap-1">
-                    <Tags className="h-4 w-4" /> Version
+            <dl className="font-mono text-xs">
+              {[
+                { icon: <Tags className="h-3.5 w-3.5" />, label: "Version", value: app.version },
+                { icon: <HardDrive className="h-3.5 w-3.5" />, label: "Size", value: app.size },
+                { icon: <Package className="h-3.5 w-3.5" />, label: "Package", value: app.package_name },
+                {
+                  icon: <CalendarClock className="h-3.5 w-3.5" />,
+                  label: "Updated",
+                  value: app.uploaded_at
+                    ? new Date(app.uploaded_at).toLocaleDateString("id-ID", {
+                        day: "numeric", month: "short", year: "numeric",
+                      })
+                    : "-",
+                },
+              ].map((row, i, arr) => (
+                <div
+                  key={i}
+                  className="px-5 py-3.5 flex justify-between items-center gap-4"
+                  style={{
+                    borderBottom: i < arr.length - 1 ? "1px solid rgba(255,255,255,0.06)" : "none",
+                  }}
+                >
+                  <dt
+                    className="font-black uppercase flex items-center gap-1.5"
+                    style={{ color: "rgba(255,255,255,0.35)" }}
+                  >
+                    {row.icon} {row.label}
                   </dt>
-                  <dd className="text-right">{app.version}</dd>
-                </div>
-                <div className="border-b-2 border-black p-4 flex justify-between gap-4">
-                  <dt className="font-bold uppercase text-muted-foreground flex items-center gap-1">
-                    <HardDrive className="h-4 w-4" /> Size
-                  </dt>
-                  <dd className="text-right">{app.size}</dd>
-                </div>
-                <div className="border-b-2 border-black p-4 flex justify-between gap-4">
-                  <dt className="font-bold uppercase text-muted-foreground flex items-center gap-1">
-                    <Package className="h-4 w-4" /> Package
-                  </dt>
-                  <dd className="text-right break-all">{app.package_name}</dd>
-                </div>
-                <div className="p-4 flex justify-between gap-4">
-                  <dt className="font-bold uppercase text-muted-foreground flex items-center gap-1">
-                    <CalendarClock className="h-4 w-4" /> Updated
-                  </dt>
-                  <dd className="text-right">
-                    {app.uploaded_at
-                      ? new Date(app.uploaded_at).toLocaleDateString("id-ID", {
-                          day: "numeric",
-                          month: "short",
-                          year: "numeric",
-                        })
-                      : "-"}
+                  <dd
+                    className="text-right break-all font-bold"
+                    style={{ color: "rgba(255,255,255,0.75)" }}
+                  >
+                    {row.value}
                   </dd>
                 </div>
-              </dl>
+              ))}
+            </dl>
+          </section>
+
+          {/* Download */}
+          <section
+            style={{
+              background: "rgba(124,58,237,0.15)",
+              backdropFilter: "blur(20px)",
+              WebkitBackdropFilter: "blur(20px)",
+              border: "1px solid rgba(124,58,237,0.3)",
+              borderRadius: "16px",
+              overflow: "hidden",
+            }}
+          >
+            <div
+              className="px-5 py-4 flex items-center gap-2"
+              style={{ borderBottom: "1px solid rgba(124,58,237,0.2)" }}
+            >
+              <Download className="h-4 w-4" style={{ color: "#c4b5fd" }} />
+              <h2 className="text-sm font-black uppercase tracking-widest" style={{ color: "#c4b5fd" }}>
+                Link Download
+              </h2>
+            </div>
+            <div className="p-5">
+              {app.download_url ? (
+                <a href={app.download_url} target="_blank" rel="noopener noreferrer">
+                  <button
+                    className="w-full font-black text-sm uppercase text-white py-4 transition-all duration-200 hover:scale-[1.02] hover:shadow-2xl"
+                    style={{
+                      background: "linear-gradient(135deg, #7c3aed, #6366f1)",
+                      borderRadius: "12px",
+                      boxShadow: "0 4px 20px rgba(124,58,237,0.5)",
+                    }}
+                  >
+                    Download APK ({app.size})
+                  </button>
+                </a>
+              ) : (
+                <button
+                  disabled
+                  className="w-full font-black text-sm uppercase py-4 cursor-not-allowed"
+                  style={{
+                    background: "rgba(255,255,255,0.06)",
+                    color: "rgba(255,255,255,0.25)",
+                    borderRadius: "12px",
+                    border: "1px solid rgba(255,255,255,0.08)",
+                  }}
+                >
+                  No Download Link
+                </button>
+              )}
             </div>
           </section>
 
-          <section className="bg-primary border-4 border-black p-5 brutal-shadow">
-            <h2 className="text-xl font-black uppercase mb-4 flex items-center gap-2">
-              <Download className="h-5 w-5" /> Link Download
-            </h2>
-            {app.download_url ? (
-              <a href={app.download_url} target="_blank" rel="noopener noreferrer">
-                <Button size="lg" className="w-full rounded-none border-4 border-black font-black text-base uppercase bg-accent hover:bg-accent/90 text-accent-foreground brutal-shadow brutal-shadow-hover h-14">
-                  Download APK ({app.size})
-                </Button>
-              </a>
-            ) : (
-              <Button size="lg" disabled className="w-full rounded-none border-4 border-black font-black text-base uppercase h-14">
-                No Download Link
-              </Button>
-            )}
-          </section>
         </div>
       </div>
     </div>
   );
-      }
+}
