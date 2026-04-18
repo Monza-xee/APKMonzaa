@@ -56,14 +56,14 @@ export function Home() {
 
       {/* SEARCH + FILTER */}
       <section
-        className="-mt-6 flex flex-col gap-4 p-4"
+        className="flex flex-col gap-4 p-4 mx-1"
         style={{
           background: "rgba(255,255,255,0.05)",
           backdropFilter: "blur(20px)",
           WebkitBackdropFilter: "blur(20px)",
           border: "1px solid rgba(255,255,255,0.08)",
-          borderTop: "none",
-          borderBottom: "1px solid rgba(255,255,255,0.06)",
+          borderRadius: "20px",
+          marginTop: "8px",
         }}
       >
         {/* Search */}
@@ -358,13 +358,9 @@ export function Home() {
                         },
                         {
                           text: app.status || "OFFLINE",
-                          bg: app.status === "ONLINE"
-                            ? "rgba(34,197,94,0.2)"
-                            : "rgba(239,68,68,0.2)",
+                          bg: app.status === "ONLINE" ? "rgba(34,197,94,0.2)" : "rgba(239,68,68,0.2)",
                           color: app.status === "ONLINE" ? "#86efac" : "#fca5a5",
-                          border: app.status === "ONLINE"
-                            ? "rgba(34,197,94,0.35)"
-                            : "rgba(239,68,68,0.35)",
+                          border: app.status === "ONLINE" ? "rgba(34,197,94,0.35)" : "rgba(239,68,68,0.35)",
                         },
                         {
                           text: app.uploaded_at
@@ -402,4 +398,4 @@ export function Home() {
       </section>
     </div>
   );
-                  }
+                      }
