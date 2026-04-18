@@ -1,12 +1,6 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { Input } from "@/components/ui/input";
 import { Plus, Trash2, ShieldAlert, AlertTriangle, X, Edit, Search, Star } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import {
   AlertDialog,
@@ -48,13 +42,29 @@ const emptyForm = {
   description: "",
   mod_features: "",
   mod_features_full: "",
-  icon_color: "#facc15",
+  icon_color: "#7c3aed",
   icon_initials: "",
   icon_url: "",
   package_name: "",
   download_url: "",
   is_recommended: false,
 };
+
+const glass = {
+  background: "rgba(255,255,255,0.06)",
+  backdropFilter: "blur(20px)",
+  WebkitBackdropFilter: "blur(20px)",
+  border: "1px solid rgba(255,255,255,0.1)",
+  borderRadius: "16px",
+} as React.CSSProperties;
+
+const glassStrong = {
+  background: "rgba(255,255,255,0.08)",
+  backdropFilter: "blur(24px)",
+  WebkitBackdropFilter: "blur(24px)",
+  border: "1px solid rgba(255,255,255,0.12)",
+  borderRadius: "16px",
+} as React.CSSProperties;
 
 export function Admin() {
   const { toast } = useToast();
@@ -88,9 +98,7 @@ export function Admin() {
     setIsLoading(false);
   }
 
-  useEffect(() => {
-    fetchApps();
-  }, []);
+  useEffect(() => { fetchApps(); }, []);
 
   function openCreate() {
     setEditingApp(null);
@@ -110,7 +118,7 @@ export function Admin() {
       description: app.description || "",
       mod_features: app.mod_features || "",
       mod_features_full: app.mod_features_full || "",
-      icon_color: app.icon_color || "#facc15",
+      icon_color: app.icon_color || "#7c3aed",
       icon_initials: app.icon_initials || "",
       icon_url: app.icon_url || "",
       package_name: app.package_name || "",
@@ -124,9 +132,9 @@ export function Admin() {
     setIsSubmitting(true);
     if (editingApp) {
       const { error } = await supabase
-  .from("ListAPKGAMES")
-  .update({ ...form, uploaded_at: new Date().toISOString() })
-  .eq("id", editingApp.id);
+        .from("ListAPKGAMES")
+        .update({ ...form, uploaded_at: new Date().toISOString() })
+        .eq("id", editingApp.id);
       if (error) {
         toast({ title: "Error", description: error.message, variant: "destructive" });
       } else {
@@ -168,10 +176,7 @@ export function Admin() {
 
   async function toggleRecommended(app: App) {
     const newVal = !app.is_recommended;
-    const { error } = await supabase
-      .from("ListAPKGAMES")
-      .update({ is_recommended: newVal })
-      .eq("id", app.id);
+    const { error } = await supabase.from("ListAPKGAMES").update({ is_recommended: newVal }).eq("id", app.id);
     if (error) {
       toast({ title: "Error", description: error.message, variant: "destructive" });
     } else {
@@ -183,205 +188,347 @@ export function Admin() {
     }
   }
 
+  const inputStyle: React.CSSProperties = {
+    background: "rgba(255,255,255,0.07)",
+    border: "1px solid rgba(255,255,255,0.12)",
+    borderRadius: "10px",
+    color: "white",
+    fontFamily: "inherit",
+    fontSize: "13px",
+    fontWeight: "700",
+    padding: "8px 12px",
+    width: "100%",
+    outline: "none",
+  };
+
+  const labelStyle: React.CSSProperties = {
+    color: "rgba(255,255,255,0.5)",
+    fontSize: "10px",
+    fontWeight: "900",
+    textTransform: "uppercase",
+    letterSpacing: "0.1em",
+    display: "block",
+    marginBottom: "4px",
+  };
+
   return (
-    <div className="space-y-8">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-card border-4 border-black p-6 brutal-shadow">
+    <div className="space-y-6">
+
+      {/* HEADER */}
+      <div
+        className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 p-5"
+        style={glassStrong}
+      >
         <div className="flex items-center gap-3">
-          <ShieldAlert className="h-8 w-8 text-primary" />
-          <h1 className="text-3xl font-black uppercase m-0 leading-none">Admin Panel</h1>
+          <div
+            className="w-10 h-10 flex items-center justify-center"
+            style={{
+              background: "linear-gradient(135deg, #7c3aed, #6366f1)",
+              borderRadius: "12px",
+              boxShadow: "0 4px 12px rgba(124,58,237,0.5)",
+            }}
+          >
+            <ShieldAlert className="h-5 w-5 text-white" />
+          </div>
+          <h1 className="text-2xl font-black uppercase leading-none text-white">Admin Panel</h1>
         </div>
-        <Button
+        <button
           onClick={openCreate}
-          className="rounded-none border-4 border-black font-black uppercase text-lg h-12 px-6 brutal-shadow-sm brutal-shadow-hover"
+          className="flex items-center gap-2 px-5 py-2.5 font-black text-sm uppercase text-white transition-all hover:scale-105"
+          style={{
+            background: "linear-gradient(135deg, #7c3aed, #6366f1)",
+            borderRadius: "12px",
+            boxShadow: "0 4px 15px rgba(124,58,237,0.45)",
+          }}
         >
-          <Plus className="mr-2 h-5 w-5" /> Add New Mod
-        </Button>
+          <Plus className="h-4 w-4" /> Add New Mod
+        </button>
       </div>
-
-      {/* Stats */}
+      {/* STATS */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
-        <StatCard title="Total Mods" value={stats.total} loading={isLoading} className="bg-secondary text-secondary-foreground" />
-        <StatCard title="Games" value={stats.games} loading={isLoading} className="bg-card" />
-        <StatCard title="Apps" value={stats.apps} loading={isLoading} className="bg-card" />
-        <StatCard title="Kategori" value={stats.categories} loading={isLoading} className="bg-primary text-primary-foreground" />
+        {[
+          { title: "Total Mods", value: stats.total, accent: "#7c3aed", glow: "rgba(124,58,237,0.2)" },
+          { title: "Games", value: stats.games, accent: "#6366f1", glow: "rgba(99,102,241,0.15)" },
+          { title: "Apps", value: stats.apps, accent: "#8b5cf6", glow: "rgba(139,92,246,0.15)" },
+          { title: "Kategori", value: stats.categories, accent: "#a78bfa", glow: "rgba(167,139,250,0.15)" },
+        ].map((stat) => (
+          <div
+            key={stat.title}
+            className="p-5 overflow-hidden relative"
+            style={{
+              ...glass,
+              boxShadow: `0 4px 20px ${stat.glow}`,
+            }}
+          >
+            <div
+              className="absolute top-0 right-0 w-16 h-16 opacity-10 rounded-full"
+              style={{ background: stat.accent, filter: "blur(20px)", transform: "translate(20%, -20%)" }}
+            />
+            <p style={{ color: "rgba(255,255,255,0.4)", fontSize: "10px", fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.1em" }}>
+              {stat.title}
+            </p>
+            {isLoading ? (
+              <div className="h-9 w-14 mt-1 animate-pulse rounded-lg" style={{ background: "rgba(255,255,255,0.1)" }} />
+            ) : (
+              <p className="text-4xl font-black mt-1" style={{ color: stat.accent }}>{stat.value}</p>
+            )}
+          </div>
+        ))}
       </div>
+      {/* TABLE */}
+      <div style={{ ...glass, overflow: "hidden" }}>
 
-      {/* Table */}
-      <div className="bg-card border-4 border-black brutal-shadow overflow-hidden">
-
-        {/* Search + Filter Status */}
-        <div className="p-4 border-b-4 border-black space-y-3">
+        {/* Search + Filter */}
+        <div className="p-4 space-y-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
           <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <Input
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4" style={{ color: "rgba(255,255,255,0.3)" }} />
+            <input
               value={tableSearch}
               onChange={(e) => setTableSearch(e.target.value)}
               placeholder="CARI MOD BERDASARKAN NAMA..."
-              className="pl-10 border-2 border-black rounded-none font-mono uppercase"
+              style={{ ...inputStyle, paddingLeft: "36px" }}
             />
           </div>
-          <div className="flex gap-2">
-            <button
-              onClick={() => setStatusFilter("")}
-              className={`px-3 py-1 border-2 border-black font-black text-xs uppercase rounded-none transition-colors ${
-                statusFilter === "" ? "bg-black text-white" : "bg-white text-black hover:bg-gray-100"
-              }`}
-            >
-              SEMUA
-            </button>
-            <button
-              onClick={() => setStatusFilter(statusFilter === "ONLINE" ? "" : "ONLINE")}
-              className={`px-3 py-1 border-2 border-black font-black text-xs uppercase rounded-none transition-colors ${
-                statusFilter === "ONLINE" ? "bg-green-500 text-white border-green-600" : "bg-white text-black hover:bg-gray-100"
-              }`}
-            >
-              ONLINE
-            </button>
-            <button
-              onClick={() => setStatusFilter(statusFilter === "OFFLINE" ? "" : "OFFLINE")}
-              className={`px-3 py-1 border-2 border-black font-black text-xs uppercase rounded-none transition-colors ${
-                statusFilter === "OFFLINE" ? "bg-red-500 text-white border-red-600" : "bg-white text-black hover:bg-gray-100"
-              }`}
-            >
-              OFFLINE
-            </button>
+          <div className="flex gap-2 items-center">
+            {[
+              { label: "SEMUA", value: "" },
+              { label: "ONLINE", value: "ONLINE" },
+              { label: "OFFLINE", value: "OFFLINE" },
+            ].map(({ label, value }) => (
+              <button
+                key={value}
+                onClick={() => setStatusFilter(value === statusFilter && value !== "" ? "" : value)}
+                className="px-3 py-1 text-xs font-black uppercase transition-all"
+                style={
+                  statusFilter === value
+                    ? {
+                        background: value === "ONLINE"
+                          ? "rgba(34,197,94,0.25)"
+                          : value === "OFFLINE"
+                          ? "rgba(239,68,68,0.25)"
+                          : "rgba(124,58,237,0.3)",
+                        color: value === "ONLINE" ? "#86efac" : value === "OFFLINE" ? "#fca5a5" : "#c4b5fd",
+                        border: `1px solid ${value === "ONLINE" ? "rgba(34,197,94,0.4)" : value === "OFFLINE" ? "rgba(239,68,68,0.4)" : "rgba(124,58,237,0.4)"}`,
+                        borderRadius: "999px",
+                      }
+                    : {
+                        background: "rgba(255,255,255,0.06)",
+                        color: "rgba(255,255,255,0.4)",
+                        border: "1px solid rgba(255,255,255,0.08)",
+                        borderRadius: "999px",
+                      }
+                }
+              >
+                {label}
+              </button>
+            ))}
             {(tableSearch || statusFilter) && (
-              <span className="ml-auto text-xs font-bold uppercase text-muted-foreground self-center">
+              <span className="ml-auto text-xs font-bold uppercase" style={{ color: "rgba(255,255,255,0.3)" }}>
                 {filteredTableApps.length} hasil
               </span>
             )}
           </div>
         </div>
 
+        {/* Table */}
         <div className="overflow-x-auto">
-          <Table>
-            <TableHeader className="bg-black border-b-4 border-black">
-              <TableRow className="hover:bg-black">
-                <TableHead className="font-black uppercase text-white py-4 w-12">ID</TableHead>
-                <TableHead className="font-black uppercase text-white py-4">App</TableHead>
-                <TableHead className="font-black uppercase text-white py-4">Version</TableHead>
-                <TableHead className="font-black uppercase text-white py-4">Type / Cat</TableHead>
-                <TableHead className="font-black uppercase text-white py-4">Status</TableHead>
-                <TableHead className="font-black uppercase text-white py-4 text-center">Rec</TableHead>
-                <TableHead className="font-black uppercase text-white py-4 text-right">Actions</TableHead>
-              </TableRow>
-            </TableHeader>
-            <TableBody>
+          <table className="w-full text-sm">
+            <thead>
+              <tr style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+                {["ID", "App", "Version", "Type / Cat", "Status", "Rec", "Actions"].map((h, i) => (
+                  <th
+                    key={h}
+                    className="py-3 px-4 text-left font-black uppercase text-xs tracking-widest"
+                    style={{
+                      color: "rgba(255,255,255,0.35)",
+                      textAlign: i >= 5 ? "center" : "left",
+                    }}
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
               {isLoading ? (
                 Array.from({ length: 4 }).map((_, i) => (
-                  <TableRow key={i}>
-                    <TableCell><Skeleton className="h-6 w-6" /></TableCell>
-                    <TableCell><Skeleton className="h-10 w-full" /></TableCell>
-                    <TableCell><Skeleton className="h-6 w-16" /></TableCell>
-                    <TableCell><Skeleton className="h-6 w-24" /></TableCell>
-                    <TableCell><Skeleton className="h-6 w-20" /></TableCell>
-                    <TableCell><Skeleton className="h-6 w-8 mx-auto" /></TableCell>
-                    <TableCell><Skeleton className="h-8 w-20 ml-auto" /></TableCell>
-                  </TableRow>
+                  <tr key={i} style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}>
+                    {Array.from({ length: 7 }).map((_, j) => (
+                      <td key={j} className="px-4 py-3">
+                        <div className="h-6 animate-pulse rounded-lg" style={{ background: "rgba(255,255,255,0.08)", width: j === 1 ? "140px" : "60px" }} />
+                      </td>
+                    ))}
+                  </tr>
                 ))
               ) : filteredTableApps.length === 0 ? (
-                <TableRow>
-                  <TableCell colSpan={7} className="text-center py-12 font-mono text-muted-foreground uppercase">
+                <tr>
+                  <td colSpan={7} className="text-center py-12 font-black uppercase text-xs tracking-widest" style={{ color: "rgba(255,255,255,0.2)" }}>
                     {tableSearch || statusFilter ? "Tidak ada mod yang sesuai filter." : "No apps found. Add your first mod."}
-                  </TableCell>
-                </TableRow>
+                  </td>
+                </tr>
               ) : (
                 filteredTableApps.map((app) => (
-                  <TableRow key={app.id} className="border-b-2 border-black hover:bg-muted/50 transition-colors">
-                    <TableCell className="font-black text-sm text-muted-foreground">#{app.id}</TableCell>
-                    <TableCell>
+                  <tr
+                    key={app.id}
+                    style={{ borderBottom: "1px solid rgba(255,255,255,0.04)" }}
+                    className="transition-colors hover:bg-white/[0.03]"
+                  >
+                    <td className="px-4 py-3 font-black text-xs" style={{ color: "rgba(255,255,255,0.25)" }}>
+                      #{app.id}
+                    </td>
+                    <td className="px-4 py-3">
                       <div className="flex items-center gap-3">
                         <div
-                          className="w-10 h-10 border-2 border-black flex items-center justify-center font-black text-sm shrink-0 overflow-hidden"
-                          style={{ backgroundColor: app.icon_color || "#facc15" }}
+                          className="w-9 h-9 shrink-0 flex items-center justify-center font-black text-xs overflow-hidden"
+                          style={{
+                            backgroundColor: app.icon_color || "#7c3aed",
+                            borderRadius: "10px",
+                            border: "1px solid rgba(255,255,255,0.12)",
+                          }}
                         >
                           {app.icon_url ? (
                             <img src={app.icon_url} alt={app.name} className="w-full h-full object-cover" />
                           ) : (
-                            app.icon_initials || "AP"
+                            <span className="text-white">{app.icon_initials || "AP"}</span>
                           )}
                         </div>
                         <div>
-                          <div className="font-black uppercase text-base">{app.name}</div>
-                          <div className="font-mono text-xs text-muted-foreground">{app.package_name}</div>
+                          <div className="font-black uppercase text-sm text-white">{app.name}</div>
+                          <div className="text-xs font-mono" style={{ color: "rgba(255,255,255,0.3)" }}>{app.package_name}</div>
                         </div>
                       </div>
-                    </TableCell>
-                    <TableCell className="font-mono text-sm">{app.version}</TableCell>
-                    <TableCell>
+                    </td>
+                    <td className="px-4 py-3 font-mono text-xs" style={{ color: "rgba(255,255,255,0.6)" }}>
+                      {app.version}
+                    </td>
+                    <td className="px-4 py-3">
                       <div className="flex flex-col gap-1 items-start">
-                        <Badge className="rounded-none border border-black bg-primary text-primary-foreground font-bold text-[10px] uppercase">
+                        <span
+                          className="text-[10px] font-black uppercase px-2 py-0.5"
+                          style={{
+                            background: "rgba(124,58,237,0.25)",
+                            color: "#c4b5fd",
+                            border: "1px solid rgba(124,58,237,0.3)",
+                            borderRadius: "999px",
+                          }}
+                        >
                           {app.type}
-                        </Badge>
-                        <span className="font-mono text-xs font-bold uppercase">{app.category}</span>
+                        </span>
+                        <span className="text-[10px] font-bold uppercase" style={{ color: "rgba(255,255,255,0.4)" }}>
+                          {app.category}
+                        </span>
                       </div>
-                    </TableCell>
-                    <TableCell>
-                      <Badge className={`rounded-none border border-black font-bold text-[10px] uppercase ${app.status === "ONLINE" ? "bg-secondary text-secondary-foreground" : "bg-accent text-accent-foreground"}`}>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span
+                        className="text-[10px] font-black uppercase px-2.5 py-0.5"
+                        style={{
+                          background: app.status === "ONLINE" ? "rgba(34,197,94,0.2)" : "rgba(239,68,68,0.2)",
+                          color: app.status === "ONLINE" ? "#86efac" : "#fca5a5",
+                          border: `1px solid ${app.status === "ONLINE" ? "rgba(34,197,94,0.35)" : "rgba(239,68,68,0.35)"}`,
+                          borderRadius: "999px",
+                        }}
+                      >
                         {app.status}
-                      </Badge>
-                    </TableCell>
-                    <TableCell className="text-center">
+                      </span>
+                    </td>
+                    <td className="px-4 py-3 text-center">
                       <button
                         onClick={() => toggleRecommended(app)}
-                        title={app.is_recommended ? "Hapus dari Recommended" : "Tambah ke Recommended"}
-                        className={`p-1 border-2 border-black rounded-none transition-colors ${
-                          app.is_recommended
-                            ? "bg-yellow-400 text-black hover:bg-yellow-300"
-                            : "bg-white text-gray-300 hover:bg-gray-100"
-                        }`}
+                        className="transition-all hover:scale-110"
+                        style={{
+                          background: app.is_recommended ? "rgba(234,179,8,0.2)" : "rgba(255,255,255,0.06)",
+                          border: `1px solid ${app.is_recommended ? "rgba(234,179,8,0.4)" : "rgba(255,255,255,0.1)"}`,
+                          borderRadius: "8px",
+                          padding: "4px 6px",
+                          color: app.is_recommended ? "#fde047" : "rgba(255,255,255,0.2)",
+                        }}
                       >
-                        <Star className="h-4 w-4" fill={app.is_recommended ? "currentColor" : "none"} />
+                        <Star className="h-3.5 w-3.5" fill={app.is_recommended ? "currentColor" : "none"} />
                       </button>
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <div className="flex justify-end gap-2">
-                        <Button
-                          variant="outline"
-                          size="icon"
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex justify-center gap-2">
+                        <button
                           onClick={() => openEdit(app)}
-                          className="rounded-none border-2 border-black h-8 w-8 hover:bg-primary hover:text-primary-foreground"
+                          className="transition-all hover:scale-110 p-1.5"
+                          style={{
+                            background: "rgba(99,102,241,0.2)",
+                            border: "1px solid rgba(99,102,241,0.3)",
+                            borderRadius: "8px",
+                            color: "#a5b4fc",
+                          }}
                         >
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button
-                          variant="destructive"
-                          size="icon"
+                          <Edit className="h-3.5 w-3.5" />
+                        </button>
+                        <button
                           onClick={() => setDeleteAppId(app.id)}
-                          className="rounded-none border-2 border-black h-8 w-8"
+                          className="transition-all hover:scale-110 p-1.5"
+                          style={{
+                            background: "rgba(239,68,68,0.2)",
+                            border: "1px solid rgba(239,68,68,0.3)",
+                            borderRadius: "8px",
+                            color: "#fca5a5",
+                          }}
                         >
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
+                          <Trash2 className="h-3.5 w-3.5" />
+                        </button>
                       </div>
-                    </TableCell>
-                  </TableRow>
+                    </td>
+                  </tr>
                 ))
               )}
-            </TableBody>
-          </Table>
+            </tbody>
+          </table>
         </div>
       </div>
 
-      {/* Form Modal */}
+      {/* FORM MODAL */}
       {isFormOpen && (
-        <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
-          <div className="bg-white border-4 border-black brutal-shadow w-full max-w-lg max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between p-4 border-b-4 border-black bg-primary text-primary-foreground">
-              <h2 className="font-black uppercase text-xl">
-                {editingApp ? `Edit #${editingApp.id} — ${editingApp.name}` : "Add New Mod"}
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center p-4"
+          style={{ background: "rgba(0,0,0,0.7)", backdropFilter: "blur(8px)" }}
+        >
+          <div
+            className="w-full max-w-lg max-h-[90vh] overflow-y-auto"
+            style={{
+              background: "rgba(20,15,50,0.95)",
+              backdropFilter: "blur(30px)",
+              WebkitBackdropFilter: "blur(30px)",
+              border: "1px solid rgba(255,255,255,0.12)",
+              borderRadius: "20px",
+              boxShadow: "0 24px 64px rgba(0,0,0,0.6)",
+            }}
+          >
+            {/* Modal Header */}
+            <div
+              className="flex items-center justify-between p-5"
+              style={{ borderBottom: "1px solid rgba(255,255,255,0.08)" }}
+            >
+              <h2 className="font-black uppercase text-base text-white tracking-widest">
+                {editingApp ? `Edit — ${editingApp.name}` : "Add New Mod"}
               </h2>
-              <button onClick={() => setIsFormOpen(false)}>
-                <X className="h-6 w-6" />
+              <button
+                onClick={() => setIsFormOpen(false)}
+                className="transition-all hover:scale-110 p-1.5"
+                style={{
+                  background: "rgba(255,255,255,0.08)",
+                  border: "1px solid rgba(255,255,255,0.1)",
+                  borderRadius: "8px",
+                  color: "rgba(255,255,255,0.6)",
+                }}
+              >
+                <X className="h-4 w-4" />
               </button>
             </div>
 
-            <div className="p-4 space-y-3">
+            {/* Form Fields */}
+            <div className="p-5 space-y-3">
               {[
                 { label: "Name", name: "name" },
                 { label: "Version", name: "version" },
                 { label: "Size (e.g. 84MB)", name: "size" },
-                { label: "Category (e.g. ACTION)", name: "category" },
+                { label: "Category", name: "category" },
                 { label: "Mod Features", name: "mod_features" },
                 { label: "Mod Features Full", name: "mod_features_full" },
                 { label: "Description", name: "description" },
@@ -392,110 +539,69 @@ export function Admin() {
                 { label: "Download URL", name: "download_url" },
               ].map(({ label, name }) => (
                 <div key={name}>
-                  <label className="font-black uppercase text-xs block mb-1">{label}</label>
-                  <Input
+                  <label style={labelStyle}>{label}</label>
+                  <input
                     name={name}
                     value={(form as any)[name]}
                     onChange={handleChange}
-                    className="rounded-none border-2 border-black"
+                    style={inputStyle}
                   />
                 </div>
               ))}
 
               <div>
-                <label className="font-black uppercase text-xs block mb-1">Type</label>
-                <select
-                  name="type"
-                  value={form.type}
-                  onChange={handleChange}
-                  className="w-full border-2 border-black p-2 font-bold uppercase text-sm"
-                >
+                <label style={labelStyle}>Type</label>
+                <select name="type" value={form.type} onChange={handleChange} style={inputStyle}>
                   <option value="APP">APP</option>
                   <option value="GAME">GAME</option>
                 </select>
               </div>
 
               <div>
-                <label className="font-black uppercase text-xs block mb-1">Status</label>
-                <select
-                  name="status"
-                  value={form.status}
-                  onChange={handleChange}
-                  className="w-full border-2 border-black p-2 font-bold uppercase text-sm"
-                >
+                <label style={labelStyle}>Status</label>
+                <select name="status" value={form.status} onChange={handleChange} style={inputStyle}>
                   <option value="ONLINE">ONLINE</option>
                   <option value="OFFLINE">OFFLINE</option>
                 </select>
               </div>
 
               {/* Toggle Recommended */}
-              <div className="flex items-center justify-between border-2 border-black p-3">
+              <div
+                className="flex items-center justify-between p-3"
+                style={{
+                  background: "rgba(255,255,255,0.04)",
+                  border: "1px solid rgba(255,255,255,0.08)",
+                  borderRadius: "12px",
+                }}
+              >
                 <div>
-                  <p className="font-black uppercase text-xs">Tampilkan di Recommended</p>
-                  <p className="text-xs text-muted-foreground">Muncul di bagian Recommended halaman utama</p>
+                  <p className="font-black uppercase text-xs text-white">Tampilkan di Recommended</p>
+                  <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.35)" }}>
+                    Muncul di bagian Recommended halaman utama
+                  </p>
                 </div>
                 <button
                   type="button"
                   onClick={() => setForm((prev) => ({ ...prev, is_recommended: !prev.is_recommended }))}
-                  className={`flex items-center gap-1 px-3 py-1 border-2 border-black font-black text-xs uppercase rounded-none transition-colors ${
+                  className="flex items-center gap-1.5 px-3 py-1.5 font-black text-xs uppercase transition-all hover:scale-105"
+                  style={
                     form.is_recommended
-                      ? "bg-yellow-400 text-black"
-                      : "bg-white text-black hover:bg-gray-100"
-                  }`}
+                      ? {
+                          background: "rgba(234,179,8,0.25)",
+                          color: "#fde047",
+                          border: "1px solid rgba(234,179,8,0.4)",
+                          borderRadius: "999px",
+                        }
+                      : {
+                          background: "rgba(255,255,255,0.06)",
+                          color: "rgba(255,255,255,0.4)",
+                          border: "1px solid rgba(255,255,255,0.1)",
+                          borderRadius: "999px",
+                        }
+                  }
                 >
                   <Star className="h-3 w-3" fill={form.is_recommended ? "currentColor" : "none"} />
                   {form.is_recommended ? "YA" : "TIDAK"}
                 </button>
               </div>
-
-              <Button
-                onClick={handleSubmit}
-                disabled={isSubmitting}
-                className="w-full rounded-none border-2 border-black font-black uppercase h-12 mt-2"
-              >
-                {isSubmitting ? "Menyimpan..." : editingApp ? "Update" : "Simpan"}
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-          {/* Delete Dialog */}
-      <AlertDialog open={!!deleteAppId} onOpenChange={(open) => !open && setDeleteAppId(null)}>
-        <AlertDialogContent className="rounded-none border-4 border-black brutal-shadow-lg p-0 overflow-hidden sm:max-w-md">
-          <div className="bg-destructive text-destructive-foreground p-6 border-b-4 border-black flex items-center gap-3">
-            <AlertTriangle className="h-8 w-8" />
-            <AlertDialogTitle className="text-2xl font-black uppercase m-0">Confirm Deletion</AlertDialogTitle>
-          </div>
-          <div className="p-6 bg-card">
-            <AlertDialogDescription className="font-mono text-base text-foreground mb-6">
-              Yakin mau hapus app ini? Aksi ini tidak bisa dibatalkan.
-            </AlertDialogDescription>
-            <AlertDialogFooter>
-              <AlertDialogCancel className="rounded-none border-2 border-black font-black uppercase">Batal</AlertDialogCancel>
-              <AlertDialogAction
-                onClick={handleDelete}
-                className="rounded-none border-2 border-black bg-destructive text-destructive-foreground font-black uppercase hover:bg-destructive/90"
-              >
-              Hapus
-              </AlertDialogAction>
-            </AlertDialogFooter>
-          </div>
-        </AlertDialogContent>
-      </AlertDialog>
-    </div>
-  );
-}
-function StatCard({ title, value, loading, className = "" }: { title: string; value?: number; loading: boolean; className?: string }) {
-  return (
-    <Card className={`rounded-none border-4 border-black brutal-shadow ${className}`}>
-      <CardHeader className="pb-2 border-b-2 border-black/10">
-        <CardTitle className="text-sm font-black uppercase opacity-80">{title}
-        </CardTitle>
-        </CardHeader>
-      <CardContent className="pt-4">
-        {loading ? <Skeleton className="h-10 w-16" /> : <div className="text-4xl font-black">{value || 0}</div>}
-      </CardContent>
-    </Card>
-  );
-}
+              
