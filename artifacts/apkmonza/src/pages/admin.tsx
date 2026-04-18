@@ -630,7 +630,16 @@ export function Admin() {
               <p style={{ color: "rgba(255,255,255,0.25)", fontSize: "10px", fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.1em", paddingTop: "8px" }}>
                 — Mod Info
               </p>
-
+<div>
+  <label style={labelStyle}>Mod Features (singkat)</label>
+  <input
+    name="mod_features"
+    value={form.mod_features}
+    onChange={handleChange}
+    style={inputStyle}
+  />
+</div>
+            
               <div>
   <label style={labelStyle}>Mod Features Full</label>
   <textarea
