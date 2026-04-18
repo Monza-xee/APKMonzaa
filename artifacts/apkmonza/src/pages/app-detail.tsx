@@ -72,16 +72,15 @@ export function AppDetail() {
     );
   }
 
+  const statusOnline = app.status === "ONLINE";
+
   return (
     <div className="space-y-6 max-w-5xl mx-auto">
 
       {/* BREADCRUMB */}
       <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest">
         <Link href="/">
-          <span
-            className="flex items-center gap-1 cursor-pointer transition-all hover:opacity-80"
-            style={{ color: "#a78bfa" }}
-          >
+          <span className="flex items-center gap-1 cursor-pointer transition-all hover:opacity-80" style={{ color: "#a78bfa" }}>
             <ChevronLeft className="h-3.5 w-3.5" /> Catalog
           </span>
         </Link>
@@ -103,7 +102,6 @@ export function AppDetail() {
           boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
         }}
       >
-        {/* Top gradient banner */}
         <div
           className="absolute top-0 left-0 w-full h-28"
           style={{
@@ -111,9 +109,7 @@ export function AppDetail() {
             borderBottom: "1px solid rgba(255,255,255,0.08)",
           }}
         />
-
         <div className="relative z-10 pt-14 px-6 pb-6 md:px-10 md:pb-10 flex flex-col md:flex-row gap-6 items-start">
-          {/* Icon */}
           <div
             className="w-28 h-28 md:w-40 md:h-40 shrink-0 flex items-center justify-center font-black text-4xl md:text-6xl overflow-hidden"
             style={{
@@ -129,20 +125,30 @@ export function AppDetail() {
               <span className="text-white">{app.icon_initials || "AP"}</span>
             )}
           </div>
-
-          {/* Info */}
           <div className="flex-1 mt-2 md:mt-16">
-            <h1
-              className="text-3xl md:text-5xl font-black uppercase leading-none mb-4"
-              style={{ color: "rgba(255,255,255,0.95)" }}
-            >
+            <h1 className="text-3xl md:text-5xl font-black uppercase leading-none mb-4" style={{ color: "rgba(255,255,255,0.95)" }}>
               {app.name}
             </h1>
             <div className="flex flex-wrap gap-2">
               {[
-                { text: app.status, bg: "rgba(99,102,241,0.3)", color: "#a5b4fc", border: "rgba(99,102,241,0.4)" },
-                { text: app.type, bg: "rgba(124,58,237,0.3)", color: "#c4b5fd", border: "rgba(124,58,237,0.4)" },
-                { text: app.category, bg: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.6)", border: "rgba(255,255,255,0.12)" },
+                {
+                  text: app.status,
+                  bg: statusOnline ? "rgba(34,197,94,0.2)" : "rgba(239,68,68,0.2)",
+                  color: statusOnline ? "#86efac" : "#fca5a5",
+                  border: statusOnline ? "rgba(34,197,94,0.4)" : "rgba(239,68,68,0.4)",
+                },
+                {
+                  text: app.type,
+                  bg: "rgba(124,58,237,0.3)",
+                  color: "#c4b5fd",
+                  border: "rgba(124,58,237,0.4)",
+                },
+                {
+                  text: app.category,
+                  bg: "rgba(255,255,255,0.08)",
+                  color: "rgba(255,255,255,0.6)",
+                  border: "rgba(255,255,255,0.12)",
+                },
               ].map((badge, i) => (
                 <span
                   key={i}
@@ -165,10 +171,8 @@ export function AppDetail() {
       {/* BODY GRID */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
-        {/* LEFT COLUMN */}
+        {/* LEFT */}
         <div className="md:col-span-2 space-y-6">
-
-          {/* Mod Features */}
           <section
             style={{
               background: "rgba(124,58,237,0.12)",
@@ -179,24 +183,17 @@ export function AppDetail() {
               overflow: "hidden",
             }}
           >
-            <div
-              className="px-6 py-4 flex items-center gap-3"
-              style={{ borderBottom: "1px solid rgba(124,58,237,0.2)" }}
-            >
+            <div className="px-6 py-4 flex items-center gap-3" style={{ borderBottom: "1px solid rgba(124,58,237,0.2)" }}>
               <Zap className="h-5 w-5" style={{ color: "#c4b5fd" }} />
               <h2 className="text-base font-black uppercase tracking-widest" style={{ color: "#c4b5fd" }}>
                 Mod Features
               </h2>
             </div>
-            <div
-              className="p-6 font-mono text-sm leading-relaxed whitespace-pre-wrap"
-              style={{ color: "rgba(255,255,255,0.75)" }}
-            >
+            <div className="p-6 font-mono text-sm leading-relaxed whitespace-pre-wrap" style={{ color: "rgba(255,255,255,0.75)" }}>
               {app.mod_features_full || "NO MOD FEATURES SPECIFIED."}
             </div>
           </section>
 
-          {/* Description */}
           <section
             style={{
               background: "rgba(255,255,255,0.05)",
@@ -207,28 +204,20 @@ export function AppDetail() {
               overflow: "hidden",
             }}
           >
-            <div
-              className="px-6 py-4 flex items-center gap-3"
-              style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}
-            >
+            <div className="px-6 py-4 flex items-center gap-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
               <Info className="h-5 w-5" style={{ color: "rgba(255,255,255,0.5)" }} />
               <h2 className="text-base font-black uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.8)" }}>
                 Description
               </h2>
             </div>
-            <div
-              className="p-6 text-sm leading-relaxed whitespace-pre-wrap"
-              style={{ color: "rgba(255,255,255,0.5)" }}
-            >
+            <div className="p-6 text-sm leading-relaxed whitespace-pre-wrap" style={{ color: "rgba(255,255,255,0.5)" }}>
               {app.description || "NO DESCRIPTION AVAILABLE."}
             </div>
           </section>
         </div>
 
-        {/* RIGHT COLUMN */}
+        {/* RIGHT */}
         <div className="space-y-6">
-
-          {/* Tech Specs */}
           <section
             style={{
               background: "rgba(255,255,255,0.05)",
@@ -239,10 +228,7 @@ export function AppDetail() {
               overflow: "hidden",
             }}
           >
-            <div
-              className="px-5 py-4 flex items-center gap-2"
-              style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}
-            >
+            <div className="px-5 py-4 flex items-center gap-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
               <Server className="h-4 w-4" style={{ color: "rgba(255,255,255,0.5)" }} />
               <h2 className="text-sm font-black uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.8)" }}>
                 Tech Specs
@@ -266,20 +252,12 @@ export function AppDetail() {
                 <div
                   key={i}
                   className="px-5 py-3.5 flex justify-between items-center gap-4"
-                  style={{
-                    borderBottom: i < arr.length - 1 ? "1px solid rgba(255,255,255,0.06)" : "none",
-                  }}
+                  style={{ borderBottom: i < arr.length - 1 ? "1px solid rgba(255,255,255,0.06)" : "none" }}
                 >
-                  <dt
-                    className="font-black uppercase flex items-center gap-1.5"
-                    style={{ color: "rgba(255,255,255,0.35)" }}
-                  >
+                  <dt className="font-black uppercase flex items-center gap-1.5" style={{ color: "rgba(255,255,255,0.35)" }}>
                     {row.icon} {row.label}
                   </dt>
-                  <dd
-                    className="text-right break-all font-bold"
-                    style={{ color: "rgba(255,255,255,0.75)" }}
-                  >
+                  <dd className="text-right break-all font-bold" style={{ color: "rgba(255,255,255,0.75)" }}>
                     {row.value}
                   </dd>
                 </div>
@@ -287,7 +265,7 @@ export function AppDetail() {
             </dl>
           </section>
 
-          {/* Download */}
+          {/* DOWNLOAD */}
           <section
             style={{
               background: "rgba(124,58,237,0.15)",
@@ -298,10 +276,7 @@ export function AppDetail() {
               overflow: "hidden",
             }}
           >
-            <div
-              className="px-5 py-4 flex items-center gap-2"
-              style={{ borderBottom: "1px solid rgba(124,58,237,0.2)" }}
-            >
+            <div className="px-5 py-4 flex items-center gap-2" style={{ borderBottom: "1px solid rgba(124,58,237,0.2)" }}>
               <Download className="h-4 w-4" style={{ color: "#c4b5fd" }} />
               <h2 className="text-sm font-black uppercase tracking-widest" style={{ color: "#c4b5fd" }}>
                 Link Download
@@ -311,7 +286,7 @@ export function AppDetail() {
               {app.download_url ? (
                 <a href={app.download_url} target="_blank" rel="noopener noreferrer">
                   <button
-                    className="w-full font-black text-sm uppercase text-white py-4 transition-all duration-200 hover:scale-[1.02] hover:shadow-2xl"
+                    className="w-full font-black text-sm uppercase text-white py-4 transition-all duration-200 hover:scale-[1.02]"
                     style={{
                       background: "linear-gradient(135deg, #7c3aed, #6366f1)",
                       borderRadius: "12px",
@@ -337,9 +312,8 @@ export function AppDetail() {
               )}
             </div>
           </section>
-
         </div>
       </div>
     </div>
   );
-}
+              }
