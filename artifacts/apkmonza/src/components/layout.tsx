@@ -20,8 +20,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           boxShadow: "0 4px 24px rgba(0,0,0,0.4)",
         }}
       >
-        <div className="container mx-auto px-4 h-16 flex items-center justify-between">
-          {/* LOGO */}
+        <div className="w-full max-w-3xl mx-auto px-4 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center gap-3 group">
             <div
               className="w-10 h-10 flex items-center justify-center font-black text-base text-white transition-all duration-200 group-hover:scale-105"
@@ -38,8 +37,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
             </span>
           </Link>
 
-          {/* NAV */}
-          <nav className="flex items-center gap-4">
+          <nav>
             <Link href="/">
               <span
                 className="font-black text-xs tracking-widest uppercase text-white px-4 py-2 transition-all duration-200 hover:scale-105 cursor-pointer"
@@ -57,7 +55,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       </header>
 
       {/* MAIN */}
-      <main className="flex-1 container mx-auto px-4 py-8">
+      <main className="flex-1 w-full max-w-3xl mx-auto px-4 py-6">
         {children}
       </main>
 
@@ -71,7 +69,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
           borderTop: "1px solid rgba(255,255,255,0.07)",
         }}
       >
-        <div className="container mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
+        <div className="w-full max-w-3xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center gap-4">
           <div className="flex items-center gap-3">
             <div
               className="w-8 h-8 flex items-center justify-center font-black text-xs text-white"
