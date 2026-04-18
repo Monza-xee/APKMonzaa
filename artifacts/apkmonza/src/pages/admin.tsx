@@ -148,7 +148,7 @@ export function Admin() {
       description: app.description || "",
       mod_features: app.mod_features || "",
       mod_features_full: app.mod_features_full || "",
-      icon_color: app.icon_color || "#7c3aed",
+      icon_color: app.icon_color || "",
       icon_initials: app.icon_initials || "",
       icon_url: app.icon_url || "",
       package_name: app.package_name || "",
