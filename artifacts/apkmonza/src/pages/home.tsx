@@ -52,13 +52,11 @@ export function Home() {
   const recommended = allApps.filter((app) => app.is_recommended);
 
   return (
-    <div
-      className="space-y-6 pt-0 px-4 pb-8"
-      style={{ minHeight: "100vh" }}
-    >
+    <div className="space-y-6 pt-0 pb-8">
+
       {/* SEARCH + FILTER */}
       <section
-        className="-mt-4 flex flex-col gap-4 p-4"
+        className="-mt-6 flex flex-col gap-4 p-4"
         style={{
           background: "rgba(255,255,255,0.05)",
           backdropFilter: "blur(20px)",
@@ -147,9 +145,7 @@ export function Home() {
             {categories.map((cat) => (
               <button
                 key={cat}
-                onClick={() =>
-                  setCategoryFilter(cat === categoryFilter ? "" : cat)
-                }
+                onClick={() => setCategoryFilter(cat === categoryFilter ? "" : cat)}
                 className="shrink-0 px-3 py-1 text-xs font-black uppercase transition-all"
                 style={
                   categoryFilter === cat
@@ -178,10 +174,7 @@ export function Home() {
       <section>
         <h2
           className="font-black uppercase text-sm mb-3 pl-3 tracking-widest"
-          style={{
-            color: "rgba(255,255,255,0.9)",
-            borderLeft: "3px solid #7c3aed",
-          }}
+          style={{ color: "rgba(255,255,255,0.9)", borderLeft: "3px solid #7c3aed" }}
         >
           RECOMMENDED
         </h2>
@@ -191,10 +184,7 @@ export function Home() {
                 <div
                   key={i}
                   className="w-44 h-36 shrink-0 animate-pulse"
-                  style={{
-                    background: "rgba(255,255,255,0.07)",
-                    borderRadius: "16px",
-                  }}
+                  style={{ background: "rgba(255,255,255,0.07)", borderRadius: "16px" }}
                 />
               ))
             : recommended.map((app) => (
@@ -218,11 +208,7 @@ export function Home() {
                       }}
                     >
                       {app.icon_url ? (
-                        <img
-                          src={app.icon_url}
-                          alt={app.name}
-                          className="w-full h-full object-cover"
-                        />
+                        <img src={app.icon_url} alt={app.name} className="w-full h-full object-cover" />
                       ) : (
                         <span className="text-white">{app.icon_initials || "AP"}</span>
                       )}
@@ -269,10 +255,7 @@ export function Home() {
       <section>
         <h2
           className="font-black uppercase text-sm mb-3 pl-3 tracking-widest"
-          style={{
-            color: "rgba(255,255,255,0.9)",
-            borderLeft: "3px solid rgba(255,255,255,0.3)",
-          }}
+          style={{ color: "rgba(255,255,255,0.9)", borderLeft: "3px solid rgba(255,255,255,0.3)" }}
         >
           MOST RECENT UPDATES
         </h2>
@@ -283,10 +266,7 @@ export function Home() {
               <div
                 key={i}
                 className="h-40 animate-pulse"
-                style={{
-                  background: "rgba(255,255,255,0.07)",
-                  borderRadius: "16px",
-                }}
+                style={{ background: "rgba(255,255,255,0.07)", borderRadius: "16px" }}
               />
             ))}
           </div>
@@ -325,10 +305,7 @@ export function Home() {
                       borderBottom: "1px solid rgba(124,58,237,0.15)",
                     }}
                   >
-                    <p
-                      className="font-black text-xs uppercase tracking-widest"
-                      style={{ color: "#c4b5fd" }}
-                    >
+                    <p className="font-black text-xs uppercase tracking-widest" style={{ color: "#c4b5fd" }}>
                       {app.mod_features || "UNLOCKED"}
                     </p>
                   </div>
@@ -336,7 +313,6 @@ export function Home() {
                   {/* CONTENT */}
                   <div className="p-4">
                     <div className="flex gap-4 mb-3 items-center">
-                      {/* ICON */}
                       <div
                         className="w-14 h-14 flex items-center justify-center font-black text-sm shrink-0 overflow-hidden"
                         style={{
@@ -347,18 +323,11 @@ export function Home() {
                         }}
                       >
                         {app.icon_url ? (
-                          <img
-                            src={app.icon_url}
-                            alt={app.name}
-                            className="w-full h-full object-cover"
-                          />
+                          <img src={app.icon_url} alt={app.name} className="w-full h-full object-cover" />
                         ) : (
-                          <span className="text-white text-base">
-                            {app.icon_initials || "AP"}
-                          </span>
+                          <span className="text-white text-base">{app.icon_initials || "AP"}</span>
                         )}
                       </div>
-
                       <div className="flex flex-col justify-center gap-0.5">
                         <h2
                           className="font-black text-base uppercase leading-tight tracking-wide"
@@ -366,10 +335,7 @@ export function Home() {
                         >
                           {app.name || "NO NAME"}
                         </h2>
-                        <p
-                          className="text-xs font-medium"
-                          style={{ color: "rgba(255,255,255,0.35)" }}
-                        >
+                        <p className="text-xs font-medium" style={{ color: "rgba(255,255,255,0.35)" }}>
                           v{app.version || "1.0"} • {app.size || "??MB"}
                         </p>
                       </div>
@@ -392,20 +358,21 @@ export function Home() {
                         },
                         {
                           text: app.status || "OFFLINE",
-                          bg: "rgba(99,102,241,0.25)",
-                          color: "#a5b4fc",
-                          border: "rgba(99,102,241,0.3)",
+                          bg: app.status === "ONLINE"
+                            ? "rgba(34,197,94,0.2)"
+                            : "rgba(239,68,68,0.2)",
+                          color: app.status === "ONLINE" ? "#86efac" : "#fca5a5",
+                          border: app.status === "ONLINE"
+                            ? "rgba(34,197,94,0.35)"
+                            : "rgba(239,68,68,0.35)",
                         },
                         {
                           text: app.uploaded_at
-                            ? new Date(app.uploaded_at).toLocaleDateString(
-                                "id-ID",
-                                {
-                                  day: "numeric",
-                                  month: "short",
-                                  year: "numeric",
-                                }
-                              )
+                            ? new Date(app.uploaded_at).toLocaleDateString("id-ID", {
+                                day: "numeric",
+                                month: "short",
+                                year: "numeric",
+                              })
                             : "-",
                           bg: "rgba(255,255,255,0.05)",
                           color: "rgba(255,255,255,0.35)",
@@ -435,4 +402,4 @@ export function Home() {
       </section>
     </div>
   );
-}
+                  }
