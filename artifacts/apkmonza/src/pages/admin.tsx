@@ -636,26 +636,7 @@ export function Admin() {
   <textarea
     name="mod_features_full"
     value={form.mod_features_full}
-    onChange={handleChange}
-    onKeyDown={(e) => {
-      if (e.key === "Enter") {
-        if (e.shiftKey) {
-          e.preventDefault();
-          const target = e.target as HTMLTextAreaElement;
-          const start = target.selectionStart;
-          const end = target.selectionEnd;
-          const val = form.mod_features_full;
-          const newVal = val.substring(0, start) + "\n" + val.substring(end);
-          setForm((prev) => ({ ...prev, mod_features_full: newVal }));
-          setTimeout(() => {
-            target.selectionStart = start + 1;
-            target.selectionEnd = start + 1;
-          }, 0);
-        } else {
-          e.preventDefault();
-        }
-      }
-    }}
+    onChange={(e) => setForm((prev) => ({ ...prev, mod_features_full: e.target.value }))}
     rows={5}
     style={{
       ...inputStyle,
@@ -670,26 +651,7 @@ export function Admin() {
   <textarea
     name="description"
     value={form.description}
-    onChange={handleChange}
-    onKeyDown={(e) => {
-      if (e.key === "Enter") {
-        if (e.shiftKey) {
-          e.preventDefault();
-          const target = e.target as HTMLTextAreaElement;
-          const start = target.selectionStart;
-          const end = target.selectionEnd;
-          const val = form.description;
-          const newVal = val.substring(0, start) + "\n" + val.substring(end);
-          setForm((prev) => ({ ...prev, description: newVal }));
-          setTimeout(() => {
-            target.selectionStart = start + 1;
-            target.selectionEnd = start + 1;
-          }, 0);
-        } else {
-          e.preventDefault();
-        }
-      }
-    }}
+    onChange={(e) => setForm((prev) => ({ ...prev, description: e.target.value }))}
     rows={4}
     style={{
       ...inputStyle,
