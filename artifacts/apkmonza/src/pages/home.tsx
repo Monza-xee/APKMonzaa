@@ -51,6 +51,14 @@ export function Home() {
 
   const recommended = allApps.filter((app) => app.is_recommended);
 
+  const btnBase: React.CSSProperties = {
+    outline: "none",
+    WebkitTapHighlightColor: "transparent",
+    border: "none",
+    cursor: "pointer",
+    fontFamily: "inherit",
+  };
+
   return (
     <div className="space-y-6 pt-0 pb-8">
 
@@ -82,6 +90,8 @@ export function Home() {
               border: "1px solid rgba(255,255,255,0.1)",
               borderRadius: "999px",
               fontFamily: "inherit",
+              outline: "none",
+              boxShadow: "none",
             }}
           />
         </div>
@@ -100,12 +110,14 @@ export function Home() {
               style={
                 typeFilter === value
                   ? {
+                      ...btnBase,
                       background: "linear-gradient(135deg, #7c3aed, #6366f1)",
                       color: "white",
                       borderRadius: "999px",
                       boxShadow: "0 4px 15px rgba(124,58,237,0.4)",
                     }
                   : {
+                      ...btnBase,
                       background: "rgba(255,255,255,0.07)",
                       border: "1px solid rgba(255,255,255,0.1)",
                       color: "rgba(255,255,255,0.55)",
@@ -127,12 +139,14 @@ export function Home() {
               style={
                 categoryFilter === ""
                   ? {
+                      ...btnBase,
                       background: "rgba(124,58,237,0.25)",
                       color: "#c4b5fd",
                       border: "1px solid rgba(124,58,237,0.4)",
                       borderRadius: "999px",
                     }
                   : {
+                      ...btnBase,
                       background: "rgba(255,255,255,0.06)",
                       color: "rgba(255,255,255,0.4)",
                       border: "1px solid rgba(255,255,255,0.08)",
@@ -150,12 +164,14 @@ export function Home() {
                 style={
                   categoryFilter === cat
                     ? {
+                        ...btnBase,
                         background: "rgba(124,58,237,0.25)",
                         color: "#c4b5fd",
                         border: "1px solid rgba(124,58,237,0.4)",
                         borderRadius: "999px",
                       }
                     : {
+                        ...btnBase,
                         background: "rgba(255,255,255,0.06)",
                         color: "rgba(255,255,255,0.4)",
                         border: "1px solid rgba(255,255,255,0.08)",
@@ -398,4 +414,4 @@ export function Home() {
       </section>
     </div>
   );
-                      }
+                        }
