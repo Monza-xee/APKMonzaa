@@ -632,24 +632,28 @@ export function Admin() {
               </p>
 
               <div>
-  <label style={labelStyle}>Mod Features (singkat)</label>
-  <input
-    name="mod_features"
-    value={form.mod_features}
-    onChange={handleChange}
-    style={inputStyle}
-  />
-</div>
-
-<div>
   <label style={labelStyle}>Mod Features Full</label>
   <textarea
     name="mod_features_full"
     value={form.mod_features_full}
     onChange={handleChange}
     onKeyDown={(e) => {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
+      if (e.key === "Enter") {
+        if (e.shiftKey) {
+          e.preventDefault();
+          const target = e.target as HTMLTextAreaElement;
+          const start = target.selectionStart;
+          const end = target.selectionEnd;
+          const val = form.mod_features_full;
+          const newVal = val.substring(0, start) + "\n" + val.substring(end);
+          setForm((prev) => ({ ...prev, mod_features_full: newVal }));
+          setTimeout(() => {
+            target.selectionStart = start + 1;
+            target.selectionEnd = start + 1;
+          }, 0);
+        } else {
+          e.preventDefault();
+        }
       }
     }}
     rows={5}
@@ -668,8 +672,22 @@ export function Admin() {
     value={form.description}
     onChange={handleChange}
     onKeyDown={(e) => {
-      if (e.key === "Enter" && !e.shiftKey) {
-        e.preventDefault();
+      if (e.key === "Enter") {
+        if (e.shiftKey) {
+          e.preventDefault();
+          const target = e.target as HTMLTextAreaElement;
+          const start = target.selectionStart;
+          const end = target.selectionEnd;
+          const val = form.description;
+          const newVal = val.substring(0, start) + "\n" + val.substring(end);
+          setForm((prev) => ({ ...prev, description: newVal }));
+          setTimeout(() => {
+            target.selectionStart = start + 1;
+            target.selectionEnd = start + 1;
+          }, 0);
+        } else {
+          e.preventDefault();
+        }
       }
     }}
     rows={4}
