@@ -3,7 +3,6 @@ import { Link } from "wouter";
 import { supabase } from "../lib/supabase";
 import { Input } from "@/components/ui/input";
 import { Search, Box, Gamepad2 } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
 
 export function Home() {
   const [search, setSearch] = useState("");
@@ -24,7 +23,10 @@ export function Home() {
   useEffect(() => {
     async function fetchApps() {
       setIsLoading(true);
-      let query = supabase.from("ListAPKGAMES").select("*").order("uploaded_at", { ascending: false });
+      let query = supabase
+        .from("ListAPKGAMES")
+        .select("*")
+        .order("uploaded_at", { ascending: false });
       if (typeFilter) query = query.eq("type", typeFilter);
       const { data, error } = await query;
       if (!error) setApps(data || []);
@@ -38,8 +40,12 @@ export function Home() {
   ) as string[];
 
   const filteredApps = apps.filter((app) => {
-    const matchSearch = (app.name || "").toLowerCase().includes(search.toLowerCase());
-    const matchCategory = categoryFilter ? app.category === categoryFilter : true;
+    const matchSearch = (app.name || "")
+      .toLowerCase()
+      .includes(search.toLowerCase());
+    const matchCategory = categoryFilter
+      ? app.category === categoryFilter
+      : true;
     return matchSearch && matchCategory;
   });
 
@@ -48,40 +54,35 @@ export function Home() {
   return (
     <div
       className="space-y-6 pt-0 px-4 pb-8"
-      style={{
-        background: "linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%)",
-        minHeight: "100vh",
-      }}
+      style={{ minHeight: "100vh" }}
     >
-
       {/* SEARCH + FILTER */}
       <section
         className="-mt-4 flex flex-col gap-4 p-4"
         style={{
-          background: "rgba(255,255,255,0.07)",
+          background: "rgba(255,255,255,0.05)",
           backdropFilter: "blur(20px)",
           WebkitBackdropFilter: "blur(20px)",
-          border: "1px solid rgba(255,255,255,0.12)",
+          border: "1px solid rgba(255,255,255,0.08)",
           borderTop: "none",
-          borderBottom: "1px solid rgba(255,255,255,0.08)",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.08)",
+          borderBottom: "1px solid rgba(255,255,255,0.06)",
         }}
       >
-        {/* Search input */}
+        {/* Search */}
         <div className="relative">
           <Search
             className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4"
-            style={{ color: "rgba(255,255,255,0.35)" }}
+            style={{ color: "rgba(255,255,255,0.3)" }}
           />
           <Input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="SEARCH GAMES OR APPS..."
-            className="pl-10 border-0 outline-none ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-white placeholder:text-white/30 rounded-xl text-xs font-black uppercase tracking-widest"
+            className="pl-10 border-0 outline-none ring-0 focus-visible:ring-0 focus-visible:ring-offset-0 text-white placeholder:text-white/25 text-xs font-black uppercase tracking-widest"
             style={{
-              background: "rgba(255,255,255,0.08)",
-              border: "1px solid rgba(255,255,255,0.12)",
-              backdropFilter: "blur(10px)",
+              background: "rgba(255,255,255,0.07)",
+              border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: "999px",
               fontFamily: "inherit",
             }}
           />
@@ -97,18 +98,20 @@ export function Home() {
             <button
               key={value}
               onClick={() => setTypeFilter(value)}
-              className="flex items-center px-4 py-2 text-xs font-black uppercase rounded-xl transition-all duration-200"
+              className="flex items-center px-4 py-2 text-xs font-black uppercase transition-all duration-200"
               style={
                 typeFilter === value
                   ? {
                       background: "linear-gradient(135deg, #7c3aed, #6366f1)",
                       color: "white",
-                      boxShadow: "0 4px 15px rgba(124,58,237,0.45)",
+                      borderRadius: "999px",
+                      boxShadow: "0 4px 15px rgba(124,58,237,0.4)",
                     }
                   : {
                       background: "rgba(255,255,255,0.07)",
-                      border: "1px solid rgba(255,255,255,0.12)",
-                      color: "rgba(255,255,255,0.6)",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      color: "rgba(255,255,255,0.55)",
+                      borderRadius: "999px",
                     }
               }
             >
@@ -122,18 +125,20 @@ export function Home() {
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
             <button
               onClick={() => setCategoryFilter("")}
-              className="shrink-0 px-3 py-1 text-xs font-black uppercase rounded-lg transition-all"
+              className="shrink-0 px-3 py-1 text-xs font-black uppercase transition-all"
               style={
                 categoryFilter === ""
                   ? {
-                      background: "rgba(124,58,237,0.3)",
+                      background: "rgba(124,58,237,0.25)",
                       color: "#c4b5fd",
-                      border: "1px solid rgba(124,58,237,0.5)",
+                      border: "1px solid rgba(124,58,237,0.4)",
+                      borderRadius: "999px",
                     }
                   : {
                       background: "rgba(255,255,255,0.06)",
-                      color: "rgba(255,255,255,0.45)",
-                      border: "1px solid rgba(255,255,255,0.1)",
+                      color: "rgba(255,255,255,0.4)",
+                      border: "1px solid rgba(255,255,255,0.08)",
+                      borderRadius: "999px",
                     }
               }
             >
@@ -142,19 +147,23 @@ export function Home() {
             {categories.map((cat) => (
               <button
                 key={cat}
-                onClick={() => setCategoryFilter(cat === categoryFilter ? "" : cat)}
-                className="shrink-0 px-3 py-1 text-xs font-black uppercase rounded-lg transition-all"
+                onClick={() =>
+                  setCategoryFilter(cat === categoryFilter ? "" : cat)
+                }
+                className="shrink-0 px-3 py-1 text-xs font-black uppercase transition-all"
                 style={
                   categoryFilter === cat
                     ? {
-                        background: "rgba(124,58,237,0.3)",
+                        background: "rgba(124,58,237,0.25)",
                         color: "#c4b5fd",
-                        border: "1px solid rgba(124,58,237,0.5)",
+                        border: "1px solid rgba(124,58,237,0.4)",
+                        borderRadius: "999px",
                       }
                     : {
                         background: "rgba(255,255,255,0.06)",
-                        color: "rgba(255,255,255,0.45)",
-                        border: "1px solid rgba(255,255,255,0.1)",
+                        color: "rgba(255,255,255,0.4)",
+                        border: "1px solid rgba(255,255,255,0.08)",
+                        borderRadius: "999px",
                       }
                 }
               >
@@ -181,47 +190,69 @@ export function Home() {
             ? [1, 2, 3].map((i) => (
                 <div
                   key={i}
-                  className="w-44 h-36 shrink-0 rounded-2xl animate-pulse"
-                  style={{ background: "rgba(255,255,255,0.08)" }}
+                  className="w-44 h-36 shrink-0 animate-pulse"
+                  style={{
+                    background: "rgba(255,255,255,0.07)",
+                    borderRadius: "16px",
+                  }}
                 />
               ))
             : recommended.map((app) => (
                 <Link key={app.id} href={`/app/${app.id}`}>
                   <div
-                    className="w-44 shrink-0 rounded-2xl cursor-pointer transition-all duration-200 hover:scale-[1.03] overflow-hidden"
+                    className="w-44 shrink-0 cursor-pointer transition-all duration-200 hover:scale-[1.03] overflow-hidden"
                     style={{
                       background: "rgba(255,255,255,0.07)",
                       backdropFilter: "blur(16px)",
                       WebkitBackdropFilter: "blur(16px)",
-                      border: "1px solid rgba(255,255,255,0.12)",
-                      boxShadow: "0 4px 20px rgba(0,0,0,0.35)",
+                      border: "1px solid rgba(255,255,255,0.1)",
+                      borderRadius: "16px",
+                      boxShadow: "0 4px 20px rgba(0,0,0,0.3)",
                     }}
                   >
                     <div
                       className="w-full h-24 flex items-center justify-center font-black text-lg overflow-hidden"
-                      style={{ backgroundColor: app.icon_color || "#7c3aed" }}
+                      style={{
+                        backgroundColor: app.icon_color || "#7c3aed",
+                        borderRadius: "16px 16px 0 0",
+                      }}
                     >
                       {app.icon_url ? (
-                        <img src={app.icon_url} alt={app.name} className="w-full h-full object-cover" />
+                        <img
+                          src={app.icon_url}
+                          alt={app.name}
+                          className="w-full h-full object-cover"
+                        />
                       ) : (
                         <span className="text-white">{app.icon_initials || "AP"}</span>
                       )}
                     </div>
                     <div className="p-2.5">
-                      <p className="font-black text-xs uppercase leading-tight line-clamp-1 tracking-wide" style={{ color: "rgba(255,255,255,0.9)" }}>
+                      <p
+                        className="font-black text-xs uppercase leading-tight line-clamp-1 tracking-wide"
+                        style={{ color: "rgba(255,255,255,0.9)" }}
+                      >
                         {app.name || "NO NAME"}
                       </p>
                       <div className="flex gap-1 flex-wrap mt-1.5">
                         <span
-                          className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full"
-                          style={{ background: "rgba(124,58,237,0.35)", color: "#c4b5fd" }}
+                          className="text-[10px] font-black uppercase px-2 py-0.5"
+                          style={{
+                            background: "rgba(124,58,237,0.3)",
+                            color: "#c4b5fd",
+                            borderRadius: "999px",
+                          }}
                         >
                           {app.type || "-"}
                         </span>
                         {app.category && (
                           <span
-                            className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full"
-                            style={{ background: "rgba(255,255,255,0.1)", color: "rgba(255,255,255,0.55)" }}
+                            className="text-[10px] font-black uppercase px-2 py-0.5"
+                            style={{
+                              background: "rgba(255,255,255,0.08)",
+                              color: "rgba(255,255,255,0.5)",
+                              borderRadius: "999px",
+                            }}
                           >
                             {app.category}
                           </span>
@@ -240,7 +271,7 @@ export function Home() {
           className="font-black uppercase text-sm mb-3 pl-3 tracking-widest"
           style={{
             color: "rgba(255,255,255,0.9)",
-            borderLeft: "3px solid rgba(255,255,255,0.35)",
+            borderLeft: "3px solid rgba(255,255,255,0.3)",
           }}
         >
           MOST RECENT UPDATES
@@ -251,18 +282,22 @@ export function Home() {
             {[1, 2].map((i) => (
               <div
                 key={i}
-                className="h-40 rounded-2xl animate-pulse"
-                style={{ background: "rgba(255,255,255,0.08)" }}
+                className="h-40 animate-pulse"
+                style={{
+                  background: "rgba(255,255,255,0.07)",
+                  borderRadius: "16px",
+                }}
               />
             ))}
           </div>
         ) : filteredApps.length === 0 ? (
           <div
-            className="p-10 text-center font-black uppercase rounded-2xl tracking-widest text-sm"
+            className="p-10 text-center font-black uppercase tracking-widest text-sm"
             style={{
-              background: "rgba(255,255,255,0.05)",
-              border: "1px solid rgba(255,255,255,0.08)",
-              color: "rgba(255,255,255,0.3)",
+              background: "rgba(255,255,255,0.04)",
+              border: "1px solid rgba(255,255,255,0.07)",
+              borderRadius: "16px",
+              color: "rgba(255,255,255,0.25)",
             }}
           >
             No Mods Found
@@ -272,21 +307,22 @@ export function Home() {
             {filteredApps.map((app) => (
               <Link key={app.id} href={`/app/${app.id}`}>
                 <div
-                  className="rounded-2xl overflow-hidden cursor-pointer transition-all duration-200 hover:scale-[1.01]"
+                  className="overflow-hidden cursor-pointer transition-all duration-200 hover:scale-[1.01]"
                   style={{
-                    background: "rgba(255,255,255,0.07)",
+                    background: "rgba(255,255,255,0.06)",
                     backdropFilter: "blur(20px)",
                     WebkitBackdropFilter: "blur(20px)",
-                    border: "1px solid rgba(255,255,255,0.11)",
-                    boxShadow: "0 4px 24px rgba(0,0,0,0.35)",
+                    border: "1px solid rgba(255,255,255,0.09)",
+                    borderRadius: "16px",
+                    boxShadow: "0 4px 24px rgba(0,0,0,0.3)",
                   }}
                 >
                   {/* MOD FEATURE BANNER */}
                   <div
                     className="px-4 py-2.5"
                     style={{
-                      background: "linear-gradient(90deg, rgba(124,58,237,0.35), rgba(99,102,241,0.15))",
-                      borderBottom: "1px solid rgba(124,58,237,0.2)",
+                      background: "linear-gradient(90deg, rgba(124,58,237,0.3), rgba(99,102,241,0.1))",
+                      borderBottom: "1px solid rgba(124,58,237,0.15)",
                     }}
                   >
                     <p
@@ -300,20 +336,26 @@ export function Home() {
                   {/* CONTENT */}
                   <div className="p-4">
                     <div className="flex gap-4 mb-3 items-center">
-                      {/* ICON dengan borderRadius fix */}
+                      {/* ICON */}
                       <div
                         className="w-14 h-14 flex items-center justify-center font-black text-sm shrink-0 overflow-hidden"
                         style={{
                           backgroundColor: app.icon_color || "#7c3aed",
                           borderRadius: "14px",
-                          border: "1px solid rgba(255,255,255,0.15)",
-                          boxShadow: "0 2px 12px rgba(0,0,0,0.4)",
+                          border: "1px solid rgba(255,255,255,0.12)",
+                          boxShadow: "0 2px 12px rgba(0,0,0,0.35)",
                         }}
                       >
                         {app.icon_url ? (
-                          <img src={app.icon_url} alt={app.name} className="w-full h-full object-cover" />
+                          <img
+                            src={app.icon_url}
+                            alt={app.name}
+                            className="w-full h-full object-cover"
+                          />
                         ) : (
-                          <span className="text-white text-base">{app.icon_initials || "AP"}</span>
+                          <span className="text-white text-base">
+                            {app.icon_initials || "AP"}
+                          </span>
                         )}
                       </div>
 
@@ -326,7 +368,7 @@ export function Home() {
                         </h2>
                         <p
                           className="text-xs font-medium"
-                          style={{ color: "rgba(255,255,255,0.4)" }}
+                          style={{ color: "rgba(255,255,255,0.35)" }}
                         >
                           v{app.version || "1.0"} • {app.size || "??MB"}
                         </p>
@@ -335,52 +377,54 @@ export function Home() {
 
                     {/* BADGES */}
                     <div className="flex gap-2 flex-wrap">
-                      <span
-                        className="text-[11px] font-black uppercase px-2.5 py-0.5 rounded-full"
-                        style={{
-                          background: "rgba(124,58,237,0.3)",
+                      {[
+                        {
+                          text: app.type || "-",
+                          bg: "rgba(124,58,237,0.25)",
                           color: "#c4b5fd",
-                          border: "1px solid rgba(124,58,237,0.3)",
-                        }}
-                      >
-                        {app.type || "-"}
-                      </span>
-                      <span
-                        className="text-[11px] font-black uppercase px-2.5 py-0.5 rounded-full"
-                        style={{
-                          background: "rgba(255,255,255,0.08)",
-                          color: "rgba(255,255,255,0.55)",
-                          border: "1px solid rgba(255,255,255,0.1)",
-                        }}
-                      >
-                        {app.category || "-"}
-                      </span>
-                      <span
-                        className="text-[11px] font-black uppercase px-2.5 py-0.5 rounded-full"
-                        style={{
-                          background: "rgba(99,102,241,0.3)",
+                          border: "rgba(124,58,237,0.3)",
+                        },
+                        {
+                          text: app.category || "-",
+                          bg: "rgba(255,255,255,0.07)",
+                          color: "rgba(255,255,255,0.5)",
+                          border: "rgba(255,255,255,0.1)",
+                        },
+                        {
+                          text: app.status || "OFFLINE",
+                          bg: "rgba(99,102,241,0.25)",
                           color: "#a5b4fc",
-                          border: "1px solid rgba(99,102,241,0.3)",
-                        }}
-                      >
-                        {app.status || "OFFLINE"}
-                      </span>
-                      <span
-                        className="text-[11px] font-black uppercase px-2.5 py-0.5 rounded-full"
-                        style={{
-                          background: "rgba(255,255,255,0.06)",
-                          color: "rgba(255,255,255,0.4)",
-                          border: "1px solid rgba(255,255,255,0.08)",
-                        }}
-                      >
-                        {app.uploaded_at
-                          ? new Date(app.uploaded_at).toLocaleDateString("id-ID", {
-                              day: "numeric",
-                              month: "short",
-                              year: "numeric",
-                            })
-                          : "-"}
-                      </span>
+                          border: "rgba(99,102,241,0.3)",
+                        },
+                        {
+                          text: app.uploaded_at
+                            ? new Date(app.uploaded_at).toLocaleDateString(
+                                "id-ID",
+                                {
+                                  day: "numeric",
+                                  month: "short",
+                                  year: "numeric",
+                                }
+                              )
+                            : "-",
+                          bg: "rgba(255,255,255,0.05)",
+                          color: "rgba(255,255,255,0.35)",
+                          border: "rgba(255,255,255,0.07)",
+                        },
+                      ].map((badge, i) => (
+                        <span
+                          key={i}
+                          className="text-[11px] font-black uppercase px-2.5 py-0.5"
+                          style={{
+                            background: badge.bg,
+                            color: badge.color,
+                            border: `1px solid ${badge.border}`,
+                            borderRadius: "999px",
+                          }}
+                        >
+                          {badge.text}
+                        </span>
+                      ))}
                     </div>
                   </div>
                 </div>
