@@ -631,17 +631,55 @@ export function Admin() {
                 — Mod Info
               </p>
 
-              {[
-                { label: "Mod Features (singkat)", name: "mod_features" },
-                { label: "Mod Features Full", name: "mod_features_full" },
-                { label: "Description", name: "description" },
-              ].map(({ label, name }) => (
-                <div key={name}>
-                  <label style={labelStyle}>{label}</label>
-                  <input name={name} value={(form as any)[name]} onChange={handleChange} style={inputStyle} />
-                </div>
-              ))}
+              <div>
+  <label style={labelStyle}>Mod Features (singkat)</label>
+  <input
+    name="mod_features"
+    value={form.mod_features}
+    onChange={handleChange}
+    style={inputStyle}
+  />
+</div>
 
+<div>
+  <label style={labelStyle}>Mod Features Full</label>
+  <textarea
+    name="mod_features_full"
+    value={form.mod_features_full}
+    onChange={handleChange}
+    onKeyDown={(e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+      }
+    }}
+    rows={5}
+    style={{
+      ...inputStyle,
+      resize: "vertical",
+      lineHeight: "1.6",
+    }}
+  />
+</div>
+
+<div>
+  <label style={labelStyle}>Description</label>
+  <textarea
+    name="description"
+    value={form.description}
+    onChange={handleChange}
+    onKeyDown={(e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+      }
+    }}
+    rows={4}
+    style={{
+      ...inputStyle,
+      resize: "vertical",
+      lineHeight: "1.6",
+    }}
+  />
+</div>
               {/* SECTION: Icon & Package */}
               <p style={{ color: "rgba(255,255,255,0.25)", fontSize: "10px", fontWeight: 900, textTransform: "uppercase", letterSpacing: "0.1em", paddingTop: "8px" }}>
                 — Icon & Package
