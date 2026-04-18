@@ -42,7 +42,7 @@ const emptyForm = {
   description: "",
   mod_features: "",
   mod_features_full: "",
-  icon_color: "#7c3aed",
+  icon_color: "",
   icon_initials: "",
   icon_url: "",
   package_name: "",
