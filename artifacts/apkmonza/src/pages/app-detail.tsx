@@ -2,7 +2,6 @@ import { useRoute, Link } from "wouter";
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { CalendarClock, ChevronLeft, Download, HardDrive, Info, Package, Server, Tags, User, Zap } from "lucide-react";
-import { AdDisplay } from "./AdDisplay";
 
 export function AppDetail() {
   const [, params] = useRoute("/app/:id");
@@ -374,4 +373,4 @@ export function AppDetail() {
       </div>
     </div>
   );
-                  }
+}
