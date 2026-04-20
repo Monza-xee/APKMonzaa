@@ -313,7 +313,6 @@ export function Home() {
                     boxShadow: "0 4px 24px rgba(0,0,0,0.3)",
                   }}
                 >
-                  {/* MOD FEATURE BANNER */}
                   <div
                     className="px-4 py-2.5"
                     style={{
@@ -326,7 +325,6 @@ export function Home() {
                     </p>
                   </div>
 
-                  {/* CONTENT */}
                   <div className="p-4">
                     <div className="flex gap-4 mb-3 items-center">
                       <div
@@ -357,7 +355,6 @@ export function Home() {
                       </div>
                     </div>
 
-                    {/* BADGES */}
                     <div className="flex gap-2 flex-wrap">
                       {[
                         {
