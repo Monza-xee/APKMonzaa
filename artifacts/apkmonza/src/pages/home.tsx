@@ -14,10 +14,7 @@ export function Home() {
 
   useEffect(() => {
     async function fetchAllApps() {
-      const { data, error } = await supabase
-        .from("ListAPKGAMES")
-        .select("*")
-        .order("id", { ascending: false });
+      const { data, error } = await supabase.from("ListAPKGAMES").select("*");
       if (!error) setAllApps(data || []);
     }
     fetchAllApps();
@@ -29,7 +26,7 @@ export function Home() {
       let query = supabase
         .from("ListAPKGAMES")
         .select("*")
-        .order("id", { ascending: false });
+        .order("id", { ascending: false }); // ← fix: id descending = terbaru di atas
       if (typeFilter) query = query.eq("type", typeFilter);
       const { data, error } = await query;
       if (!error) setApps(data || []);
@@ -77,6 +74,7 @@ export function Home() {
           marginTop: "8px",
         }}
       >
+        {/* Search */}
         <div className="relative">
           <Search
             className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4"
@@ -98,6 +96,7 @@ export function Home() {
           />
         </div>
 
+        {/* Type filter */}
         <div className="flex gap-2">
           {[
             { label: "ALL", value: "", icon: null },
@@ -131,6 +130,7 @@ export function Home() {
           ))}
         </div>
 
+        {/* Category filter */}
         {categories.length > 0 && (
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
             <button
@@ -313,6 +313,7 @@ export function Home() {
                     boxShadow: "0 4px 24px rgba(0,0,0,0.3)",
                   }}
                 >
+                  {/* MOD FEATURE BANNER */}
                   <div
                     className="px-4 py-2.5"
                     style={{
@@ -325,6 +326,7 @@ export function Home() {
                     </p>
                   </div>
 
+                  {/* CONTENT */}
                   <div className="p-4">
                     <div className="flex gap-4 mb-3 items-center">
                       <div
@@ -355,6 +357,7 @@ export function Home() {
                       </div>
                     </div>
 
+                    {/* BADGES */}
                     <div className="flex gap-2 flex-wrap">
                       {[
                         {
@@ -371,9 +374,13 @@ export function Home() {
                         },
                         {
                           text: app.status || "OFFLINE",
-                          bg: app.status === "ONLINE" ? "rgba(34,197,94,0.2)" : "rgba(239,68,68,0.2)",
+                          bg: app.status === "ONLINE"
+                            ? "rgba(34,197,94,0.2)"
+                            : "rgba(239,68,68,0.2)",
                           color: app.status === "ONLINE" ? "#86efac" : "#fca5a5",
-                          border: app.status === "ONLINE" ? "rgba(34,197,94,0.35)" : "rgba(239,68,68,0.35)",
+                          border: app.status === "ONLINE"
+                            ? "rgba(34,197,94,0.35)"
+                            : "rgba(239,68,68,0.35)",
                         },
                         {
                           text: app.uploaded_at
