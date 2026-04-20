@@ -268,9 +268,6 @@ export function Home() {
         </div>
       </section>
 
-      {/* AD BETWEEN SECTIONS */}
-      <AdDisplay />
-
       {/* MOST RECENT UPDATES */}
       <section>
         <h2
@@ -414,9 +411,7 @@ export function Home() {
                   </div>
                 </Link>
 
-                {/* AD EVERY 3 ITEMS */}
-                {(index + 1) % 3 === 0 && <AdDisplay key={`ad-${index}`} />}
-              </>
+              
             ))}
           </div>
         )}
