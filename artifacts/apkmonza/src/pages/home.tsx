@@ -404,18 +404,16 @@ export function Home() {
                             }}
                           >
                             {badge.text}
-                          </span>
-                        ))}
-                      </div>
+                        </span>
+                      ))}
                     </div>
                   </div>
-                </Link>
-
-              
+                </div>
+              </Link>
             ))}
           </div>
         )}
       </section>
     </div>
   );
-                        }
+        }
