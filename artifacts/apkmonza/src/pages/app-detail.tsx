@@ -169,9 +169,6 @@ export function AppDetail() {
         </div>
       </div>
 
-      {/* AD AFTER HERO */}
-      <AdDisplay />
-
       {/* BODY GRID */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
 
@@ -372,9 +369,6 @@ export function AppDetail() {
               )}
             </div>
           </section>
-
-          {/* AD BELOW DOWNLOAD */}
-          <AdDisplay />
 
         </div>
       </div>
