@@ -3,6 +3,7 @@ import { Link } from "wouter";
 import { supabase } from "../lib/supabase";
 import { Input } from "@/components/ui/input";
 import { Search, Box, Gamepad2 } from "lucide-react";
+import { AdDisplay } from "./AdDisplay";
 
 export function Home() {
   const [search, setSearch] = useState("");
@@ -14,7 +15,10 @@ export function Home() {
 
   useEffect(() => {
     async function fetchAllApps() {
-      const { data, error } = await supabase.from("ListAPKGAMES").select("*");
+      const { data, error } = await supabase
+        .from("ListAPKGAMES")
+        .select("*")
+        .order("id", { ascending: false });
       if (!error) setAllApps(data || []);
     }
     fetchAllApps();
@@ -26,7 +30,7 @@ export function Home() {
       let query = supabase
         .from("ListAPKGAMES")
         .select("*")
-        .order("id", { ascending: false })
+        .order("id", { ascending: false });
       if (typeFilter) query = query.eq("type", typeFilter);
       const { data, error } = await query;
       if (!error) setApps(data || []);
@@ -74,7 +78,6 @@ export function Home() {
           marginTop: "8px",
         }}
       >
-        {/* Search */}
         <div className="relative">
           <Search
             className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4"
@@ -96,7 +99,6 @@ export function Home() {
           />
         </div>
 
-        {/* Type filter */}
         <div className="flex gap-2">
           {[
             { label: "ALL", value: "", icon: null },
@@ -130,7 +132,6 @@ export function Home() {
           ))}
         </div>
 
-        {/* Category filter */}
         {categories.length > 0 && (
           <div className="flex gap-2 overflow-x-auto pb-1 scrollbar-none">
             <button
@@ -267,6 +268,9 @@ export function Home() {
         </div>
       </section>
 
+      {/* AD BETWEEN SECTIONS */}
+      <AdDisplay />
+
       {/* MOST RECENT UPDATES */}
       <section>
         <h2
@@ -300,114 +304,119 @@ export function Home() {
           </div>
         ) : (
           <div className="grid gap-4">
-            {filteredApps.map((app) => (
-              <Link key={app.id} href={`/app/${app.id}`}>
-                <div
-                  className="overflow-hidden cursor-pointer transition-all duration-200 hover:scale-[1.01]"
-                  style={{
-                    background: "rgba(255,255,255,0.06)",
-                    backdropFilter: "blur(20px)",
-                    WebkitBackdropFilter: "blur(20px)",
-                    border: "1px solid rgba(255,255,255,0.09)",
-                    borderRadius: "16px",
-                    boxShadow: "0 4px 24px rgba(0,0,0,0.3)",
-                  }}
-                >
-                  {/* MOD FEATURE BANNER */}
+            {filteredApps.map((app, index) => (
+              <>
+                <Link key={app.id} href={`/app/${app.id}`}>
                   <div
-                    className="px-4 py-2.5"
+                    className="overflow-hidden cursor-pointer transition-all duration-200 hover:scale-[1.01]"
                     style={{
-                      background: "linear-gradient(90deg, rgba(124,58,237,0.3), rgba(99,102,241,0.1))",
-                      borderBottom: "1px solid rgba(124,58,237,0.15)",
+                      background: "rgba(255,255,255,0.06)",
+                      backdropFilter: "blur(20px)",
+                      WebkitBackdropFilter: "blur(20px)",
+                      border: "1px solid rgba(255,255,255,0.09)",
+                      borderRadius: "16px",
+                      boxShadow: "0 4px 24px rgba(0,0,0,0.3)",
                     }}
                   >
-                    <p className="font-black text-xs uppercase tracking-widest" style={{ color: "#c4b5fd" }}>
-                      {app.mod_features || "UNLOCKED"}
-                    </p>
-                  </div>
-
-                  {/* CONTENT */}
-                  <div className="p-4">
-                    <div className="flex gap-4 mb-3 items-center">
-                      <div
-                        className="w-14 h-14 flex items-center justify-center font-black text-sm shrink-0 overflow-hidden"
-                        style={{
-                          backgroundColor: app.icon_color || "#7c3aed",
-                          borderRadius: "14px",
-                          border: "1px solid rgba(255,255,255,0.12)",
-                          boxShadow: "0 2px 12px rgba(0,0,0,0.35)",
-                        }}
-                      >
-                        {app.icon_url ? (
-                          <img src={app.icon_url} alt={app.name} className="w-full h-full object-cover" />
-                        ) : (
-                          <span className="text-white text-base">{app.icon_initials || "AP"}</span>
-                        )}
-                      </div>
-                      <div className="flex flex-col justify-center gap-0.5">
-                        <h2
-                          className="font-black text-base uppercase leading-tight tracking-wide"
-                          style={{ color: "rgba(255,255,255,0.95)" }}
-                        >
-                          {app.name || "NO NAME"}
-                        </h2>
-                        <p className="text-xs font-medium" style={{ color: "rgba(255,255,255,0.35)" }}>
-                          v{app.version || "1.0"} • {app.size || "??MB"}
-                        </p>
-                      </div>
+                    {/* MOD FEATURE BANNER */}
+                    <div
+                      className="px-4 py-2.5"
+                      style={{
+                        background: "linear-gradient(90deg, rgba(124,58,237,0.3), rgba(99,102,241,0.1))",
+                        borderBottom: "1px solid rgba(124,58,237,0.15)",
+                      }}
+                    >
+                      <p className="font-black text-xs uppercase tracking-widest" style={{ color: "#c4b5fd" }}>
+                        {app.mod_features || "UNLOCKED"}
+                      </p>
                     </div>
 
-                    {/* BADGES */}
-                    <div className="flex gap-2 flex-wrap">
-                      {[
-                        {
-                          text: app.type || "-",
-                          bg: "rgba(124,58,237,0.25)",
-                          color: "#c4b5fd",
-                          border: "rgba(124,58,237,0.3)",
-                        },
-                        {
-                          text: app.category || "-",
-                          bg: "rgba(255,255,255,0.07)",
-                          color: "rgba(255,255,255,0.5)",
-                          border: "rgba(255,255,255,0.1)",
-                        },
-                        {
-                          text: app.status || "OFFLINE",
-                          bg: app.status === "ONLINE" ? "rgba(34,197,94,0.2)" : "rgba(239,68,68,0.2)",
-                          color: app.status === "ONLINE" ? "#86efac" : "#fca5a5",
-                          border: app.status === "ONLINE" ? "rgba(34,197,94,0.35)" : "rgba(239,68,68,0.35)",
-                        },
-                        {
-                          text: app.uploaded_at
-                            ? new Date(app.uploaded_at).toLocaleDateString("id-ID", {
-                                day: "numeric",
-                                month: "short",
-                                year: "numeric",
-                              })
-                            : "-",
-                          bg: "rgba(255,255,255,0.05)",
-                          color: "rgba(255,255,255,0.35)",
-                          border: "rgba(255,255,255,0.07)",
-                        },
-                      ].map((badge, i) => (
-                        <span
-                          key={i}
-                          className="text-[11px] font-black uppercase px-2.5 py-0.5"
+                    {/* CONTENT */}
+                    <div className="p-4">
+                      <div className="flex gap-4 mb-3 items-center">
+                        <div
+                          className="w-14 h-14 flex items-center justify-center font-black text-sm shrink-0 overflow-hidden"
                           style={{
-                            background: badge.bg,
-                            color: badge.color,
-                            border: `1px solid ${badge.border}`,
-                            borderRadius: "999px",
+                            backgroundColor: app.icon_color || "#7c3aed",
+                            borderRadius: "14px",
+                            border: "1px solid rgba(255,255,255,0.12)",
+                            boxShadow: "0 2px 12px rgba(0,0,0,0.35)",
                           }}
                         >
-                          {badge.text}
-                        </span>
-                      ))}
+                          {app.icon_url ? (
+                            <img src={app.icon_url} alt={app.name} className="w-full h-full object-cover" />
+                          ) : (
+                            <span className="text-white text-base">{app.icon_initials || "AP"}</span>
+                          )}
+                        </div>
+                        <div className="flex flex-col justify-center gap-0.5">
+                          <h2
+                            className="font-black text-base uppercase leading-tight tracking-wide"
+                            style={{ color: "rgba(255,255,255,0.95)" }}
+                          >
+                            {app.name || "NO NAME"}
+                          </h2>
+                          <p className="text-xs font-medium" style={{ color: "rgba(255,255,255,0.35)" }}>
+                            v{app.version || "1.0"} • {app.size || "??MB"}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* BADGES */}
+                      <div className="flex gap-2 flex-wrap">
+                        {[
+                          {
+                            text: app.type || "-",
+                            bg: "rgba(124,58,237,0.25)",
+                            color: "#c4b5fd",
+                            border: "rgba(124,58,237,0.3)",
+                          },
+                          {
+                            text: app.category || "-",
+                            bg: "rgba(255,255,255,0.07)",
+                            color: "rgba(255,255,255,0.5)",
+                            border: "rgba(255,255,255,0.1)",
+                          },
+                          {
+                            text: app.status || "OFFLINE",
+                            bg: app.status === "ONLINE" ? "rgba(34,197,94,0.2)" : "rgba(239,68,68,0.2)",
+                            color: app.status === "ONLINE" ? "#86efac" : "#fca5a5",
+                            border: app.status === "ONLINE" ? "rgba(34,197,94,0.35)" : "rgba(239,68,68,0.35)",
+                          },
+                          {
+                            text: app.uploaded_at
+                              ? new Date(app.uploaded_at).toLocaleDateString("id-ID", {
+                                  day: "numeric",
+                                  month: "short",
+                                  year: "numeric",
+                                })
+                              : "-",
+                            bg: "rgba(255,255,255,0.05)",
+                            color: "rgba(255,255,255,0.35)",
+                            border: "rgba(255,255,255,0.07)",
+                          },
+                        ].map((badge, i) => (
+                          <span
+                            key={i}
+                            className="text-[11px] font-black uppercase px-2.5 py-0.5"
+                            style={{
+                              background: badge.bg,
+                              color: badge.color,
+                              border: `1px solid ${badge.border}`,
+                              borderRadius: "999px",
+                            }}
+                          >
+                            {badge.text}
+                          </span>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
-              </Link>
+                </Link>
+
+                {/* AD EVERY 3 ITEMS */}
+                {(index + 1) % 3 === 0 && <AdDisplay key={`ad-${index}`} />}
+              </>
             ))}
           </div>
         )}
