@@ -427,3 +427,70 @@ export function Admin() {
                     <input name="download_url" value={form.download_url} onChange={handleChange} style={inputStyle} />
                   </div>
                   <div>
+<label style={labelStyle}>Icon Color (hex)</label>
+                    <input name="icon_color" value={form.icon_color} onChange={handleChange} style={inputStyle} />
+                  </div>
+                  <div>
+                    <label style={labelStyle}>Icon Initials</label>
+                    <input name="icon_initials" value={form.icon_initials} onChange={handleChange} style={inputStyle} />
+                  </div>
+                </div>
+              </div>
+
+              {/* Buttons */}
+              <div className="flex gap-3 pb-2">
+                <button
+                  onClick={() => setIsFormOpen(false)}
+                  className="flex-1 py-3 font-black text-sm transition-all"
+                  style={{ background: "rgba(255,255,255,0.07)", color: "rgba(255,255,255,0.6)", borderRadius: "12px" }}
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleSubmit}
+                  disabled={isSubmitting}
+                  className="flex-1 py-3 font-black text-sm text-white transition-all hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2"
+                  style={{ background: "linear-gradient(135deg, #7c3aed, #6366f1)", borderRadius: "12px" }}
+                >
+                  {editingApp ? <><Edit className="h-3.5 w-3.5" /> Update</> : <><Plus className="h-3.5 w-3.5" /> Add App</>}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* DELETE DIALOG */}
+      <AlertDialog open={!!deleteAppId} onOpenChange={(open) => !open && setDeleteAppId(null)}>
+        <AlertDialogContent
+          className="p-0 overflow-hidden border-0 sm:max-w-sm"
+          style={{
+            background: "rgba(12,10,35,0.98)",
+            border: "1px solid rgba(239,68,68,0.2)",
+            borderRadius: "20px",
+          }}
+        >
+          <div className="p-5 flex items-center gap-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+            <AlertTriangle className="h-5 w-5" style={{ color: "#fca5a5" }} />
+            <AlertDialogTitle className="text-base font-black text-white m-0">Delete App?</AlertDialogTitle>
+          </div>
+          <div className="p-5">
+            <AlertDialogDescription className="text-sm mb-4" style={{ color: "rgba(255,255,255,0.45)" }}>
+              Yakin mau hapus app ini? Aksi ini tidak bisa dibatalkan.
+            </AlertDialogDescription>
+            <AlertDialogFooter className="gap-2">
+              <AlertDialogCancel className="font-bold text-xs border-0 flex-1"
+                style={{ background: "rgba(255,255,255,0.07)", color: "rgba(255,255,255,0.6)", borderRadius: "10px" }}>
+                Batal
+              </AlertDialogCancel>
+              <AlertDialogAction onClick={handleDelete} className="font-bold text-xs border-0 flex-1"
+                style={{ background: "rgba(239,68,68,0.25)", color: "#fca5a5", border: "1px solid rgba(239,68,68,0.35)", borderRadius: "10px" }}>
+                Hapus
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
+}
