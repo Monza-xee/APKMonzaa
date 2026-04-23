@@ -3,7 +3,6 @@ import { Link } from "wouter";
 import { supabase } from "../lib/supabase";
 import { Search, Gamepad2, Smartphone, Wifi, Calendar } from "lucide-react";
 
-// Warna per kategori
 const categoryColors: Record<string, { bg: string; color: string; border: string }> = {
   Photography: { bg: "rgba(236,72,153,0.15)", color: "#f9a8d4", border: "rgba(236,72,153,0.3)" },
   "Video Editor": { bg: "rgba(124,58,237,0.15)", color: "#c4b5fd", border: "rgba(124,58,237,0.3)" },
@@ -84,7 +83,6 @@ export function Home() {
 
       {/* SEARCH + FILTER */}
       <section className="space-y-3 pt-1">
-        {/* Search */}
         <div
           className="flex items-center gap-3 px-4 py-3"
           style={{
@@ -110,7 +108,6 @@ export function Home() {
           />
         </div>
 
-        {/* Type filter */}
         <div className="flex gap-2">
           {[
             { label: "ALL", value: "", icon: null },
@@ -144,7 +141,6 @@ export function Home() {
           ))}
         </div>
 
-        {/* Category filter - wrap */}
         {categories.length > 0 && (
           <div className="flex gap-2 flex-wrap">
             <button
@@ -215,9 +211,9 @@ export function Home() {
               <Link key={app.id} href={`/app/${app.id}`}>
                 <div
                   className="relative overflow-hidden cursor-pointer transition-all duration-200 hover:scale-[1.01]"
-                  style={{ borderRadius: "16px", height: "120px" }}
+                  style={{ borderRadius: "16px", height: "110px" }}
                 >
-                  {/* Background image blur */}
+                  {/* Background image blur — dikurangi */}
                   {app.icon_url && (
                     <div
                       className="absolute inset-0"
@@ -225,23 +221,24 @@ export function Home() {
                         backgroundImage: `url(${app.icon_url})`,
                         backgroundSize: "cover",
                         backgroundPosition: "center",
-                        filter: "blur(20px) brightness(0.4)",
+                        filter: "blur(8px) brightness(0.6)",
                         transform: "scale(1.1)",
                       }}
                     />
                   )}
+                  {/* Overlay — dikurangi opacity */}
                   <div
                     className="absolute inset-0"
                     style={{
                       background: app.icon_url
-                        ? "rgba(10,8,30,0.5)"
-                        : `linear-gradient(135deg, ${app.icon_color || "#7c3aed"}44, rgba(10,8,30,0.8))`,
+                        ? "rgba(10,8,30,0.25)"
+                        : `linear-gradient(135deg, ${app.icon_color || "#7c3aed"}55, rgba(10,8,30,0.5))`,
                     }}
                   />
                   {!app.icon_url && (
                     <div
                       className="absolute inset-0"
-                      style={{ backgroundColor: app.icon_color || "#7c3aed", opacity: 0.3 }}
+                      style={{ backgroundColor: app.icon_color || "#7c3aed", opacity: 0.25 }}
                     />
                   )}
 
@@ -267,8 +264,8 @@ export function Home() {
                         <span
                           className="text-[11px] font-bold px-2 py-0.5"
                           style={{
-                            background: "rgba(255,255,255,0.12)",
-                            color: "rgba(255,255,255,0.7)",
+                            background: "rgba(255,255,255,0.15)",
+                            color: "rgba(255,255,255,0.8)",
                             borderRadius: "999px",
                           }}
                         >
@@ -279,7 +276,12 @@ export function Home() {
                           return (
                             <span
                               className="text-[11px] font-bold px-2 py-0.5"
-                              style={{ background: s.bg, color: s.color, border: `1px solid ${s.border}`, borderRadius: "999px" }}
+                              style={{
+                                background: s.bg,
+                                color: s.color,
+                                border: `1px solid ${s.border}`,
+                                borderRadius: "999px",
+                              }}
                             >
                               {app.category}
                             </span>
@@ -310,11 +312,11 @@ export function Home() {
         </div>
 
         {isLoading ? (
-          <div className="space-y-3">
+          <div className="space-y-4">
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="h-24 animate-pulse"
+                className="h-28 animate-pulse"
                 style={{ background: "rgba(255,255,255,0.05)", borderRadius: "16px" }}
               />
             ))}
@@ -327,7 +329,7 @@ export function Home() {
             No apps found
           </div>
         ) : (
-          <div className="space-y-3">
+          <div className="space-y-4">
             {filteredApps.map((app) => {
               const catStyle = getCategoryStyle(app.category);
               return (
@@ -345,7 +347,7 @@ export function Home() {
 
                     <div className="flex gap-3 items-center">
                       <div
-                        className="w-14 h-14 shrink-0 overflow-hidden flex items-center justify-center font-black text-sm"
+                        className="w-16 h-16 shrink-0 overflow-hidden flex items-center justify-center font-black text-sm"
                         style={{
                           borderRadius: "14px",
                           backgroundColor: app.icon_color || "#7c3aed",
@@ -401,10 +403,8 @@ export function Home() {
                           </span>
                           {app.uploaded_at && (
                             <span
-                              className="text-[11px] font-bold px-2 py-0.5 flex items-center gap-1"
-                              style={{
-                                color: "rgba(255,255,255,0.3)",
-                              }}
+                              className="text-[11px] font-bold flex items-center gap-1"
+                              style={{ color: "rgba(255,255,255,0.3)" }}
                             >
                               <Calendar className="h-2.5 w-2.5" />
                               {new Date(app.uploaded_at).toLocaleDateString("id-ID", {
@@ -424,4 +424,4 @@ export function Home() {
       </section>
     </div>
   );
-                    }
+                              }
