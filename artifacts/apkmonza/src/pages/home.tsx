@@ -345,9 +345,9 @@ export function Home() {
                       </p>
                     )}
 
-                    <div className="flex gap-3 items-center">
+                    <div className="flex gap-4 items-center">
                       <div
-                        className="w-16 h-16 shrink-0 overflow-hidden flex items-center justify-center font-black text-sm"
+                        className="w-14 h-14 shrink-0 overflow-hidden flex items-center justify-center font-black text-sm"
                         style={{
                           borderRadius: "14px",
                           backgroundColor: app.icon_color || "#7c3aed",
