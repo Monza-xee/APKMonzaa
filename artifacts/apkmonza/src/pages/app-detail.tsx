@@ -1,12 +1,33 @@
 import { useRoute, Link } from "wouter";
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
-import { CalendarClock, ChevronLeft, Download, HardDrive, Info, Package, Server, Tags, User, Zap } from "lucide-react";
+import { CalendarClock, ChevronLeft, Download, HardDrive, Info, Package, Server, Tags, User, Wifi, Zap } from "lucide-react";
+
+const categoryColors: Record<string, { bg: string; color: string; border: string }> = {
+  Photography: { bg: "rgba(236,72,153,0.15)", color: "#f9a8d4", border: "rgba(236,72,153,0.3)" },
+  "Video Editor": { bg: "rgba(124,58,237,0.15)", color: "#c4b5fd", border: "rgba(124,58,237,0.3)" },
+  Tools: { bg: "rgba(20,184,166,0.15)", color: "#5eead4", border: "rgba(20,184,166,0.3)" },
+  Social: { bg: "rgba(59,130,246,0.15)", color: "#93c5fd", border: "rgba(59,130,246,0.3)" },
+  Productivity: { bg: "rgba(16,185,129,0.15)", color: "#6ee7b7", border: "rgba(16,185,129,0.3)" },
+  Games: { bg: "rgba(245,158,11,0.15)", color: "#fcd34d", border: "rgba(245,158,11,0.3)" },
+  Education: { bg: "rgba(99,102,241,0.15)", color: "#a5b4fc", border: "rgba(99,102,241,0.3)" },
+  Entertainment: { bg: "rgba(239,68,68,0.15)", color: "#fca5a5", border: "rgba(239,68,68,0.3)" },
+};
+
+function getCategoryStyle(cat: string) {
+  return categoryColors[cat] || { bg: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.6)", border: "rgba(255,255,255,0.12)" };
+}
+
+const cardStyle: React.CSSProperties = {
+  background: "rgba(255,255,255,0.04)",
+  border: "1px solid rgba(255,255,255,0.07)",
+  borderRadius: "16px",
+  overflow: "hidden",
+};
 
 export function AppDetail() {
   const [, params] = useRoute("/app/:id");
   const id = params?.id || "";
-
   const [app, setApp] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
 
@@ -26,16 +47,16 @@ export function AppDetail() {
 
   if (isLoading) {
     return (
-      <div className="space-y-6 max-w-5xl mx-auto">
+      <div className="space-y-4">
         {[1, 2, 3].map((i) => (
           <div
             key={i}
             className="animate-pulse"
             style={{
-              height: i === 1 ? "32px" : i === 2 ? "260px" : "180px",
-              background: "rgba(255,255,255,0.07)",
+              height: i === 1 ? "28px" : i === 2 ? "200px" : "160px",
+              background: "rgba(255,255,255,0.05)",
               borderRadius: "16px",
-              width: i === 1 ? "200px" : "100%",
+              width: i === 1 ? "180px" : "100%",
             }}
           />
         ))}
@@ -45,25 +66,12 @@ export function AppDetail() {
 
   if (!app) {
     return (
-      <div
-        className="p-12 text-center max-w-md mx-auto mt-12"
-        style={{
-          background: "rgba(255,255,255,0.06)",
-          backdropFilter: "blur(20px)",
-          WebkitBackdropFilter: "blur(20px)",
-          border: "1px solid rgba(255,255,255,0.1)",
-          borderRadius: "20px",
-        }}
-      >
-        <h2 className="text-2xl font-black mb-6 uppercase text-white">App Not Found</h2>
+      <div className="p-12 text-center" style={cardStyle}>
+        <h2 className="text-xl font-black mb-4 text-white">App Not Found</h2>
         <Link href="/">
           <span
-            className="inline-block font-black text-xs uppercase px-6 py-3 text-white cursor-pointer transition-all hover:scale-105"
-            style={{
-              background: "linear-gradient(135deg, #7c3aed, #6366f1)",
-              borderRadius: "12px",
-              boxShadow: "0 4px 15px rgba(124,58,237,0.4)",
-            }}
+            className="inline-block font-bold text-xs uppercase px-5 py-2.5 text-white cursor-pointer"
+            style={{ background: "rgba(124,58,237,0.3)", borderRadius: "999px", border: "1px solid rgba(124,58,237,0.5)" }}
           >
             Return to Catalog
           </span>
@@ -73,50 +81,58 @@ export function AppDetail() {
   }
 
   const statusOnline = app.status === "ONLINE";
+  const catStyle = getCategoryStyle(app.category);
 
   return (
-    <div className="space-y-6 max-w-5xl mx-auto">
+    <div className="space-y-4">
 
       {/* BREADCRUMB */}
-      <div className="flex items-center gap-2 text-xs font-black uppercase tracking-widest">
+      <div className="flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide flex-wrap">
         <Link href="/">
-          <span className="flex items-center gap-1 cursor-pointer transition-all hover:opacity-80" style={{ color: "#a78bfa" }}>
-            <ChevronLeft className="h-3.5 w-3.5" /> Catalog
+          <span className="flex items-center gap-1 cursor-pointer hover:opacity-80" style={{ color: "rgba(255,255,255,0.4)" }}>
+            <ChevronLeft className="h-3 w-3" /> CATALOG
           </span>
         </Link>
         <span style={{ color: "rgba(255,255,255,0.2)" }}>/</span>
         <span style={{ color: "rgba(255,255,255,0.4)" }}>{app.category}</span>
         <span style={{ color: "rgba(255,255,255,0.2)" }}>/</span>
-        <span style={{ color: "rgba(255,255,255,0.8)" }}>{app.name}</span>
+        <span className="text-white truncate max-w-[140px]">{app.name?.toUpperCase()}</span>
       </div>
 
-      {/* HERO CARD */}
-      <div
-        className="overflow-hidden relative"
-        style={{
-          background: "rgba(255,255,255,0.06)",
-          backdropFilter: "blur(24px)",
-          WebkitBackdropFilter: "blur(24px)",
-          border: "1px solid rgba(255,255,255,0.1)",
-          borderRadius: "20px",
-          boxShadow: "0 8px 32px rgba(0,0,0,0.4)",
-        }}
-      >
+      {/* HERO */}
+      <div className="relative overflow-hidden" style={{ borderRadius: "16px" }}>
+        {/* Blurred bg */}
+        {app.icon_url && (
+          <div
+            className="absolute inset-0"
+            style={{
+              backgroundImage: `url(${app.icon_url})`,
+              backgroundSize: "cover",
+              backgroundPosition: "center",
+              filter: "blur(30px) brightness(0.3)",
+              transform: "scale(1.2)",
+            }}
+          />
+        )}
         <div
-          className="absolute top-0 left-0 w-full h-28"
+          className="absolute inset-0"
           style={{
-            background: "linear-gradient(135deg, rgba(124,58,237,0.5), rgba(99,102,241,0.3))",
-            borderBottom: "1px solid rgba(255,255,255,0.08)",
+            background: app.icon_url
+              ? "rgba(10,8,30,0.6)"
+              : `linear-gradient(135deg, ${app.icon_color || "#7c3aed"}33, rgba(10,8,30,0.9))`,
           }}
         />
-        <div className="relative z-10 pt-14 px-6 pb-6 md:px-10 md:pb-10 flex flex-col md:flex-row gap-6 items-start">
+        {!app.icon_url && (
+          <div className="absolute inset-0" style={{ backgroundColor: app.icon_color || "#7c3aed", opacity: 0.2 }} />
+        )}
+
+        <div className="relative z-10 p-5 flex gap-4 items-center">
           <div
-            className="w-28 h-28 md:w-40 md:h-40 shrink-0 flex items-center justify-center font-black text-4xl md:text-6xl overflow-hidden"
+            className="w-20 h-20 shrink-0 overflow-hidden flex items-center justify-center font-black text-2xl"
             style={{
+              borderRadius: "18px",
               backgroundColor: app.icon_color || "#7c3aed",
-              borderRadius: "20px",
               border: "1px solid rgba(255,255,255,0.15)",
-              boxShadow: "0 8px 32px rgba(0,0,0,0.5)",
             }}
           >
             {app.icon_url ? (
@@ -125,252 +141,158 @@ export function AppDetail() {
               <span className="text-white">{app.icon_initials || "AP"}</span>
             )}
           </div>
-          <div className="flex-1 mt-2 md:mt-16">
-            <h1 className="text-3xl md:text-5xl font-black uppercase leading-none mb-4" style={{ color: "rgba(255,255,255,0.95)" }}>
-              {app.name}
-            </h1>
-            <div className="flex flex-wrap gap-2">
-              {[
-                {
-                  text: app.status,
-                  bg: statusOnline ? "rgba(34,197,94,0.2)" : "rgba(239,68,68,0.2)",
+          <div className="flex-1 min-w-0">
+            <h1 className="text-xl font-black text-white leading-tight">{app.name}</h1>
+            <div className="flex gap-1.5 mt-2 flex-wrap">
+              <span
+                className="text-[11px] font-bold px-2.5 py-1 flex items-center gap-1"
+                style={{
+                  background: statusOnline ? "rgba(34,197,94,0.2)" : "rgba(239,68,68,0.2)",
                   color: statusOnline ? "#86efac" : "#fca5a5",
-                  border: statusOnline ? "rgba(34,197,94,0.4)" : "rgba(239,68,68,0.4)",
-                },
-                {
-                  text: app.type,
-                  bg: "rgba(124,58,237,0.3)",
-                  color: "#c4b5fd",
-                  border: "rgba(124,58,237,0.4)",
-                },
-                {
-                  text: app.category,
-                  bg: "rgba(255,255,255,0.08)",
-                  color: "rgba(255,255,255,0.6)",
-                  border: "rgba(255,255,255,0.12)",
-                },
-              ].map((badge, i) => (
+                  border: `1px solid ${statusOnline ? "rgba(34,197,94,0.4)" : "rgba(239,68,68,0.4)"}`,
+                  borderRadius: "999px",
+                }}
+              >
+                <Wifi className="h-2.5 w-2.5" /> {app.status}
+              </span>
+              <span
+                className="text-[11px] font-bold px-2.5 py-1"
+                style={{
+                  background: "rgba(255,255,255,0.1)",
+                  color: "rgba(255,255,255,0.7)",
+                  borderRadius: "999px",
+                }}
+              >
+                {app.type}
+              </span>
+              {app.category && (
                 <span
-                  key={i}
-                  className="text-xs font-black uppercase px-3 py-1"
-                  style={{
-                    background: badge.bg,
-                    color: badge.color,
-                    border: `1px solid ${badge.border}`,
-                    borderRadius: "999px",
-                  }}
+                  className="text-[11px] font-bold px-2.5 py-1"
+                  style={{ background: catStyle.bg, color: catStyle.color, border: `1px solid ${catStyle.border}`, borderRadius: "999px" }}
                 >
-                  {badge.text}
+                  {app.category}
                 </span>
-              ))}
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* BODY GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-
-        {/* LEFT */}
-        <div className="md:col-span-2 space-y-6">
-
-          {/* DEVELOPER */}
-          <section
-            style={{
-              background: "rgba(255,255,255,0.05)",
-              backdropFilter: "blur(20px)",
-              WebkitBackdropFilter: "blur(20px)",
-              border: "1px solid rgba(255,255,255,0.09)",
-              borderRadius: "16px",
-              overflow: "hidden",
-            }}
-          >
-            <div className="px-6 py-4 flex items-center gap-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
-              <User className="h-5 w-5" style={{ color: "rgba(255,255,255,0.5)" }} />
-              <h2 className="text-base font-black uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.8)" }}>
-                Developer
-              </h2>
-            </div>
-            <div className="p-6 flex items-center gap-4">
-              <div
-                className="w-12 h-12 flex items-center justify-center shrink-0"
-                style={{
-                  background: "rgba(124,58,237,0.2)",
-                  border: "1px solid rgba(124,58,237,0.3)",
-                  borderRadius: "12px",
-                }}
-              >
-                <User className="h-6 w-6" style={{ color: "#c4b5fd" }} />
-              </div>
-              <div>
-                <p className="font-black text-sm uppercase tracking-wide text-white">
-                  {app.developer || "UNKNOWN DEVELOPER"}
-                </p>
-                {app.developer_url ? (
-                  <a
-                    href={app.developer_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-xs font-bold transition-all hover:opacity-80"
-                    style={{ color: "#a78bfa" }}
-                  >
-                    {app.developer_url}
-                  </a>
-                ) : (
-                  <p className="text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>
-                    No developer info available
-                  </p>
-                )}
-              </div>
-            </div>
-          </section>
-
-          {/* MOD FEATURES */}
-          <section
-            style={{
-              background: "rgba(255,255,255,0.05)",
-              backdropFilter: "blur(20px)",
-              WebkitBackdropFilter: "blur(20px)",
-              border: "1px solid rgba(255,255,255,0.09)",
-              borderRadius: "16px",
-              overflow: "hidden",
-            }}
-          >
-            <div className="px-6 py-4 flex items-center gap-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
-              <Zap className="h-5 w-5" style={{ color: "rgba(255,255,255,0.5)" }} />
-              <h2 className="text-base font-black uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.8)" }}>
-                Mod Features
-              </h2>
-            </div>
-            <div className="p-6 font-mono text-sm leading-relaxed whitespace-pre-wrap" style={{ color: "rgba(255,255,255,0.75)" }}>
-              {app.mod_features_full || "NO MOD FEATURES SPECIFIED."}
-            </div>
-          </section>
-
-          {/* DESCRIPTION */}
-          <section
-            style={{
-              background: "rgba(255,255,255,0.05)",
-              backdropFilter: "blur(20px)",
-              WebkitBackdropFilter: "blur(20px)",
-              border: "1px solid rgba(255,255,255,0.09)",
-              borderRadius: "16px",
-              overflow: "hidden",
-            }}
-          >
-            <div className="px-6 py-4 flex items-center gap-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
-              <Info className="h-5 w-5" style={{ color: "rgba(255,255,255,0.5)" }} />
-              <h2 className="text-base font-black uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.8)" }}>
-                Description
-              </h2>
-            </div>
-            <div className="p-6 text-sm leading-relaxed whitespace-pre-wrap" style={{ color: "rgba(255,255,255,0.5)" }}>
-              {app.description || "NO DESCRIPTION AVAILABLE."}
-            </div>
-          </section>
+      {/* DEVELOPER */}
+      <div style={cardStyle}>
+        <div className="px-4 py-3 flex items-center gap-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+          <User className="h-4 w-4" style={{ color: "#a78bfa" }} />
+          <span className="text-xs font-black uppercase tracking-wider" style={{ color: "#a78bfa" }}>Developer</span>
         </div>
-
-        {/* RIGHT */}
-        <div className="space-y-6">
-
-          {/* TECH SPECS */}
-          <section
-            style={{
-              background: "rgba(255,255,255,0.05)",
-              backdropFilter: "blur(20px)",
-              WebkitBackdropFilter: "blur(20px)",
-              border: "1px solid rgba(255,255,255,0.09)",
-              borderRadius: "16px",
-              overflow: "hidden",
-            }}
+        <div className="p-4 flex items-center gap-3">
+          <div
+            className="w-10 h-10 flex items-center justify-center shrink-0"
+            style={{ background: "rgba(124,58,237,0.15)", border: "1px solid rgba(124,58,237,0.25)", borderRadius: "10px" }}
           >
-            <div className="px-5 py-4 flex items-center gap-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
-              <Server className="h-4 w-4" style={{ color: "rgba(255,255,255,0.5)" }} />
-              <h2 className="text-sm font-black uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.8)" }}>
-                Tech Specs
-              </h2>
-            </div>
-            <dl className="font-mono text-xs">
-              {[
-                { icon: <Tags className="h-3.5 w-3.5" />, label: "Version", value: app.version },
-                { icon: <HardDrive className="h-3.5 w-3.5" />, label: "Size", value: app.size },
-                { icon: <Package className="h-3.5 w-3.5" />, label: "Package", value: app.package_name },
-                {
-                  icon: <CalendarClock className="h-3.5 w-3.5" />,
-                  label: "Updated",
-                  value: app.uploaded_at
-                    ? new Date(app.uploaded_at).toLocaleDateString("id-ID", {
-                        day: "numeric", month: "short", year: "numeric",
-                      })
-                    : "-",
-                },
-              ].map((row, i, arr) => (
-                <div
-                  key={i}
-                  className="px-5 py-3.5 flex justify-between items-center gap-4"
-                  style={{ borderBottom: i < arr.length - 1 ? "1px solid rgba(255,255,255,0.06)" : "none" }}
-                >
-                  <dt className="font-black uppercase flex items-center gap-1.5" style={{ color: "rgba(255,255,255,0.35)" }}>
-                    {row.icon} {row.label}
-                  </dt>
-                  <dd className="text-right break-all font-bold" style={{ color: "rgba(255,255,255,0.75)" }}>
-                    {row.value}
-                  </dd>
-                </div>
-              ))}
-            </dl>
-          </section>
-
-          {/* DOWNLOAD */}
-          <section
-            style={{
-              background: "rgba(124,58,237,0.15)",
-              backdropFilter: "blur(20px)",
-              WebkitBackdropFilter: "blur(20px)",
-              border: "1px solid rgba(124,58,237,0.3)",
-              borderRadius: "16px",
-              overflow: "hidden",
-            }}
-          >
-            <div className="px-5 py-4 flex items-center gap-2" style={{ borderBottom: "1px solid rgba(124,58,237,0.2)" }}>
-              <Download className="h-4 w-4" style={{ color: "#c4b5fd" }} />
-              <h2 className="text-sm font-black uppercase tracking-widest" style={{ color: "#c4b5fd" }}>
-                Link Download
-              </h2>
-            </div>
-            <div className="p-5">
-              {app.download_url ? (
-                <a href={app.download_url} target="_blank" rel="noopener noreferrer">
-                  <button
-                    className="w-full font-black text-sm uppercase text-white py-4 transition-all duration-200 hover:scale-[1.02]"
-                    style={{
-                      background: "linear-gradient(135deg, #7c3aed, #6366f1)",
-                      borderRadius: "12px",
-                      boxShadow: "0 4px 20px rgba(124,58,237,0.5)",
-                    }}
-                  >
-                    Download APK ({app.size})
-                  </button>
-                </a>
-              ) : (
-                <button
-                  disabled
-                  className="w-full font-black text-sm uppercase py-4 cursor-not-allowed"
-                  style={{
-                    background: "rgba(255,255,255,0.06)",
-                    color: "rgba(255,255,255,0.25)",
-                    borderRadius: "12px",
-                    border: "1px solid rgba(255,255,255,0.08)",
-                  }}
-                >
-                  No Download Link
-                </button>
-              )}
-            </div>
-          </section>
-
+            <User className="h-5 w-5" style={{ color: "#c4b5fd" }} />
+          </div>
+          <div>
+            <p className="font-black text-sm text-white">{app.developer || "Unknown Developer"}</p>
+            {app.developer_url ? (
+              <a href={app.developer_url} target="_blank" rel="noopener noreferrer"
+                className="text-xs hover:opacity-80" style={{ color: "#a78bfa" }}>
+                {app.developer_url}
+              </a>
+            ) : (
+              <p className="text-xs" style={{ color: "rgba(255,255,255,0.3)" }}>No developer info</p>
+            )}
+          </div>
         </div>
       </div>
+
+      {/* MOD FEATURES */}
+      <div style={cardStyle}>
+        <div className="px-4 py-3 flex items-center gap-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+          <Zap className="h-4 w-4" style={{ color: "#a78bfa" }} />
+          <span className="text-xs font-black uppercase tracking-wider" style={{ color: "#a78bfa" }}>Mod Features</span>
+        </div>
+        <div className="p-4 text-sm leading-relaxed whitespace-pre-wrap" style={{ color: "rgba(255,255,255,0.7)", fontFamily: "inherit" }}>
+          {app.mod_features_full || "No mod features specified."}
+        </div>
+      </div>
+
+      {/* DESCRIPTION */}
+      <div style={cardStyle}>
+        <div className="px-4 py-3 flex items-center gap-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+          <Info className="h-4 w-4" style={{ color: "#a78bfa" }} />
+          <span className="text-xs font-black uppercase tracking-wider" style={{ color: "#a78bfa" }}>Description</span>
+        </div>
+        <div className="p-4 text-sm leading-relaxed whitespace-pre-wrap" style={{ color: "rgba(255,255,255,0.55)" }}>
+          {app.description || "No description available."}
+        </div>
+      </div>
+
+      {/* TECH SPECS */}
+      <div style={cardStyle}>
+        <div className="px-4 py-3 flex items-center gap-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+          <Server className="h-4 w-4" style={{ color: "#a78bfa" }} />
+          <span className="text-xs font-black uppercase tracking-wider" style={{ color: "#a78bfa" }}>Tech Specs</span>
+        </div>
+        {[
+          { icon: <Tags className="h-3.5 w-3.5" />, label: "VERSION", value: app.version },
+          { icon: <HardDrive className="h-3.5 w-3.5" />, label: "SIZE", value: app.size },
+          { icon: <Package className="h-3.5 w-3.5" />, label: "PACKAGE", value: app.package_name },
+          {
+            icon: <CalendarClock className="h-3.5 w-3.5" />,
+            label: "UPDATED",
+            value: app.uploaded_at
+              ? new Date(app.uploaded_at).toLocaleDateString("id-ID", { day: "numeric", month: "short", year: "numeric" })
+              : "-",
+          },
+        ].map((row, i, arr) => (
+          <div
+            key={i}
+            className="px-4 py-3 flex justify-between items-center gap-4"
+            style={{ borderBottom: i < arr.length - 1 ? "1px solid rgba(255,255,255,0.05)" : "none" }}
+          >
+            <dt className="flex items-center gap-2 text-xs font-black uppercase" style={{ color: "rgba(255,255,255,0.35)" }}>
+              <span style={{ color: "#a78bfa" }}>{row.icon}</span> {row.label}
+            </dt>
+            <dd className="text-xs font-bold text-right break-all" style={{ color: "rgba(255,255,255,0.75)" }}>
+              {row.value}
+            </dd>
+          </div>
+        ))}
+      </div>
+
+      {/* DOWNLOAD */}
+      <div style={cardStyle}>
+        <div className="px-4 py-3 flex items-center gap-2" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
+          <Download className="h-4 w-4" style={{ color: "#a78bfa" }} />
+          <span className="text-xs font-black uppercase tracking-wider" style={{ color: "#a78bfa" }}>Link Download</span>
+        </div>
+        <div className="p-4">
+          {app.download_url ? (
+            <a href={app.download_url} target="_blank" rel="noopener noreferrer">
+              <button
+                className="w-full font-black text-sm uppercase text-white py-4 flex items-center justify-center gap-2 transition-all hover:opacity-90"
+                style={{
+                  background: "linear-gradient(135deg, #7c3aed, #6366f1)",
+                  borderRadius: "12px",
+                  boxShadow: "0 4px 20px rgba(124,58,237,0.4)",
+                }}
+              >
+                <Download className="h-4 w-4" />
+                DOWNLOAD APK ({app.size})
+              </button>
+            </a>
+          ) : (
+            <button
+              disabled
+              className="w-full font-black text-sm uppercase py-4 cursor-not-allowed"
+              style={{ background: "rgba(255,255,255,0.05)", color: "rgba(255,255,255,0.2)", borderRadius: "12px" }}
+            >
+              No Download Link
+            </button>
+          )}
+        </div>
+      </div>
+
     </div>
   );
-}
+        }
