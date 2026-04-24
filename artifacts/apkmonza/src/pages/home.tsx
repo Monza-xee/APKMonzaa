@@ -15,7 +15,13 @@ const categoryColors: Record<string, { bg: string; color: string; border: string
 };
 
 function getCategoryStyle(cat: string) {
-  return categoryColors[cat] || { bg: "rgba(255,255,255,0.08)", color: "rgba(255,255,255,0.6)", border: "rgba(255,255,255,0.12)" };
+  return (
+    categoryColors[cat] || {
+      bg: "rgba(255,255,255,0.08)",
+      color: "rgba(255,255,255,0.6)",
+      border: "rgba(255,255,255,0.12)",
+    }
+  );
 }
 
 export function Home() {
@@ -32,23 +38,30 @@ export function Home() {
         .from("ListAPKGAMES")
         .select("*")
         .order("id", { ascending: false });
+
       if (!error) setAllApps(data || []);
     }
+
     fetchAllApps();
   }, []);
 
   useEffect(() => {
     async function fetchApps() {
       setIsLoading(true);
+
       let query = supabase
         .from("ListAPKGAMES")
         .select("*")
         .order("id", { ascending: false });
+
       if (typeFilter) query = query.eq("type", typeFilter);
+
       const { data, error } = await query;
+
       if (!error) setApps(data || []);
       setIsLoading(false);
     }
+
     fetchApps();
   }, [typeFilter]);
 
@@ -80,7 +93,6 @@ export function Home() {
 
   return (
     <div className="space-y-5 pb-8">
-
       {/* SEARCH + FILTER */}
       <section className="space-y-3 pt-1">
         <div
@@ -91,7 +103,10 @@ export function Home() {
             borderRadius: "14px",
           }}
         >
-          <Search className="h-4 w-4 shrink-0" style={{ color: "rgba(255,255,255,0.3)" }} />
+          <Search
+            className="h-4 w-4 shrink-0"
+            style={{ color: "rgba(255,255,255,0.3)" }}
+          />
           <input
             value={search}
             onChange={(e) => setSearch(e.target.value)}
@@ -136,7 +151,8 @@ export function Home() {
                     }
               }
             >
-              {icon}{label}
+              {icon}
+              {label}
             </button>
           ))}
         </div>
@@ -171,9 +187,11 @@ export function Home() {
             >
               SEMUA
             </button>
+
             {categories.map((cat) => {
               const style = getCategoryStyle(cat);
               const isActive = categoryFilter === cat;
+
               return (
                 <button
                   key={cat}
@@ -206,6 +224,7 @@ export function Home() {
               RECOMMENDED
             </h2>
           </div>
+
           <div className="space-y-3">
             {recommended.map((app) => (
               <Link key={app.id} href={`/app/${app.id}`}>
@@ -213,7 +232,6 @@ export function Home() {
                   className="relative overflow-hidden cursor-pointer transition-all duration-200 hover:scale-[1.01]"
                   style={{ borderRadius: "16px", height: "110px" }}
                 >
-                  {/* Background image blur — dikurangi */}
                   {app.icon_url && (
                     <div
                       className="absolute inset-0"
@@ -226,7 +244,7 @@ export function Home() {
                       }}
                     />
                   )}
-                  {/* Overlay — dikurangi opacity */}
+
                   <div
                     className="absolute inset-0"
                     style={{
@@ -235,14 +253,17 @@ export function Home() {
                         : `linear-gradient(135deg, ${app.icon_color || "#7c3aed"}55, rgba(10,8,30,0.5))`,
                     }}
                   />
+
                   {!app.icon_url && (
                     <div
                       className="absolute inset-0"
-                      style={{ backgroundColor: app.icon_color || "#7c3aed", opacity: 0.25 }}
+                      style={{
+                        backgroundColor: app.icon_color || "#7c3aed",
+                        opacity: 0.25,
+                      }}
                     />
                   )}
 
-                  {/* Content */}
                   <div className="relative z-10 h-full flex items-center gap-4 px-4">
                     <div
                       className="w-14 h-14 shrink-0 overflow-hidden flex items-center justify-center font-black text-lg"
@@ -253,13 +274,19 @@ export function Home() {
                       }}
                     >
                       {app.icon_url ? (
-                        <img src={app.icon_url} alt={app.name} className="w-full h-full object-cover" />
+                        <img
+                          src={app.icon_url}
+                          alt={app.name}
+                          className="w-full h-full object-cover"
+                        />
                       ) : (
                         <span className="text-white">{app.icon_initials || "AP"}</span>
                       )}
                     </div>
+
                     <div>
                       <p className="font-black text-base text-white leading-tight">{app.name}</p>
+
                       <div className="flex gap-1.5 mt-1.5 flex-wrap">
                         <span
                           className="text-[11px] font-bold px-2 py-0.5"
@@ -271,22 +298,24 @@ export function Home() {
                         >
                           {app.type}
                         </span>
-                        {app.category && (() => {
-                          const s = getCategoryStyle(app.category);
-                          return (
-                            <span
-                              className="text-[11px] font-bold px-2 py-0.5"
-                              style={{
-                                background: s.bg,
-                                color: s.color,
-                                border: `1px solid ${s.border}`,
-                                borderRadius: "999px",
-                              }}
-                            >
-                              {app.category}
-                            </span>
-                          );
-                        })()}
+
+                        {app.category &&
+                          (() => {
+                            const s = getCategoryStyle(app.category);
+                            return (
+                              <span
+                                className="text-[11px] font-bold px-2 py-0.5"
+                                style={{
+                                  background: s.bg,
+                                  color: s.color,
+                                  border: `1px solid ${s.border}`,
+                                  borderRadius: "999px",
+                                }}
+                              >
+                                {app.category}
+                              </span>
+                            );
+                          })()}
                       </div>
                     </div>
                   </div>
@@ -301,12 +330,19 @@ export function Home() {
       <section>
         <div className="flex items-center justify-between mb-3">
           <div className="flex items-center gap-2">
-            <div className="w-1 h-4 rounded-full" style={{ background: "rgba(255,255,255,0.3)" }} />
+            <div
+              className="w-1 h-4 rounded-full"
+              style={{ background: "rgba(255,255,255,0.3)" }}
+            />
             <h2 className="text-sm font-black uppercase tracking-wider text-white">
               MOST RECENT UPDATES
             </h2>
           </div>
-          <span className="text-xs font-bold" style={{ color: "rgba(255,255,255,0.3)" }}>
+
+          <span
+            className="text-xs font-bold"
+            style={{ color: "rgba(255,255,255,0.3)" }}
+          >
             {filteredApps.length} apps
           </span>
         </div>
@@ -317,7 +353,10 @@ export function Home() {
               <div
                 key={i}
                 className="h-28 animate-pulse"
-                style={{ background: "rgba(255,255,255,0.05)", borderRadius: "16px" }}
+                style={{
+                  background: "rgba(255,255,255,0.05)",
+                  borderRadius: "16px",
+                }}
               />
             ))}
           </div>
@@ -329,94 +368,120 @@ export function Home() {
             No apps found
           </div>
         ) : (
-          <div className="space-y-4">
+          <div>
             {filteredApps.map((app) => {
               const catStyle = getCategoryStyle(app.category);
-              return (
-                <Link key={app.id} href={`/app/${app.id}`}>
-                  <div
-                    className="cursor-pointer transition-all duration-200 hover:bg-white/[0.06] p-4"
-                    style={cardBg}
-                  >
-                    {/* Mod feature label */}
-                    {app.mod_features && (
-                      <p className="text-xs font-bold mb-3" style={{ color: "#a78bfa" }}>
-                        {app.mod_features}
-                      </p>
-                    )}
 
-                    <div className="flex gap-4 items-center">
-                      <div
-                        className="w-14 h-14 shrink-0 overflow-hidden flex items-center justify-center font-black text-sm"
-                        style={{
-                          borderRadius: "14px",
-                          backgroundColor: app.icon_color || "#7c3aed",
-                          border: "1px solid rgba(255,255,255,0.1)",
-                        }}
-                      >
-                        {app.icon_url ? (
-                          <img src={app.icon_url} alt={app.name} className="w-full h-full object-cover" />
-                        ) : (
-                          <span className="text-white">{app.icon_initials || "AP"}</span>
-                        )}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-black text-base text-white leading-tight truncate">{app.name}</p>
-                        <p className="text-xs mt-0.5" style={{ color: "rgba(255,255,255,0.35)" }}>
-                          v{app.version || "1.0"} • {app.size || "??MB"}
+              return (
+                <div key={app.id} className="mb-4 last:mb-0">
+                  <Link href={`/app/${app.id}`}>
+                    <div
+                      className="cursor-pointer transition-all duration-200 hover:bg-white/[0.06] p-4"
+                      style={cardBg}
+                    >
+                      {app.mod_features && (
+                        <p className="text-xs font-bold mb-3" style={{ color: "#a78bfa" }}>
+                          {app.mod_features}
                         </p>
-                        <div className="flex gap-1.5 mt-2 flex-wrap items-center">
-                          <span
-                            className="text-[11px] font-bold px-2 py-0.5"
-                            style={{
-                              background: "rgba(255,255,255,0.08)",
-                              color: "rgba(255,255,255,0.55)",
-                              borderRadius: "999px",
-                            }}
+                      )}
+
+                      <div className="flex gap-4 items-center">
+                        <div
+                          className="w-14 h-14 shrink-0 overflow-hidden flex items-center justify-center font-black text-sm"
+                          style={{
+                            borderRadius: "14px",
+                            backgroundColor: app.icon_color || "#7c3aed",
+                            border: "1px solid rgba(255,255,255,0.1)",
+                          }}
+                        >
+                          {app.icon_url ? (
+                            <img
+                              src={app.icon_url}
+                              alt={app.name}
+                              className="w-full h-full object-cover"
+                            />
+                          ) : (
+                            <span className="text-white">{app.icon_initials || "AP"}</span>
+                          )}
+                        </div>
+
+                        <div className="flex-1 min-w-0">
+                          <p className="font-black text-base text-white leading-tight truncate">
+                            {app.name}
+                          </p>
+
+                          <p
+                            className="text-xs mt-0.5"
+                            style={{ color: "rgba(255,255,255,0.35)" }}
                           >
-                            {app.type}
-                          </span>
-                          {app.category && (
+                            v{app.version || "1.0"} • {app.size || "??MB"}
+                          </p>
+
+                          <div className="flex gap-1.5 mt-2 flex-wrap items-center">
                             <span
                               className="text-[11px] font-bold px-2 py-0.5"
                               style={{
-                                background: catStyle.bg,
-                                color: catStyle.color,
-                                border: `1px solid ${catStyle.border}`,
+                                background: "rgba(255,255,255,0.08)",
+                                color: "rgba(255,255,255,0.55)",
                                 borderRadius: "999px",
                               }}
                             >
-                              {app.category}
+                              {app.type}
                             </span>
-                          )}
-                          <span
-                            className="text-[11px] font-bold px-2 py-0.5 flex items-center gap-1"
-                            style={{
-                              background: app.status === "ONLINE" ? "rgba(34,197,94,0.15)" : "rgba(239,68,68,0.15)",
-                              color: app.status === "ONLINE" ? "#86efac" : "#fca5a5",
-                              border: `1px solid ${app.status === "ONLINE" ? "rgba(34,197,94,0.3)" : "rgba(239,68,68,0.3)"}`,
-                              borderRadius: "999px",
-                            }}
-                          >
-                            <Wifi className="h-2.5 w-2.5" />
-                            {app.status}
-                          </span>
-                          {app.uploaded_at && (
+
+                            {app.category && (
+                              <span
+                                className="text-[11px] font-bold px-2 py-0.5"
+                                style={{
+                                  background: catStyle.bg,
+                                  color: catStyle.color,
+                                  border: `1px solid ${catStyle.border}`,
+                                  borderRadius: "999px",
+                                }}
+                              >
+                                {app.category}
+                              </span>
+                            )}
+
                             <span
-                              className="text-[11px] font-bold flex items-center gap-1"
-                              style={{ color: "rgba(255,255,255,0.3)" }}
+                              className="text-[11px] font-bold px-2 py-0.5 flex items-center gap-1"
+                              style={{
+                                background:
+                                  app.status === "ONLINE"
+                                    ? "rgba(34,197,94,0.15)"
+                                    : "rgba(239,68,68,0.15)",
+                                color: app.status === "ONLINE" ? "#86efac" : "#fca5a5",
+                                border: `1px solid ${
+                                  app.status === "ONLINE"
+                                    ? "rgba(34,197,94,0.3)"
+                                    : "rgba(239,68,68,0.3)"
+                                }`,
+                                borderRadius: "999px",
+                              }}
                             >
-                              <Calendar className="h-2.5 w-2.5" />
-                              {new Date(app.uploaded_at).toLocaleDateString("id-ID", {
-                                day: "numeric", month: "short", year: "numeric",
-                              })}
+                              <Wifi className="h-2.5 w-2.5" />
+                              {app.status}
                             </span>
-                          )}
+
+                            {app.uploaded_at && (
+                              <span
+                                className="text-[11px] font-bold flex items-center gap-1"
+                                style={{ color: "rgba(255,255,255,0.3)" }}
+                              >
+                                <Calendar className="h-2.5 w-2.5" />
+                                {new Date(app.uploaded_at).toLocaleDateString("id-ID", {
+                                  day: "numeric",
+                                  month: "short",
+                                  year: "numeric",
+                                })}
+                              </span>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </Link>
+                  </Link>
+                </div>
               );
             })}
           </div>
@@ -424,4 +489,5 @@ export function Home() {
       </section>
     </div>
   );
-                              }
+    }
+    
