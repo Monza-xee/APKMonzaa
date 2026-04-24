@@ -1,10 +1,23 @@
 import { Link } from "wouter";
-import { Zap } from "lucide-react";
+import { Zap, User } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "../lib/supabase";
 
 export function Layout({ children }: { children: React.ReactNode }) {
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data }) => {
+      setIsLoggedIn(!!data.session);
+    });
+    const { data: listener } = supabase.auth.onAuthStateChange((_, session) => {
+      setIsLoggedIn(!!session);
+    });
+    return () => listener.subscription.unsubscribe();
+  }, []);
+
   return (
     <div className="min-h-[100dvh] flex flex-col text-foreground">
-      {/* HEADER */}
       <header
         className="sticky top-0 z-50 w-full"
         style={{
@@ -40,16 +53,26 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 CATALOG
               </span>
             </Link>
+            <Link href={isLoggedIn ? "/profile" : "/auth"}>
+              <div
+                className="w-8 h-8 flex items-center justify-center cursor-pointer transition-all hover:scale-105"
+                style={{
+                  background: isLoggedIn ? "rgba(124,58,237,0.2)" : "rgba(255,255,255,0.06)",
+                  border: `1px solid ${isLoggedIn ? "rgba(124,58,237,0.4)" : "rgba(255,255,255,0.1)"}`,
+                  borderRadius: "999px",
+                }}
+              >
+                <User className="h-3.5 w-3.5" style={{ color: isLoggedIn ? "#a78bfa" : "rgba(255,255,255,0.4)" }} />
+              </div>
+            </Link>
           </nav>
         </div>
       </header>
 
-      {/* MAIN */}
       <main className="flex-1 w-full max-w-2xl mx-auto px-4 py-5">
         {children}
       </main>
 
-      {/* FOOTER */}
       <footer
         className="py-6 mt-8"
         style={{
@@ -69,14 +92,9 @@ export function Layout({ children }: { children: React.ReactNode }) {
             >
               <Zap className="h-3.5 w-3.5" style={{ color: "#a78bfa" }} />
             </div>
-            <span className="font-black text-sm tracking-tight uppercase text-white">
-              APKMONZA
-            </span>
+            <span className="font-black text-sm tracking-tight uppercase text-white">APKMONZA</span>
           </div>
-          <p
-            className="font-mono text-xs font-bold uppercase tracking-widest"
-            style={{ color: "rgba(255,255,255,0.2)" }}
-          >
+          <p className="font-mono text-xs font-bold uppercase tracking-widest" style={{ color: "rgba(255,255,255,0.2)" }}>
             APKMONZA &copy; 2026. NO FILLER.
           </p>
         </div>
