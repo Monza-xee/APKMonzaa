@@ -19,9 +19,9 @@ function Router() {
         <Route path="/" component={Home} />
         <Route path="/app/:id" component={AppDetail} />
         <Route path="/admin" component={Admin} />
+        <Route path="/auth" component={Auth} />
+        <Route path="/profile" component={Profile} />
         <Route component={NotFound} />
-<Route path="/auth" component={Auth} />
-<Route path="/profile" component={Profile} />
       </Switch>
     </Layout>
   );
