@@ -37,7 +37,7 @@ export function Home() {
       const { data, error } = await supabase
         .from("ListAPKGAMES")
         .select("*")
-        .order("id", { ascending: false });
+        .order("is_recommended", { ascending: false });
 
       if (!error) setAllApps(data || []);
     }
@@ -52,7 +52,7 @@ export function Home() {
       let query = supabase
         .from("ListAPKGAMES")
         .select("*")
-        .order("id", { ascending: false });
+        .order("uploaded_at", { ascending: false });
 
       if (typeFilter) query = query.eq("type", typeFilter);
 
