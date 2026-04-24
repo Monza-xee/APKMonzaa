@@ -723,4 +723,482 @@ export function Admin() {
                   <img
                     src={app.icon_url}
                     alt={app.name}
-         
+         className="w-full h-full object-cover"
+                  />
+                ) : (
+                  <span className="text-white">
+                    {app.icon_initials || "AP"}
+                  </span>
+                )}
+              </div>
+
+              <div className="flex-1 min-w-0">
+                <p className="font-black text-sm text-white truncate">
+                  {app.name}
+                </p>
+                <p className="text-xs font-bold" style={{ color: "#a78bfa" }}>
+                  {app.mod_features || app.type}
+                </p>
+              </div>
+
+              <div className="flex items-center gap-2 shrink-0">
+                <button
+                  onClick={() => toggleRecommended(app)}
+                  style={{
+                    color: app.is_recommended
+                      ? "#fbbf24"
+                      : "rgba(255,255,255,0.2)",
+                    padding: "4px",
+                  }}
+                >
+                  <Star
+                    className="h-4 w-4"
+                    fill={app.is_recommended ? "currentColor" : "none"}
+                  />
+                </button>
+
+                <button
+                  onClick={() => openEdit(app)}
+                  style={{ color: "rgba(255,255,255,0.4)", padding: "4px" }}
+                >
+                  <Edit className="h-4 w-4" />
+                </button>
+
+                <button
+                  onClick={() => setDeleteAppId(app.id)}
+                  style={{ color: "rgba(239,68,68,0.6)", padding: "4px" }}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          ))
+        )}
+      </div>
+
+      {/* FORM MODAL */}
+      {isFormOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4"
+          style={{ background: "rgba(0,0,0,0.8)", backdropFilter: "blur(8px)" }}
+        >
+          <div
+            className="w-full sm:max-w-lg max-h-[92vh] overflow-y-auto"
+            style={{
+              background: "rgba(12,10,35,0.98)",
+              border: "1px solid rgba(255,255,255,0.1)",
+              borderRadius: "20px 20px 0 0",
+              boxShadow: "0 -8px 40px rgba(0,0,0,0.6)",
+            }}
+          >
+            <div
+              className="flex items-center justify-between px-5 py-4 sticky top-0 z-10"
+              style={{
+                borderBottom: "1px solid rgba(255,255,255,0.07)",
+                background: "rgba(12,10,35,0.99)",
+                borderRadius: "20px 20px 0 0",
+              }}
+            >
+              <div>
+                <h2 className="font-black text-base text-white">
+                  {editingApp ? "Edit App" : "Add New App"}
+                </h2>
+                {editingApp && (
+                  <p
+                    className="text-xs"
+                    style={{ color: "rgba(255,255,255,0.35)" }}
+                  >
+                    {editingApp.name}
+                  </p>
+                )}
+              </div>
+
+              <button
+                onClick={() => setIsFormOpen(false)}
+                style={{ color: "rgba(255,255,255,0.4)", padding: "4px" }}
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+
+            <div className="px-5 py-4 space-y-4">
+              <button
+                type="button"
+                onClick={() =>
+                  setForm((prev) => ({
+                    ...prev,
+                    is_recommended: !prev.is_recommended,
+                  }))
+                }
+                className="w-full flex items-center gap-3 p-3 transition-all"
+                style={{
+                  background: form.is_recommended
+                    ? "rgba(124,58,237,0.1)"
+                    : "rgba(255,255,255,0.04)",
+                  border: `1px solid ${
+                    form.is_recommended
+                      ? "rgba(124,58,237,0.3)"
+                      : "rgba(255,255,255,0.08)"
+                  }`,
+                  borderRadius: "12px",
+                }}
+              >
+                <div
+                  className="w-5 h-5 flex items-center justify-center shrink-0"
+                  style={{
+                    background: form.is_recommended
+                      ? "#7c3aed"
+                      : "rgba(255,255,255,0.08)",
+                    borderRadius: "5px",
+                    border: form.is_recommended
+                      ? "none"
+                      : "1px solid rgba(255,255,255,0.2)",
+                  }}
+                >
+                  {form.is_recommended && (
+                    <span className="text-white text-xs">✓</span>
+                  )}
+                </div>
+                <span className="text-sm font-bold text-white">
+                  Mark as Recommended
+                </span>
+              </button>
+
+              <div>
+                <p
+                  className="text-xs font-black uppercase tracking-wider mb-3"
+                  style={{ color: "#a78bfa" }}
+                >
+                  Basic Info
+                </p>
+                <div className="space-y-3">
+                  {[
+                    {
+                      label: "App Name *",
+                      name: "name",
+                      placeholder: "e.g. WhatsApp",
+                    },
+                    {
+                      label: "Icon URL",
+                      name: "icon_url",
+                      placeholder: "https://...",
+                    },
+                  ].map(({ label, name, placeholder }) => (
+                    <div key={name}>
+                      <label style={labelStyle}>{label}</label>
+                      <input
+                        name={name}
+                        value={(form as any)[name]}
+                        onChange={handleChange}
+                        placeholder={placeholder}
+                        style={{
+                          ...inputStyle,
+                          color: (form as any)[name]
+                            ? "white"
+                            : "rgba(255,255,255,0.3)",
+                        }}
+                      />
+                    </div>
+                  ))}
+
+                  <div>
+                    <label style={labelStyle}>Type</label>
+                    <select
+                      name="type"
+                      value={form.type}
+                      onChange={handleChange}
+                      style={inputStyle}
+                    >
+                      <option value="APP">APP</option>
+                      <option value="GAME">GAME</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={labelStyle}>Category</label>
+                    <select
+                      name="category"
+                      value={form.category}
+                      onChange={handleChange}
+                      style={inputStyle}
+                    >
+                      <option value="">Other</option>
+                      {[
+                        "Photography",
+                        "Video Editor",
+                        "Tools",
+                        "Social",
+                        "Productivity",
+                        "Games",
+                        "Education",
+                        "Entertainment",
+                      ].map((c) => (
+                        <option key={c} value={c}>
+                          {c}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={labelStyle}>Mod Type</label>
+                    <select
+                      name="mod_features"
+                      value={form.mod_features}
+                      onChange={handleChange}
+                      style={inputStyle}
+                    >
+                      <option value="-">-</option>
+                      <option value="PRO">PRO</option>
+                      <option value="PRO [Paid]">PRO [Paid]</option>
+                      <option value="Premium">Premium</option>
+                      <option value="Unlocked">Unlocked</option>
+                      <option value="MOD">MOD</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label style={labelStyle}>Status</label>
+                    <select
+                      name="status"
+                      value={form.status}
+                      onChange={handleChange}
+                      style={inputStyle}
+                    >
+                      <option value="ONLINE">ONLINE</option>
+                      <option value="OFFLINE">OFFLINE</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <p
+                  className="text-xs font-black uppercase tracking-wider mb-3"
+                  style={{ color: "#a78bfa" }}
+                >
+                  Tech Specs
+                </p>
+                <div className="space-y-3">
+                  {[
+                    { label: "Version", name: "version" },
+                    { label: "Size", name: "size" },
+                    { label: "Package Name", name: "package_name" },
+                  ].map(({ label, name }) => (
+                    <div key={name}>
+                      <label style={labelStyle}>{label}</label>
+                      <input
+                        name={name}
+                        value={(form as any)[name]}
+                        onChange={handleChange}
+                        style={inputStyle}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <p
+                  className="text-xs font-black uppercase tracking-wider mb-3"
+                  style={{ color: "#a78bfa" }}
+                >
+                  Developer
+                </p>
+                <div className="space-y-3">
+                  {[
+                    { label: "Developer Name", name: "developer" },
+                    { label: "Developer URL", name: "developer_url" },
+                  ].map(({ label, name }) => (
+                    <div key={name}>
+                      <label style={labelStyle}>{label}</label>
+                      <input
+                        name={name}
+                        value={(form as any)[name]}
+                        onChange={handleChange}
+                        style={inputStyle}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </div>
+
+              <div>
+                <p
+                  className="text-xs font-black uppercase tracking-wider mb-3"
+                  style={{ color: "#a78bfa" }}
+                >
+                  Content
+                </p>
+                <div className="space-y-3">
+                  <div>
+                    <label style={labelStyle}>Mod Features Full</label>
+                    <textarea
+                      name="mod_features_full"
+                      value={form.mod_features_full}
+                      onChange={(e) =>
+                        setForm((prev) => ({
+                          ...prev,
+                          mod_features_full: e.target.value,
+                        }))
+                      }
+                      rows={4}
+                      style={{
+                        ...inputStyle,
+                        resize: "vertical",
+                        lineHeight: "1.6",
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={labelStyle}>Description</label>
+                    <textarea
+                      name="description"
+                      value={form.description}
+                      onChange={(e) =>
+                        setForm((prev) => ({
+                          ...prev,
+                          description: e.target.value,
+                        }))
+                      }
+                      rows={3}
+                      style={{
+                        ...inputStyle,
+                        resize: "vertical",
+                        lineHeight: "1.6",
+                      }}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={labelStyle}>Download URL</label>
+                    <input
+                      name="download_url"
+                      value={form.download_url}
+                      onChange={handleChange}
+                      style={inputStyle}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={labelStyle}>Icon Color (hex)</label>
+                    <input
+                      name="icon_color"
+                      value={form.icon_color}
+                      onChange={handleChange}
+                      style={inputStyle}
+                    />
+                  </div>
+
+                  <div>
+                    <label style={labelStyle}>Icon Initials</label>
+                    <input
+                      name="icon_initials"
+                      value={form.icon_initials}
+                      onChange={handleChange}
+                      style={inputStyle}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex gap-3 pb-2">
+                <button
+                  onClick={() => setIsFormOpen(false)}
+                  className="flex-1 py-3 font-black text-sm transition-all"
+                  style={{
+                    background: "rgba(255,255,255,0.07)",
+                    color: "rgba(255,255,255,0.6)",
+                    borderRadius: "12px",
+                  }}
+                >
+                  Cancel
+                </button>
+
+                <button
+                  onClick={handleSubmit}
+                  disabled={isSubmitting}
+                  className="flex-1 py-3 font-black text-sm text-white transition-all hover:opacity-90 disabled:opacity-50 flex items-center justify-center gap-2"
+                  style={{
+                    background: "linear-gradient(135deg, #7c3aed, #6366f1)",
+                    borderRadius: "12px",
+                  }}
+                >
+                  {editingApp ? (
+                    <>
+                      <Edit className="h-3.5 w-3.5" /> Update
+                    </>
+                  ) : (
+                    <>
+                      <Plus className="h-3.5 w-3.5" /> Add App
+                    </>
+                  )}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <AlertDialog
+        open={!!deleteAppId}
+        onOpenChange={(open) => !open && setDeleteAppId(null)}
+      >
+        <AlertDialogContent
+          className="p-0 overflow-hidden border-0 sm:max-w-sm"
+          style={{
+            background: "rgba(12,10,35,0.98)",
+            border: "1px solid rgba(239,68,68,0.2)",
+            borderRadius: "20px",
+          }}
+        >
+          <div
+            className="p-5 flex items-center gap-3"
+            style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}
+          >
+            <AlertTriangle className="h-5 w-5" style={{ color: "#fca5a5" }} />
+            <AlertDialogTitle className="text-base font-black text-white m-0">
+              Delete App?
+            </AlertDialogTitle>
+          </div>
+
+          <div className="p-5">
+            <AlertDialogDescription
+              className="text-sm mb-4"
+              style={{ color: "rgba(255,255,255,0.45)" }}
+            >
+              Yakin mau hapus app ini? Aksi ini tidak bisa dibatalkan.
+            </AlertDialogDescription>
+
+            <AlertDialogFooter className="gap-2">
+              <AlertDialogCancel
+                className="font-bold text-xs border-0 flex-1"
+                style={{
+                  background: "rgba(255,255,255,0.07)",
+                  color: "rgba(255,255,255,0.6)",
+                  borderRadius: "10px",
+                }}
+              >
+                Batal
+              </AlertDialogCancel>
+
+              <AlertDialogAction
+                onClick={handleDelete}
+                className="font-bold text-xs border-0 flex-1"
+                style={{
+                  background: "rgba(239,68,68,0.25)",
+                  color: "#fca5a5",
+                  border: "1px solid rgba(239,68,68,0.35)",
+                  borderRadius: "10px",
+                }}
+              >
+                Hapus
+              </AlertDialogAction>
+            </AlertDialogFooter>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
+    </div>
+  );
+                    }
