@@ -225,102 +225,104 @@ export function Home() {
             </h2>
           </div>
 
-          <div className="space-y-3">
+          <div>
             {recommended.map((app) => (
-              <Link key={app.id} href={`/app/${app.id}`}>
-                <div
-                  className="relative overflow-hidden cursor-pointer transition-all duration-200 hover:scale-[1.01]"
-                  style={{ borderRadius: "16px", height: "110px" }}
-                >
-                  {app.icon_url && (
-                    <div
-                      className="absolute inset-0"
-                      style={{
-                        backgroundImage: `url(${app.icon_url})`,
-                        backgroundSize: "cover",
-                        backgroundPosition: "center",
-                        filter: "blur(8px) brightness(0.6)",
-                        transform: "scale(1.1)",
-                      }}
-                    />
-                  )}
-
+              <div key={app.id} className="mb-2 last:mb-0">
+                <Link href={`/app/${app.id}`}>
                   <div
-                    className="absolute inset-0"
-                    style={{
-                      background: app.icon_url
-                        ? "rgba(10,8,30,0.25)"
-                        : `linear-gradient(135deg, ${app.icon_color || "#7c3aed"}55, rgba(10,8,30,0.5))`,
-                    }}
-                  />
+                    className="relative overflow-hidden cursor-pointer transition-all duration-200 hover:scale-[1.01]"
+                    style={{ borderRadius: "16px", height: "110px" }}
+                  >
+                    {app.icon_url && (
+                      <div
+                        className="absolute inset-0"
+                        style={{
+                          backgroundImage: `url(${app.icon_url})`,
+                          backgroundSize: "cover",
+                          backgroundPosition: "center",
+                          filter: "blur(8px) brightness(0.6)",
+                          transform: "scale(1.1)",
+                        }}
+                      />
+                    )}
 
-                  {!app.icon_url && (
                     <div
                       className="absolute inset-0"
                       style={{
-                        backgroundColor: app.icon_color || "#7c3aed",
-                        opacity: 0.25,
+                        background: app.icon_url
+                          ? "rgba(10,8,30,0.25)"
+                          : `linear-gradient(135deg, ${app.icon_color || "#7c3aed"}55, rgba(10,8,30,0.5))`,
                       }}
                     />
-                  )}
 
-                  <div className="relative z-10 h-full flex items-center gap-4 px-4">
-                    <div
-                      className="w-14 h-14 shrink-0 overflow-hidden flex items-center justify-center font-black text-lg"
-                      style={{
-                        borderRadius: "14px",
-                        backgroundColor: app.icon_color || "#7c3aed",
-                        border: "1px solid rgba(255,255,255,0.15)",
-                      }}
-                    >
-                      {app.icon_url ? (
-                        <img
-                          src={app.icon_url}
-                          alt={app.name}
-                          className="w-full h-full object-cover"
-                        />
-                      ) : (
-                        <span className="text-white">{app.icon_initials || "AP"}</span>
-                      )}
-                    </div>
+                    {!app.icon_url && (
+                      <div
+                        className="absolute inset-0"
+                        style={{
+                          backgroundColor: app.icon_color || "#7c3aed",
+                          opacity: 0.25,
+                        }}
+                      />
+                    )}
 
-                    <div>
-                      <p className="font-black text-base text-white leading-tight">{app.name}</p>
+                    <div className="relative z-10 h-full flex items-center gap-4 px-4">
+                      <div
+                        className="w-14 h-14 shrink-0 overflow-hidden flex items-center justify-center font-black text-lg"
+                        style={{
+                          borderRadius: "14px",
+                          backgroundColor: app.icon_color || "#7c3aed",
+                          border: "1px solid rgba(255,255,255,0.15)",
+                        }}
+                      >
+                        {app.icon_url ? (
+                          <img
+                            src={app.icon_url}
+                            alt={app.name}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <span className="text-white">{app.icon_initials || "AP"}</span>
+                        )}
+                      </div>
 
-                      <div className="flex gap-1.5 mt-1.5 flex-wrap">
-                        <span
-                          className="text-[11px] font-bold px-2 py-0.5"
-                          style={{
-                            background: "rgba(255,255,255,0.15)",
-                            color: "rgba(255,255,255,0.8)",
-                            borderRadius: "999px",
-                          }}
-                        >
-                          {app.type}
-                        </span>
+                      <div>
+                        <p className="font-black text-base text-white leading-tight">{app.name}</p>
 
-                        {app.category &&
-                          (() => {
-                            const s = getCategoryStyle(app.category);
-                            return (
-                              <span
-                                className="text-[11px] font-bold px-2 py-0.5"
-                                style={{
-                                  background: s.bg,
-                                  color: s.color,
-                                  border: `1px solid ${s.border}`,
-                                  borderRadius: "999px",
-                                }}
-                              >
-                                {app.category}
-                              </span>
-                            );
-                          })()}
+                        <div className="flex gap-1.5 mt-1.5 flex-wrap">
+                          <span
+                            className="text-[11px] font-bold px-2 py-0.5"
+                            style={{
+                              background: "rgba(255,255,255,0.15)",
+                              color: "rgba(255,255,255,0.8)",
+                              borderRadius: "999px",
+                            }}
+                          >
+                            {app.type}
+                          </span>
+
+                          {app.category &&
+                            (() => {
+                              const s = getCategoryStyle(app.category);
+                              return (
+                                <span
+                                  className="text-[11px] font-bold px-2 py-0.5"
+                                  style={{
+                                    background: s.bg,
+                                    color: s.color,
+                                    border: `1px solid ${s.border}`,
+                                    borderRadius: "999px",
+                                  }}
+                                >
+                                  {app.category}
+                                </span>
+                              );
+                            })()}
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              </Link>
+                </Link>
+              </div>
             ))}
           </div>
         </section>
@@ -373,7 +375,7 @@ export function Home() {
               const catStyle = getCategoryStyle(app.category);
 
               return (
-                <div key={app.id} className="mb-4 last:mb-0">
+                <div key={app.id} className="mb-3 last:mb-0">
                   <Link href={`/app/${app.id}`}>
                     <div
                       className="cursor-pointer transition-all duration-200 hover:bg-white/[0.06] p-4"
@@ -489,5 +491,4 @@ export function Home() {
       </section>
     </div>
   );
-    }
-    
+                                    }
