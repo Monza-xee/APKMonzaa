@@ -107,7 +107,16 @@ export function Admin() {
   const [editingApp, setEditingApp] = useState<App | null>(null);
   const [form, setForm] = useState(emptyForm);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  
   const [tableSearch, setTableSearch] = useState("");
+  const [activeTab, setActiveTab] = useState<"apps" | "users">("apps");
+const [users, setUsers] = useState<any[]>([]);
+const [usersLoading, setUsersLoading] = useState(false);
+const [userSearch, setUserSearch] = useState("");
+const [editingUser, setEditingUser] = useState<any | null>(null);
+const [newPassword, setNewPassword] = useState("");
+const [isPasswordModalOpen, setIsPasswordModalOpen] = useState(false);
+const [isSavingPassword, setIsSavingPassword] = useState(false);
 
   const [sessionChecked, setSessionChecked] = useState(false);
   const [userEmail, setUserEmail] = useState<string | null>(null);
