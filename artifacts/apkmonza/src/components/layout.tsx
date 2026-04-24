@@ -50,7 +50,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
                 className="text-xs font-bold uppercase tracking-wider cursor-pointer transition-all hover:opacity-80"
                 style={{ color: "rgba(255,255,255,0.5)" }}
               >
-                CATALOG
+                HOME
               </span>
             </Link>
             <Link href={isLoggedIn ? "/profile" : "/auth"}>
