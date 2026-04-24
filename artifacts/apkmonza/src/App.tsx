@@ -7,6 +7,8 @@ import { Layout } from "@/components/layout";
 import { Home } from "@/pages/home";
 import { AppDetail } from "@/pages/app-detail";
 import { Admin } from "@/pages/admin";
+import { Auth } from "./pages/auth";
+import { Profile } from "./pages/profile";
 
 const queryClient = new QueryClient();
 
@@ -18,6 +20,8 @@ function Router() {
         <Route path="/app/:id" component={AppDetail} />
         <Route path="/admin" component={Admin} />
         <Route component={NotFound} />
+<Route path="/auth" component={Auth} />
+<Route path="/profile" component={Profile} />
       </Switch>
     </Layout>
   );
