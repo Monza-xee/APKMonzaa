@@ -788,7 +788,7 @@ export function Admin() {
           style={{ background: "rgba(0,0,0,0.8)", backdropFilter: "blur(8px)" }}
         >
           <div
-            className="w-full sm:max-w-md"
+            className="w-full sm:max-w-md max-h-[90vh] overflow-y-auto"
             style={{ background: "rgba(12,10,35,0.98)", border: "1px solid rgba(255,255,255,0.1)", borderRadius: "20px 20px 0 0", boxShadow: "0 -8px 40px rgba(0,0,0,0.6)" }}
           >
             <div
@@ -833,6 +833,116 @@ export function Admin() {
                   ))}
                 </div>
               </div>
+              
+              {/* Role */}
+<div>
+  <label style={labelStyle}>Role</label>
+  <select
+    value={editingUser.role || "member"}
+    onChange={async (e) => {
+      const newRole = e.target.value;
+      const { error } = await supabase
+        .from("profiles")
+        .update({ role: newRole })
+        .eq("id", editingUser.id);
+      if (!error) {
+        setEditingUser((u: any) => ({ ...u, role: newRole }));
+        setUsers((prev) => prev.map((u) => u.id === editingUser.id ? { ...u, role: newRole } : u));
+        toast({ title: "Role diupdate!" });
+      }
+    }}
+    style={inputStyle}
+  >
+    <option value="member">Member</option>
+    <option value="moderator">Moderator</option>
+    <option value="admin">Admin</option>
+  </select>
+</div>
+
+{/* VIP Toggle */}
+<div>
+  <label style={labelStyle}>VIP Status</label>
+  <button
+    type="button"
+    onClick={async () => {
+      const newVip = !editingUser.is_vip;
+      const { error } = await supabase
+        .from("profiles")
+        .update({ is_vip: newVip })
+        .eq("id", editingUser.id);
+      if (!error) {
+        setEditingUser((u: any) => ({ ...u, is_vip: newVip }));
+        setUsers((prev) => prev.map((u) => u.id === editingUser.id ? { ...u, is_vip: newVip } : u));
+        toast({ title: newVip ? "User dijadikan VIP!" : "VIP dinonaktifkan" });
+      }
+    }}
+    className="w-full flex items-center gap-3 p-3 transition-all"
+    style={{
+      background: editingUser.is_vip ? "rgba(245,158,11,0.1)" : "rgba(255,255,255,0.04)",
+      border: `1px solid ${editingUser.is_vip ? "rgba(245,158,11,0.3)" : "rgba(255,255,255,0.08)"}`,
+      borderRadius: "12px",
+      cursor: "pointer",
+      fontFamily: "inherit",
+    }}
+  >
+    <div
+      className="w-5 h-5 flex items-center justify-center shrink-0"
+      style={{
+        background: editingUser.is_vip ? "#f59e0b" : "rgba(255,255,255,0.08)",
+        borderRadius: "5px",
+      }}
+    >
+      {editingUser.is_vip && <span className="text-white text-xs">✓</span>}
+    </div>
+    <span className="text-sm font-bold text-white">VIP Member</span>
+  </button>
+</div>
+
+{/* VIP Expiry */}
+<div>
+  <label style={labelStyle}>VIP Berlaku Hingga (opsional)</label>
+  <input
+    type="date"
+    value={editingUser.vip_expires_at ? editingUser.vip_expires_at.split("T")[0] : ""}
+    onChange={async (e) => {
+      const val = e.target.value ? new Date(e.target.value).toISOString() : null;
+      const { error } = await supabase
+        .from("profiles")
+        .update({ vip_expires_at: val })
+        .eq("id", editingUser.id);
+      if (!error) {
+        setEditingUser((u: any) => ({ ...u, vip_expires_at: val }));
+        toast({ title: "Tanggal VIP diupdate!" });
+      }
+    }}
+    style={{ ...inputStyle, colorScheme: "dark" }}
+  />
+</div>
+
+{/* VIP Download URL */}
+<div>
+  <label style={labelStyle}>Link Download VIP</label>
+  <input
+    type="url"
+    value={editingUser.vip_download_url || ""}
+    onChange={(e) => setEditingUser((u: any) => ({ ...u, vip_download_url: e.target.value }))}
+    placeholder="https://drive.google.com/..."
+    style={inputStyle}
+    onBlur={async (e) => {
+      const { error } = await supabase
+        .from("profiles")
+        .update({ vip_download_url: e.target.value })
+        .eq("id", editingUser.id);
+      if (!error) {
+        setUsers((prev) => prev.map((u) => u.id === editingUser.id ? { ...u, vip_download_url: e.target.value } : u));
+        toast({ title: "Link VIP diupdate!" });
+      }
+    }}
+  />
+  <p className="text-[11px] mt-1" style={{ color: "rgba(255,255,255,0.25)" }}>
+    Link ini hanya bisa diakses oleh user VIP di halaman profile mereka
+  </p>
+</div>
 
               {/* New password */}
               <div>
