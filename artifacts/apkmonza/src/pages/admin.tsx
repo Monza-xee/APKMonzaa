@@ -846,30 +846,6 @@ export function Admin() {
                 </div>
               </div>
               
-              {/* Role */}
-<div>
-  <label style={labelStyle}>Role</label>
-  <select
-    value={editingUser.role || "member"}
-    onChange={async (e) => {
-      const newRole = e.target.value;
-      const { error } = await supabase
-        .from("profiles")
-        .update({ role: newRole })
-        .eq("id", editingUser.id);
-      if (!error) {
-        setEditingUser((u: any) => ({ ...u, role: newRole }));
-        setUsers((prev) => prev.map((u) => u.id === editingUser.id ? { ...u, role: newRole } : u));
-        toast({ title: "Role diupdate!" });
-      }
-    }}
-    style={inputStyle}
-  >
-    <option value="member">Member</option>
-    <option value="moderator">Moderator</option>
-    <option value="admin">Admin</option>
-  </select>
-</div>
 
 {/* VIP Toggle */}
 <div>

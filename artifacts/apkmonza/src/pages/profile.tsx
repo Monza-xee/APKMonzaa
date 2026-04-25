@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabase";
 import { useLocation } from "wouter";
-import { User, Mail, LogOut, Edit2, Check, X, Shield, Calendar, Crown, Star, Eye, EyeOff } from "lucide-react";
+import { User, Mail, LogOut, Edit2, Check, X, Shield, Calendar, Crown, Eye, EyeOff } from "lucide-react";
 
 export function Profile() {
   const [, setLocation] = useLocation();
@@ -13,7 +13,6 @@ export function Profile() {
   const [isSaving, setIsSaving] = useState(false);
   const [message, setMessage] = useState({ text: "", type: "success" });
 
-  // Password change
   const [showPasswordForm, setShowPasswordForm] = useState(false);
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword, setNewPassword] = useState("");
@@ -76,20 +75,15 @@ export function Profile() {
       return;
     }
     setIsChangingPassword(true);
-
-    // Re-auth dulu dengan password lama
     const { error: signInError } = await supabase.auth.signInWithPassword({
       email: user.email,
       password: currentPassword,
     });
-
     if (signInError) {
       showMsg("Password lama salah.", "error");
       setIsChangingPassword(false);
       return;
     }
-
-    // Update password baru
     const { error } = await supabase.auth.updateUser({ password: newPassword });
     if (error) {
       showMsg("Gagal update password: " + error.message, "error");
@@ -123,23 +117,14 @@ export function Profile() {
     overflow: "hidden",
   };
 
-  // Role badge config
-  const roleConfig: Record<string, { label: string; color: string; bg: string; border: string; icon: any }> = {
-    admin: { label: "Admin", color: "#fca5a5", bg: "rgba(239,68,68,0.15)", border: "rgba(239,68,68,0.3)", icon: Shield },
-    moderator: { label: "Moderator", color: "#93c5fd", bg: "rgba(59,130,246,0.15)", border: "rgba(59,130,246,0.3)", icon: Star },
-    member: { label: "Member", color: "#a78bfa", bg: "rgba(124,58,237,0.15)", border: "rgba(124,58,237,0.3)", icon: User },
-  };
-
-  const role = profile?.role || "member";
-  const roleCfg = roleConfig[role] || roleConfig.member;
-  const RoleIcon = roleCfg.icon;
-
   const isVip = profile?.is_vip && (
     !profile?.vip_expires_at || new Date(profile.vip_expires_at) > new Date()
   );
 
   const vipExpiry = profile?.vip_expires_at
-    ? new Date(profile.vip_expires_at).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })
+    ? new Date(profile.vip_expires_at).toLocaleDateString("id-ID", {
+        day: "numeric", month: "long", year: "numeric",
+      })
     : null;
 
   if (isLoading) {
@@ -158,7 +143,6 @@ export function Profile() {
 
       {/* AVATAR + NAME */}
       <div className="flex flex-col items-center py-8 px-4 text-center" style={cardStyle}>
-        {/* Avatar with VIP ring */}
         <div className="relative mb-4">
           <div
             className="w-20 h-20 flex items-center justify-center"
@@ -191,22 +175,29 @@ export function Profile() {
         <p className="font-black text-xl text-white">{profile?.username || "User"}</p>
         <p className="text-xs mt-1" style={{ color: "rgba(255,255,255,0.35)" }}>{user?.email}</p>
 
-        {/* Badges */}
         <div className="flex gap-2 mt-3 flex-wrap justify-center">
-          {/* Role badge */}
+          {/* Member badge */}
           <div
             className="flex items-center gap-1.5 px-3 py-1"
-            style={{ background: roleCfg.bg, border: `1px solid ${roleCfg.border}`, borderRadius: "999px" }}
+            style={{
+              background: "rgba(124,58,237,0.15)",
+              border: "1px solid rgba(124,58,237,0.3)",
+              borderRadius: "999px",
+            }}
           >
-            <RoleIcon className="h-3 w-3" style={{ color: roleCfg.color }} />
-            <span className="text-xs font-bold" style={{ color: roleCfg.color }}>{roleCfg.label}</span>
+            <User className="h-3 w-3" style={{ color: "#a78bfa" }} />
+            <span className="text-xs font-bold" style={{ color: "#a78bfa" }}>Member</span>
           </div>
 
           {/* VIP badge */}
           {isVip && (
             <div
               className="flex items-center gap-1.5 px-3 py-1"
-              style={{ background: "rgba(245,158,11,0.15)", border: "1px solid rgba(245,158,11,0.35)", borderRadius: "999px" }}
+              style={{
+                background: "rgba(245,158,11,0.15)",
+                border: "1px solid rgba(245,158,11,0.35)",
+                borderRadius: "999px",
+              }}
             >
               <Crown className="h-3 w-3" style={{ color: "#fcd34d" }} />
               <span className="text-xs font-bold" style={{ color: "#fcd34d" }}>VIP</span>
@@ -234,7 +225,9 @@ export function Profile() {
           <div className="p-4 space-y-3">
             {vipExpiry && (
               <div>
-                <p className="text-[10px] font-bold uppercase mb-0.5" style={{ color: "rgba(245,158,11,0.6)" }}>Berlaku hingga</p>
+                <p className="text-[10px] font-bold uppercase mb-0.5" style={{ color: "rgba(245,158,11,0.6)" }}>
+                  Berlaku hingga
+                </p>
                 <p className="text-sm font-bold text-white">{vipExpiry}</p>
               </div>
             )}
@@ -312,8 +305,10 @@ export function Profile() {
                   style={{ color: "#86efac", padding: "4px", background: "none", cursor: "pointer" }}>
                   <Check className="h-4 w-4" />
                 </button>
-                <button onClick={() => { setEditingUsername(false); setNewUsername(profile?.username || ""); }}
-                  style={{ color: "#fca5a5", padding: "4px", background: "none", cursor: "pointer" }}>
+                <button
+                  onClick={() => { setEditingUsername(false); setNewUsername(profile?.username || ""); }}
+                  style={{ color: "#fca5a5", padding: "4px", background: "none", cursor: "pointer" }}
+                >
                   <X className="h-4 w-4" />
                 </button>
               </div>
@@ -338,20 +333,6 @@ export function Profile() {
           </div>
         </div>
 
-        {/* Role */}
-        <div className="px-4 py-3 flex items-center gap-3" style={{ borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-          <RoleIcon className="h-4 w-4 shrink-0" style={{ color: "rgba(255,255,255,0.3)" }} />
-          <div>
-            <p className="text-xs font-bold uppercase mb-0.5" style={{ color: "rgba(255,255,255,0.35)" }}>Role</p>
-            <span
-              className="text-xs font-bold px-2 py-0.5"
-              style={{ background: roleCfg.bg, color: roleCfg.color, border: `1px solid ${roleCfg.border}`, borderRadius: "999px" }}
-            >
-              {roleCfg.label}
-            </span>
-          </div>
-        </div>
-
         {/* Member since */}
         <div className="px-4 py-3 flex items-center gap-3">
           <Calendar className="h-4 w-4 shrink-0" style={{ color: "rgba(255,255,255,0.3)" }} />
@@ -359,7 +340,9 @@ export function Profile() {
             <p className="text-xs font-bold uppercase mb-0.5" style={{ color: "rgba(255,255,255,0.35)" }}>Member Since</p>
             <p className="text-sm font-bold text-white">
               {user?.created_at
-                ? new Date(user.created_at).toLocaleDateString("id-ID", { day: "numeric", month: "long", year: "numeric" })
+                ? new Date(user.created_at).toLocaleDateString("id-ID", {
+                    day: "numeric", month: "long", year: "numeric",
+                  })
                 : "-"}
             </p>
           </div>
@@ -404,7 +387,6 @@ export function Profile() {
             </button>
           ) : (
             <div className="space-y-3">
-              {/* Current password */}
               <div>
                 <label className="block text-xs font-bold mb-1.5" style={{ color: "rgba(255,255,255,0.4)" }}>
                   Password Lama
@@ -427,7 +409,6 @@ export function Profile() {
                 </div>
               </div>
 
-              {/* New password */}
               <div>
                 <label className="block text-xs font-bold mb-1.5" style={{ color: "rgba(255,255,255,0.4)" }}>
                   Password Baru
@@ -450,7 +431,6 @@ export function Profile() {
                 </div>
               </div>
 
-              {/* Confirm password */}
               <div>
                 <label className="block text-xs font-bold mb-1.5" style={{ color: "rgba(255,255,255,0.4)" }}>
                   Konfirmasi Password Baru
