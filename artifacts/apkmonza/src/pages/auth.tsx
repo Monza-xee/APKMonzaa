@@ -52,11 +52,14 @@ export function Auth() {
         return;
       }
 
-      const { error } = await supabase.auth.signUp({
-        email,
-        password,
-        options: { data: { username } },
-      });
+        const { error } = await supabase.auth.signUp({
+  email,
+  password,
+  options: {
+    data: { username },
+    emailRedirectTo: `${window.location.origin}/callback`,
+  },
+});
 
       if (error) {
         setError(error.message);
