@@ -326,14 +326,15 @@ export function AppDetail() {
 
           {/* Info untuk non-VIP */}
           {!isVip && (app.download_url || app.download_url_free) && (
-            <div
-              className="flex items-center gap-2 p-3"
-              style={{
-                background: "rgba(245,158,11,0.06)",
-                border: "1px solid rgba(245,158,11,0.15)",
-                borderRadius: "0 0 10px 10px",
-              }}
-            >
+          <div
+  className="flex items-center gap-2 px-4 py-2 -mt-2"
+  style={{
+    background: "rgba(245,158,11,0.06)",
+    border: "1px solid rgba(245,158,11,0.15)",
+    borderTop: "none", // biar nyatu sama atas
+    borderRadius: "0 0 10px 10px",
+  }}
+>
               <Lock className="h-3.5 w-3.5 shrink-0" style={{ color: "rgba(245,158,11,0.6)" }} />
               <p className="text-xs" style={{ color: "rgba(255,255,255,0.4)" }}>
                 User <span style={{ color: "#fcd34d", fontWeight: 700 }}>VIP</span> mendapat link download langsung tanpa redirect
