@@ -331,7 +331,7 @@ export function AppDetail() {
               style={{
                 background: "rgba(245,158,11,0.06)",
                 border: "1px solid rgba(245,158,11,0.15)",
-                borderRadius: "10px",
+                borderRadius: "0 0 10px 10px",
               }}
             >
               <Lock className="h-3.5 w-3.5 shrink-0" style={{ color: "rgba(245,158,11,0.6)" }} />
@@ -354,7 +354,7 @@ export function AppDetail() {
               >
                 <User className="h-3.5 w-3.5" style={{ color: "#a78bfa" }} />
                 <p className="text-xs font-bold" style={{ color: "#a78bfa" }}>
-                  Login untuk akses link VIP
+                  Login dan berlangganan user VIP
                 </p>
               </div>
             </Link>
