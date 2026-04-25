@@ -14,8 +14,7 @@ type App = {
   id: number; name: string; version: string; size: string; type: string;
   category: string; status: string; description: string; mod_features: string;
   mod_features_full: string; icon_color: string; icon_initials: string;
-  icon_url: string; package_name: string; download_url: string;
-  uploaded_at: string; is_recommended: boolean; developer: string; developer_url: string;
+  icon_url: string; package_name: string; download_url: string; download_url_free: string; uploaded_at: string; is_recommended: boolean; developer: string; developer_url: string;
 };
 
 type UserProfile = {
@@ -27,7 +26,7 @@ const ADMIN_EMAIL = "admin@monza.com";
 const emptyForm = {
   name: "", version: "", size: "", type: "APP", category: "", status: "ONLINE",
   description: "", mod_features: "", mod_features_full: "", icon_color: "",
-  icon_initials: "", icon_url: "", package_name: "", download_url: "",
+  icon_initials: "", icon_url: "", package_name: "", download_url: "", download_url_free: "",
   is_recommended: false, developer: "", developer_url: "",
 };
 
@@ -195,7 +194,7 @@ export function Admin() {
       description: app.description || "", mod_features: app.mod_features || "",
       mod_features_full: app.mod_features_full || "", icon_color: app.icon_color || "",
       icon_initials: app.icon_initials || "", icon_url: app.icon_url || "",
-      package_name: app.package_name || "", download_url: app.download_url || "",
+      package_name: app.package_name || "", download_url: app.download_url || "", download_url_free: app.download_url_free || "",
       is_recommended: app.is_recommended || false, developer: app.developer || "",
       developer_url: app.developer_url || "",
     });
@@ -750,6 +749,19 @@ export function Admin() {
                     <input name="download_url" value={form.download_url} onChange={handleChange} style={inputStyle} />
                   </div>
                   <div>
+  <label style={labelStyle}>Download URL Free (untuk non-VIP)</label>
+  <input
+    name="download_url_free"
+    value={(form as any).download_url_free}
+    onChange={handleChange}
+    placeholder="https://shortlink.com/..."
+    style={inputStyle}
+  />
+  <p className="text-[11px] mt-1" style={{ color: "rgba(255,255,255,0.25)" }}>
+    Link ini untuk user biasa. Kosongkan jika sama dengan link VIP.
+  </p>
+</div>
+                  <div>
                     <label style={labelStyle}>Icon Color (hex)</label>
                     <input name="icon_color" value={form.icon_color} onChange={handleChange} style={inputStyle} />
                   </div>
@@ -919,30 +931,6 @@ export function Admin() {
   />
 </div>
 
-{/* VIP Download URL */}
-<div>
-  <label style={labelStyle}>Link Download VIP</label>
-  <input
-    type="url"
-    value={editingUser.vip_download_url || ""}
-    onChange={(e) => setEditingUser((u: any) => ({ ...u, vip_download_url: e.target.value }))}
-    placeholder="https://drive.google.com/..."
-    style={inputStyle}
-    onBlur={async (e) => {
-      const { error } = await supabase
-        .from("profiles")
-        .update({ vip_download_url: e.target.value })
-        .eq("id", editingUser.id);
-      if (!error) {
-        setUsers((prev) => prev.map((u) => u.id === editingUser.id ? { ...u, vip_download_url: e.target.value } : u));
-        toast({ title: "Link VIP diupdate!" });
-      }
-    }}
-  />
-  <p className="text-[11px] mt-1" style={{ color: "rgba(255,255,255,0.25)" }}>
-    Link ini hanya bisa diakses oleh user VIP di halaman profile mereka
-  </p>
-</div>
 
               {/* New password */}
               <div>
