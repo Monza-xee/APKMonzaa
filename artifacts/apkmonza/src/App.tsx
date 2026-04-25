@@ -9,6 +9,7 @@ import { AppDetail } from "@/pages/app-detail";
 import { Admin } from "@/pages/admin";
 import { Auth } from "./pages/auth";
 import { Profile } from "./pages/profile";
+import { Callback } from "./pages/callback";
 
 const queryClient = new QueryClient();
 
@@ -21,6 +22,7 @@ function Router() {
         <Route path="/admin" component={Admin} />
         <Route path="/auth" component={Auth} />
         <Route path="/profile" component={Profile} />
+        <Route path="/callback" component={Callback} />
         <Route component={NotFound} />
       </Switch>
     </Layout>
