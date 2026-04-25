@@ -405,4 +405,121 @@ export function Profile() {
           ) : (
             <div className="space-y-3">
               {/* Current password */}
-              
+              <div>
+                <label className="block text-xs font-bold mb-1.5" style={{ color: "rgba(255,255,255,0.4)" }}>
+                  Password Lama
+                </label>
+                <div className="relative">
+                  <input
+                    type={showCurrentPw ? "text" : "password"}
+                    value={currentPassword}
+                    onChange={(e) => setCurrentPassword(e.target.value)}
+                    placeholder="••••••••"
+                    style={{ ...inputStyle, paddingRight: "40px" }}
+                  />
+                  <button
+                    onClick={() => setShowCurrentPw(!showCurrentPw)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2"
+                    style={{ color: "rgba(255,255,255,0.3)", background: "none", cursor: "pointer" }}
+                  >
+                    {showCurrentPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+
+              {/* New password */}
+              <div>
+                <label className="block text-xs font-bold mb-1.5" style={{ color: "rgba(255,255,255,0.4)" }}>
+                  Password Baru
+                </label>
+                <div className="relative">
+                  <input
+                    type={showNewPw ? "text" : "password"}
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    placeholder="Min 6 karakter"
+                    style={{ ...inputStyle, paddingRight: "40px" }}
+                  />
+                  <button
+                    onClick={() => setShowNewPw(!showNewPw)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2"
+                    style={{ color: "rgba(255,255,255,0.3)", background: "none", cursor: "pointer" }}
+                  >
+                    {showNewPw ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                  </button>
+                </div>
+              </div>
+
+              {/* Confirm password */}
+              <div>
+                <label className="block text-xs font-bold mb-1.5" style={{ color: "rgba(255,255,255,0.4)" }}>
+                  Konfirmasi Password Baru
+                </label>
+                <input
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Ulangi password baru"
+                  style={inputStyle}
+                  onKeyDown={(e) => e.key === "Enter" && handleChangePassword()}
+                />
+              </div>
+
+              <div className="flex gap-2">
+                <button
+                  onClick={() => {
+                    setShowPasswordForm(false);
+                    setCurrentPassword("");
+                    setNewPassword("");
+                    setConfirmPassword("");
+                  }}
+                  className="flex-1 py-2.5 text-sm font-bold transition-all"
+                  style={{
+                    background: "rgba(255,255,255,0.06)",
+                    color: "rgba(255,255,255,0.5)",
+                    borderRadius: "10px",
+                    cursor: "pointer",
+                    fontFamily: "inherit",
+                  }}
+                >
+                  Batal
+                </button>
+                <button
+                  onClick={handleChangePassword}
+                  disabled={isChangingPassword || !currentPassword || !newPassword || !confirmPassword}
+                  className="flex-1 py-2.5 text-sm font-bold text-white transition-all hover:opacity-90 disabled:opacity-40"
+                  style={{
+                    background: "linear-gradient(135deg, #7c3aed, #6366f1)",
+                    borderRadius: "10px",
+                    cursor: "pointer",
+                    fontFamily: "inherit",
+                  }}
+                >
+                  {isChangingPassword ? "Menyimpan..." : "Simpan"}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* LOGOUT */}
+      <button
+        onClick={handleLogout}
+        className="w-full py-3.5 font-black text-sm uppercase flex items-center justify-center gap-2 transition-all hover:opacity-80"
+        style={{
+          background: "rgba(239,68,68,0.15)",
+          color: "#fca5a5",
+          border: "1px solid rgba(239,68,68,0.25)",
+          borderRadius: "14px",
+          cursor: "pointer",
+          fontFamily: "inherit",
+        }}
+      >
+        <LogOut className="h-4 w-4" />
+        Logout
+      </button>
+
+    </div>
+  );
+}
