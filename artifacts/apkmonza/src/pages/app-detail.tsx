@@ -14,7 +14,6 @@ import {
   Wifi,
   Zap,
   Crown,
-  Lock,
 } from "lucide-react";
 
 const categoryColors: Record<string, { bg: string; color: string; border: string }> = {
@@ -123,6 +122,10 @@ export function AppDetail() {
 
   const statusOnline = app.status === "ONLINE";
   const catStyle = getCategoryStyle(app.category);
+
+  // Logic 1 tombol: VIP pakai download_url, Free pakai download_url_free
+  const downloadUrl = isVip ? app.download_url : app.download_url_free;
+  const hasDownloadLink = !!downloadUrl;
 
   return (
     <div className="space-y-4">
@@ -359,7 +362,7 @@ export function AppDetail() {
         ))}
       </div>
 
-      {/* DOWNLOAD - DUAL TIER */}
+      {/* DOWNLOAD - 1 TOMBOL DINAMIS */}
       <div style={cardStyle}>
         <div
           className="px-4 py-3 flex items-center justify-between"
@@ -389,89 +392,23 @@ export function AppDetail() {
         </div>
 
         <div className="p-4 space-y-3">
-          {/* VIP TIER */}
-          {app.download_url ? (
-            isVip ? (
-              <a href={app.download_url} target="_blank" rel="noopener noreferrer">
-                <button
-                  className="w-full font-black text-sm uppercase text-white py-4 flex items-center justify-center gap-2 transition-all hover:opacity-90"
-                  style={{
-                    background: "linear-gradient(135deg, #f59e0b, #d97706)",
-                    borderRadius: "12px",
-                    boxShadow: "0 4px 20px rgba(245,158,11,0.4)",
-                  }}
-                >
-                  <Crown className="h-4 w-4" />
-                  VIP DIRECT DOWNLOAD ({app.size})
-                </button>
-              </a>
-            ) : (
-              <div className="relative group">
-                <button
-                  disabled
-                  className="w-full font-black text-sm uppercase py-4 flex items-center justify-center gap-2 cursor-not-allowed relative overflow-hidden"
-                  style={{
-                    background: "rgba(245,158,11,0.08)",
-                    color: "rgba(245,158,11,0.4)",
-                    borderRadius: "12px",
-                    border: "1px solid rgba(245,158,11,0.15)",
-                  }}
-                >
-                  <Lock className="h-4 w-4" />
-                  VIP DIRECT DOWNLOAD
-                </button>
-                {/* Upsell overlay untuk non-VIP */}
-                {!userProfile ? (
-                  <Link href="/auth">
-                    <div
-                      className="absolute inset-0 flex items-center justify-center gap-2 cursor-pointer opacity-0 group-hover:opacity-100 transition-opacity"
-                      style={{
-                        background: "linear-gradient(135deg, #f59e0b, #d97706)",
-                        borderRadius: "12px",
-                      }}
-                    >
-                      <Crown className="h-4 w-4 text-white" />
-                      <span className="text-xs font-black text-white uppercase">
-                        Login untuk Upgrade VIP
-                      </span>
-                    </div>
-                  </Link>
-                ) : (
-                  <div
-                    className="absolute inset-0 flex items-center justify-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"
-                    style={{
-                      background: "linear-gradient(135deg, #f59e0b, #d97706)",
-                      borderRadius: "12px",
-                    }}
-                  >
-                    <Crown className="h-4 w-4 text-white" />
-                    <span className="text-xs font-black text-white uppercase">
-                      Upgrade ke VIP untuk Unlock
-                    </span>
-                  </div>
-                )}
-              </div>
-            )
-          ) : null}
-
-          {/* FREE TIER */}
-          {app.download_url_free || app.download_url ? (
-            <a
-              href={app.download_url_free || app.download_url}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
+          {/* 1 TOMBOL - HREF DAN STYLE BERUBAH SESUAI TIER */}
+          {hasDownloadLink ? (
+            <a href={downloadUrl} target="_blank" rel="noopener noreferrer">
               <button
-                className="w-full font-black text-sm uppercase py-4 flex items-center justify-center gap-2 transition-all hover:opacity-90"
+                className="w-full font-black text-sm uppercase text-white py-4 flex items-center justify-center gap-2 transition-all hover:opacity-90 active:scale-[0.98]"
                 style={{
-                  background: "linear-gradient(135deg, #7c3aed, #6366f1)",
-                  color: "#ffffff",
+                  background: isVip
+                    ? "linear-gradient(135deg, #f59e0b, #d97706)"
+                    : "linear-gradient(135deg, #7c3aed, #6366f1)",
                   borderRadius: "12px",
-                  boxShadow: "0 4px 20px rgba(124,58,237,0.4)",
+                  boxShadow: isVip
+                    ? "0 4px 20px rgba(245,158,11,0.4)"
+                    : "0 4px 20px rgba(124,58,237,0.4)",
                 }}
               >
-                <Download className="h-4 w-4" />
-                FREE DOWNLOAD ({app.size})
+                {isVip ? <Crown className="h-4 w-4" /> : <Download className="h-4 w-4" />}
+                {isVip ? `VIP DOWNLOAD (${app.size})` : `DOWNLOAD APK (${app.size})`}
               </button>
             </a>
           ) : (
@@ -488,8 +425,8 @@ export function AppDetail() {
             </button>
           )}
 
-          {/* Info banner */}
-          {!isVip && (
+          {/* Info tier untuk non-VIP */}
+          {!isVip && hasDownloadLink && (
             <div
               className="flex items-start gap-2 px-4 py-3"
               style={{
@@ -503,18 +440,17 @@ export function AppDetail() {
                 style={{ color: "rgba(245,158,11,0.6)" }}
               />
               <p className="text-xs leading-relaxed" style={{ color: "rgba(255,255,255,0.4)" }}>
-                User <span style={{ color: "#fcd34d", fontWeight: 700 }}>VIP</span> mendapat akses
-                <span style={{ color: "rgba(255,255,255,0.6)", fontWeight: 600 }}>
-                  {" "}
-                  Direct Download
-                </span>{" "}
-                tanpa redirect, iklan, atau waiting timer.
+                Kamu menggunakan link{" "}
+                <span style={{ color: "rgba(255,255,255,0.6)", fontWeight: 600 }}>Free Tier</span>.
+                User{" "}
+                <span style={{ color: "#fcd34d", fontWeight: 700 }}>VIP</span> mendapat akses
+                direct link tanpa redirect & waiting timer.
               </p>
             </div>
           )}
 
-          {/* Login prompt */}
-          {!userProfile && (app.download_url || app.download_url_free) && (
+          {/* Login prompt jika belum login */}
+          {!userProfile && hasDownloadLink && (
             <Link href="/auth">
               <div
                 className="flex items-center justify-center gap-2 py-2.5 cursor-pointer transition-all hover:opacity-80"
@@ -535,5 +471,5 @@ export function AppDetail() {
       </div>
     </div>
   );
-                    }
+          }
             
